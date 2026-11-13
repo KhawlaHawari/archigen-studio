@@ -15,20 +15,6 @@
 
 ---
 
-## 🎓 Academic context
-
-| | |
-| :--- | :--- |
-| **University** | TEK-UP University — 2026/2027 |
-| **Course** | Advanced Deep Learning & MLOps |
-| **Supervisor** | Haythem Ghazouani |
-| **Team** | Khalil Ayeb · Amine Ben Fadhel · Khawla Hawari |
-| **Topics** | Generative AI for images · Semantic segmentation |
-
-**Scope (project framing, 13 Oct 2026)** — *core*: conditional facade generation (Pix2Pix) compared against a U-Net
-baseline trained with L1 only; *extension*: CubiCasa5K floor-plan segmentation and 3D reconstruction.
-
----
 
 ## 🧭 Overview
 
