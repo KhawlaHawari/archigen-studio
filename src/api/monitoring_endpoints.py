@@ -7,7 +7,7 @@ Encadrant : Haythem Ghazouani
 
 from fastapi import APIRouter, Query, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Literal
 
 from src.mlops.drift_detector import (
     DriftDetector,
@@ -31,7 +31,7 @@ async def get_dvc_status_endpoint() -> Dict[str, Any]:
 
 
 @router.get("/drift/status")
-async def get_drift_status_endpoint(domain: str = Query("floorplan", enum=["floorplan", "facade"])) -> Dict[str, Any]:
+async def get_drift_status_endpoint(domain: Literal["floorplan", "facade"] = Query("floorplan")) -> Dict[str, Any]:
     """
     Fast health check for data and prediction drift.
     Returns composite drift score, max PSI, and retraining recommendation.
@@ -52,7 +52,7 @@ async def get_drift_status_endpoint(domain: str = Query("floorplan", enum=["floo
 
 
 @router.get("/drift/report")
-async def get_drift_full_report_endpoint(domain: str = Query("floorplan", enum=["floorplan", "facade"])) -> Dict[str, Any]:
+async def get_drift_full_report_endpoint(domain: Literal["floorplan", "facade"] = Query("floorplan")) -> Dict[str, Any]:
     """
     Returns complete statistical drift report:
     PSI per feature, Kolmogorov-Smirnov p-values, Wasserstein distances, and mean shifts.
@@ -63,7 +63,7 @@ async def get_drift_full_report_endpoint(domain: str = Query("floorplan", enum=[
 
 
 @router.post("/drift/detect")
-async def trigger_drift_detection_endpoint(domain: str = Query("floorplan", enum=["floorplan", "facade"])) -> Dict[str, Any]:
+async def trigger_drift_detection_endpoint(domain: Literal["floorplan", "facade"] = Query("floorplan")) -> Dict[str, Any]:
     """
     Forces an immediate drift audit over the recent production sliding window.
     Logs drift metrics to MLflow Tracking Server.
@@ -79,8 +79,8 @@ async def trigger_drift_detection_endpoint(domain: str = Query("floorplan", enum
 
 @router.post("/drift/simulate")
 async def simulate_drift_endpoint(
-    domain: str = Query("floorplan", enum=["floorplan", "facade"]),
-    drift_type: str = Query("inverted_dark_mode", enum=["inverted_dark_mode", "heavy_noise", "noise_and_shift"]),
+    domain: Literal["floorplan", "facade"] = Query("floorplan"),
+    drift_type: Literal["inverted_dark_mode", "heavy_noise", "noise_and_shift"] = Query("inverted_dark_mode"),
     samples: int = Query(15, ge=5, le=50)
 ) -> Dict[str, Any]:
     """
@@ -100,7 +100,7 @@ async def simulate_drift_endpoint(
 
 @router.post("/drift/retrain")
 async def trigger_retraining_endpoint(
-    domain: str = Query("floorplan", enum=["floorplan", "facade"]),
+    domain: Literal["floorplan", "facade"] = Query("floorplan"),
     force: bool = Query(False, description="Force retraining even if drift threshold is not breached")
 ) -> Dict[str, Any]:
     """

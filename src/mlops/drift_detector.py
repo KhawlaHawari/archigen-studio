@@ -81,7 +81,13 @@ def calculate_psi(baseline: np.ndarray, current: np.ndarray, num_bins: int = 10,
     # Ensure unique and strictly increasing edges
     bin_edges = np.unique(bin_edges)
     if len(bin_edges) < 2:
-        return 0.0
+        # Degenerate (constant) baseline: quantile bins collapse to a single edge.
+        # Bin over the joint range instead, so a shift away from the constant is still measured.
+        lo = min(baseline.min(), current.min())
+        hi = max(baseline.max(), current.max())
+        if hi <= lo:
+            return 0.0  # both distributions are the same constant: no drift
+        bin_edges = np.linspace(lo, hi, num_bins + 1)
 
     bin_edges[0] = -np.inf
     bin_edges[-1] = np.inf
@@ -278,7 +284,7 @@ def build_reference_baseline_profile(sample_count: int = 40) -> Dict[str, Any]:
     floorplan_source = "real:cubicasa5k/train" if floorplan_samples else "synthetic (no real cache found)"
     # Synthetic samples are used ONLY when no real data is available (e.g. CI without DVC pull).
     while not floorplan_samples or (floorplan_source.startswith("synthetic") and len(floorplan_samples) < sample_count):
-        img, struct, room = generate_synthetic_cubicasa_sample(512, 512)
+        img, struct, room = generate_synthetic_cubicasa_sample(512, 512, sample_id=len(floorplan_samples))
         feat = extract_floorplan_features(img, struct, room)
         floorplan_samples.append(feat)
 
@@ -294,7 +300,7 @@ def build_reference_baseline_profile(sample_count: int = 40) -> Dict[str, Any]:
 
     facade_source = "real:cmp_facades/train" if facade_samples else "synthetic (no real data found)"
     while not facade_samples or (facade_source.startswith("synthetic") and len(facade_samples) < sample_count):
-        mask, photo = generate_synthetic_facade_sample(256, 256)
+        mask, photo = generate_synthetic_facade_sample(256, 256, sample_id=len(facade_samples))
         feat = extract_facade_features(mask, photo)
         facade_samples.append(feat)
 

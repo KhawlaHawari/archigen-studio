@@ -71,6 +71,13 @@ def test_feature_extraction_floorplan():
     assert feat["mean_brightness"] > 200
 
 
+def test_psi_constant_baseline_still_detects_shift():
+    """A constant reference (e.g. synthetic fallback in CI) must not hide a total shift."""
+    baseline = np.full(40, 230.0)
+    assert calculate_psi(baseline, np.full(12, 24.8)) >= 0.20
+    assert calculate_psi(baseline, np.full(12, 230.0)) == 0.0
+
+
 def test_feature_extraction_facade():
     """Validates statistical feature extraction from facade semantic mask."""
     mask = np.zeros((256, 256, 3), dtype=np.uint8)
