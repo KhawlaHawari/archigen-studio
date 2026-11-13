@@ -3,16 +3,23 @@ FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
-# Install system dependencies for OpenCV/image/rendering libraries
+# System libraries for image / rendering packages
+# (libgl1 replaces libgl1-mesa-glx, which no longer exists on current Debian/Ubuntu)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+# CPU-only PyTorch first, from the PyTorch CPU index: keeps the image small enough for the
+# GitHub runner (the default PyPI build pulls several GB of CUDA libraries). The rest of
+# requirements.txt then reuses this torch/torchvision instead of downloading another build.
+RUN pip install --no-cache-dir --user \
+        --index-url https://download.pytorch.org/whl/cpu \
+        torch torchvision \
+    && pip install --no-cache-dir --user -r requirements.txt
 
 # Final production stage
 FROM python:3.11-slim
@@ -20,7 +27,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     curl \
     && rm -rf /var/lib/apt/lists/*
@@ -31,7 +38,9 @@ ENV PATH=/root/.local/bin:$PATH
 
 # Copy project files
 COPY src/ /app/src/
-COPY models/ /app/models/
+# Trained weights are not in Git (DVC / Kaggle): the folder is created empty and can be
+# mounted at runtime (docker-compose mounts ./models). The API loads models lazily.
+RUN mkdir -p /app/models
 COPY params.yaml /app/params.yaml
 COPY dvc.yaml /app/dvc.yaml
 COPY requirements.txt /app/requirements.txt

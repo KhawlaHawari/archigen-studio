@@ -9,7 +9,8 @@ on:
 env:
   PYTHON_VERSION: "3.11"
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  # GHCR image names must be lowercase (github.repository keeps the owner's capitals)
+  IMAGE_NAME: khawlahawari/archigen-studio
   # CI has neither the datasets nor trained checkpoints: ONNX export / parity / latency /
   # API steps run on explicitly-labelled UNTRAINED weights to test the plumbing only.
   # Real training & metrics: see README (train_facade, train_floorplan, src.evaluation.evaluate).
@@ -113,6 +114,9 @@ jobs:
   docker-build-verify:
     needs: test-and-verify
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -140,7 +144,8 @@ jobs:
       - name: Run Container & Verify Healthcheck
         if: github.ref == 'refs/heads/main'
         run: |
-          docker compose up --build -d archigen-api
+          # --no-deps: /health and /system/info need neither MLflow nor MinIO
+          docker compose up --build -d --no-deps archigen-api
           sleep 15
           curl -f --retry 5 --retry-delay 3 http://localhost:8000/health
           curl -f http://localhost:8000/system/info
@@ -150,6 +155,9 @@ jobs:
   docker-push-release:
     needs: docker-build-verify
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - name: Checkout Code
