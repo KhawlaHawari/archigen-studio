@@ -1,0 +1,7 @@
+[core]
+    remote = minio-storage
+['remote "minio-storage"']
+    url = s3://archigen-dvc
+    endpointurl = http://localhost:9000
+['remote "local-storage"']
+    url = c:\Users\DELL\Desktop\archigen-3d\..\dvc_storage

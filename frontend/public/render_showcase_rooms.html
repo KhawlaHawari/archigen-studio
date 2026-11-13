@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ArchiGen 3D - Furnished Rooms Showcase</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    #container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.90);
+      border: 1px solid #38bdf8;
+      color: #f8fafc;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      line-height: 1.4;
+    }
+    .badge span { color: #38bdf8; }
+    .badge .sub { font-size: 12px; color: #94a3b8; font-weight: normal; margin-top: 2px; }
+    .item-legend {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.90);
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      padding: 8px 14px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+    .item-legend strong { color: #38bdf8; }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="container"></div>
+  <div class="badge" id="badge">
+    <div id="badge-title">ArchiGen 3D &mdash; <span>Deterministic Room Placement</span></div>
+    <div class="sub" id="badge-sub">Loading geometry and GLB assets...</div>
+  </div>
+  <div class="item-legend" id="item-legend"></div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomKey = urlParams.get('room') || 'bedroom';
+    const viewMode = urlParams.get('view') || 'perspective'; // 'perspective' or 'top'
+
+    async function init() {
+      // Fetch showcase data
+      const data = {"bedroom": {"plan": "colorful_11261.npz", "room_type": "Bedroom", "polygon": [[6.228, 9.571], [6.228, 11.809], [10.029, 11.809], [10.029, 9.005], [6.875, 9.005]], "result": {"room_id": "bedroom_showcase", "room_type": "bedroom", "preset": "contemporary_minimal", "seed": 42, "is_valid": true, "failure_reason": null, "items": [{"item_id": "bed_0", "catalog_id": "bed_double", "name": "Double Bed", "category": "bed", "position_m": [8.452, 9.945], "rotation_deg": 180.0, "dimensions_m": [1.597, 1.879, 0.626], "glb": "/models/furniture/bed_double.glb", "placement_rule": "back_to_wall", "wall_distance_cm": 0.0, "footprint_polygon": [[7.654, 10.884], [7.654, 9.005], [9.251, 9.005], [9.251, 10.884]]}, {"item_id": "nightstand_left", "catalog_id": "nightstand", "name": "Nightstand", "category": "nightstand", "position_m": [9.543, 9.212], "rotation_deg": 180.0, "dimensions_m": [0.505, 0.413, 0.5], "glb": "/models/furniture/nightstand.glb", "placement_rule": "adjacent_anchor", "wall_distance_cm": 0.0, "footprint_polygon": [[9.29, 9.418], [9.29, 9.005], [9.795, 9.005], [9.795, 9.418]]}, {"item_id": "nightstand_right", "catalog_id": "nightstand", "name": "Nightstand", "category": "nightstand", "position_m": [7.361, 9.212], "rotation_deg": 180.0, "dimensions_m": [0.505, 0.413, 0.5], "glb": "/models/furniture/nightstand.glb", "placement_rule": "adjacent_anchor", "wall_distance_cm": 0.0, "footprint_polygon": [[7.109, 9.418], [7.109, 9.005], [7.614, 9.005], [7.614, 9.418]]}, {"item_id": "wardrobe_0", "catalog_id": "wardrobe", "name": "Wardrobe Closet", "category": "wardrobe", "position_m": [9.729, 11.209], "rotation_deg": 270.0, "dimensions_m": [1.0, 0.6, 2.0], "glb": "/models/furniture/wardrobe.glb", "placement_rule": "back_to_wall", "wall_distance_cm": 0.0, "footprint_polygon": [[9.429, 10.709], [10.029, 10.709], [10.029, 11.709], [9.429, 11.709]]}], "metadata": {"room_width_m": 3.8, "room_depth_m": 2.8, "room_area_m2": 10.47, "usable_wall_segments_count": 4, "scale_uncalibrated": false, "runtime_ms": 455.21}, "validation": {"is_valid": true, "overlap_count": 0, "door_clearance_violation": false, "out_of_bounds_count": 0, "max_wall_gap_cm": 0.0, "bfs_reachable": true, "failure_reasons": []}}}, "living_room": {"plan": "colorful_11261.npz", "room_type": "Living Room", "polygon": [[5.769, 3.397], [5.769, 6.309], [10.029, 6.309], [10.029, 3.424]], "result": {"room_id": "living_showcase", "room_type": "living_room", "preset": "contemporary_minimal", "seed": 42, "is_valid": true, "failure_reason": null, "items": [{"item_id": "sofa_0", "catalog_id": "sofa_modern", "name": "Low-Profile Sofa", "category": "sofa", "position_m": [6.171, 4.853], "rotation_deg": 90.0, "dimensions_m": [2.195, 0.804, 0.784], "glb": "/models/furniture/sofa_modern.glb", "placement_rule": "back_to_wall", "wall_distance_cm": 0.0, "footprint_polygon": [[6.573, 5.95], [5.769, 5.95], [5.769, 3.755], [6.573, 3.755]]}, {"item_id": "coffee_table_0", "catalog_id": "coffee_table_glass", "name": "Square Coffee Table", "category": "coffee_table", "position_m": [7.363, 4.853], "rotation_deg": 90.0, "dimensions_m": [0.68, 0.68, 0.391], "glb": "/models/furniture/coffee_table_glass.glb", "placement_rule": "in_front_of_anchor", "wall_distance_cm": 0.0, "footprint_polygon": [[7.703, 5.193], [7.023, 5.193], [7.023, 4.513], [7.703, 4.513]]}, {"item_id": "rug_0", "catalog_id": "rug_living", "name": "Area Floor Rug", "category": "rug", "position_m": [6.923, 4.853], "rotation_deg": 90.0, "dimensions_m": [2.512, 1.472, 0.016], "glb": "/models/furniture/rug_living.glb", "placement_rule": "under_anchor", "wall_distance_cm": 0.0, "footprint_polygon": [[7.659, 6.109], [6.187, 6.109], [6.187, 3.597], [7.659, 3.597]]}, {"item_id": "tv_unit_0", "catalog_id": "tv_unit", "name": "Media TV Console", "category": "tv_unit", "position_m": [9.804, 4.867], "rotation_deg": 270.0, "dimensions_m": [1.6, 0.45, 0.5], "glb": "/models/furniture/tv_unit.glb", "placement_rule": "back_to_wall", "wall_distance_cm": 0.0, "footprint_polygon": [[9.579, 4.067], [10.029, 4.067], [10.029, 5.667], [9.579, 5.667]]}], "metadata": {"room_width_m": 4.26, "room_depth_m": 2.91, "room_area_m2": 12.35, "usable_wall_segments_count": 2, "scale_uncalibrated": false, "runtime_ms": 29.4}, "validation": {"is_valid": true, "overlap_count": 0, "door_clearance_violation": false, "out_of_bounds_count": 0, "max_wall_gap_cm": 0.0, "bfs_reachable": true, "failure_reasons": []}}}, "kitchen": {"plan": "colorful_1148.npz", "room_type": "Kitchen", "polygon": [[11.15, 14.35], [11.15, 18.15], [15.25, 18.15], [15.25, 14.4]], "result": {"room_id": "kitchen_showcase", "room_type": "kitchen", "preset": "contemporary_minimal", "seed": 42, "is_valid": true, "failure_reason": null, "items": [{"item_id": "kitchen_sink_0", "catalog_id": "kitchen_sink_unit", "name": "Kitchen Sink Counter", "category": "kitchen_sink", "position_m": [14.696, 14.693], "rotation_deg": 180.7, "dimensions_m": [0.9, 0.6, 0.88], "glb": "/models/furniture/kitchen_sink_unit.glb", "placement_rule": "back_to_wall", "wall_distance_cm": 0.0, "footprint_polygon": [[14.243, 14.988], [14.25, 14.388], [15.15, 14.399], [15.143, 14.999]]}, {"item_id": "kitchen_counter_0", "catalog_id": "kitchen_counter", "name": "Kitchen Base Counter", "category": "kitchen_counter", "position_m": [13.796, 14.682], "rotation_deg": 180.7, "dimensions_m": [0.9, 0.6, 0.88], "glb": "/models/furniture/kitchen_counter.glb", "placement_rule": "back_to_wall", "wall_distance_cm": 0.0, "footprint_polygon": [[13.343, 14.977], [13.35, 14.377], [14.25, 14.388], [14.243, 14.988]]}, {"item_id": "refrigerator_0", "catalog_id": "refrigerator", "name": "Tall Refrigerator", "category": "refrigerator", "position_m": [12.971, 14.718], "rotation_deg": 180.7, "dimensions_m": [0.75, 0.692, 1.8], "glb": "/models/furniture/refrigerator.glb", "placement_rule": "back_to_wall", "wall_distance_cm": 0.0, "footprint_polygon": [[12.592, 15.06], [12.6, 14.368], [13.35, 14.377], [13.342, 15.069]]}], "metadata": {"room_width_m": 4.1, "room_depth_m": 3.8, "room_area_m2": 15.48, "usable_wall_segments_count": 3, "scale_uncalibrated": false, "runtime_ms": 31.53}, "validation": {"is_valid": true, "overlap_count": 0, "door_clearance_violation": false, "out_of_bounds_count": 0, "max_wall_gap_cm": 0.0, "bfs_reachable": true, "failure_reasons": []}}}};
+      const roomData = data[roomKey];
+      if (!roomData) {
+        document.getElementById('badge-sub').innerText = 'Room not found: ' + roomKey;
+        return;
+      }
+
+      const result = roomData.result;
+      const polyCoords = roomData.polygon;
+
+      // Update badge
+      document.getElementById('badge-title').innerHTML = `Real CubiCasa Room &mdash; <span>${roomData.room_type} (${roomData.plan})</span>`;
+      document.getElementById('badge-sub').innerHTML = 
+        `Area: ${result.metadata.room_area_m2} m² | Dimensions: ${result.metadata.room_width_m}m × ${result.metadata.room_depth_m}m | Validation: 0 Overlaps, Doors Clear, Wall Gap &le; 2cm`;
+
+      const itemList = result.items.map(it => `${it.name} (${it.category})`).join(' &bull; ');
+      document.getElementById('item-legend').innerHTML = `<strong>Placed Assets:</strong> ${itemList}`;
+
+      // Calculate centroid of room polygon
+      let cx = 0, cy = 0;
+      for (const p of polyCoords) {
+        cx += p[0];
+        cy += p[1];
+      }
+      cx /= polyCoords.length;
+      cy /= polyCoords.length;
+
+      // Setup Three.js scene
+      const container = document.getElementById('container');
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0f172a);
+
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      // Camera
+      let camera;
+      if (viewMode === 'top') {
+        const aspect = width / height;
+        const frustumSize = Math.max(result.metadata.room_width_m, result.metadata.room_depth_m) * 1.5;
+        camera = new THREE.OrthographicCamera(
+          frustumSize * aspect / -2, frustumSize * aspect / 2,
+          frustumSize / 2, frustumSize / -2,
+          0.1, 100
+        );
+        camera.position.set(0, 15, 0);
+        camera.lookAt(0, 0, 0);
+        camera.up.set(0, 0, -1); // North (+Z in Three.js plan coordinates) is Up
+      } else {
+        camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+        const maxDim = Math.max(result.metadata.room_width_m, result.metadata.room_depth_m);
+        // Architectural isometric 3/4 perspective
+        camera.position.set(maxDim * 0.9, maxDim * 1.5, maxDim * 1.4);
+        camera.lookAt(0, 0.4, 0);
+      }
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(window.devicePixelRatio || 1);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      container.appendChild(renderer.domElement);
+
+      // Lighting
+      const ambLight = new THREE.AmbientLight(0xffffff, 1.3);
+      scene.add(ambLight);
+
+      const dirLight = new THREE.DirectionalLight(0xfff7ed, 1.8);
+      dirLight.position.set(6, 12, 8);
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.width = 2048;
+      dirLight.shadow.mapSize.height = 2048;
+      dirLight.shadow.bias = -0.001;
+      scene.add(dirLight);
+
+      const fillLight = new THREE.DirectionalLight(0x93c5fd, 0.8);
+      fillLight.position.set(-8, 8, -6);
+      scene.add(fillLight);
+
+      // Floor plane geometry from room polygon
+      const floorShape = new THREE.Shape();
+      for (let i = 0; i < polyCoords.length; i++) {
+        // Unmirrored transform: X = x - cx, Z = y - cy
+        // In Three.js Shape: (x, y) maps to X and -Z
+        const px = polyCoords[i][0] - cx;
+        const pz = polyCoords[i][1] - cy;
+        if (i === 0) floorShape.moveTo(px, -pz);
+        else floorShape.lineTo(px, -pz);
+      }
+      floorShape.closePath();
+
+      const floorGeo = new THREE.ShapeGeometry(floorShape);
+      floorGeo.rotateX(Math.PI / 2); // Lay flat on XZ plane
+
+      // Wood plank floor material or tile material depending on room
+      let floorColor = 0xe2e8f0;
+      if (roomKey === 'bedroom' || roomKey === 'living_room') floorColor = 0xd7c4b7; // warm oak
+      else if (roomKey === 'kitchen') floorColor = 0xcfd8dc; // light stone tile
+
+      const floorMat = new THREE.MeshStandardMaterial({
+        color: floorColor,
+        roughness: 0.6,
+        metalness: 0.05
+      });
+      const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+      floorMesh.receiveShadow = true;
+      scene.add(floorMesh);
+
+      // Cutaway Walls (height 1.4m so interior is clearly visible)
+      const wallHeight = 1.4;
+      const wallMat = new THREE.MeshStandardMaterial({
+        color: 0xf1f5f9,
+        roughness: 0.8,
+        side: THREE.DoubleSide
+      });
+
+      for (let i = 0; i < polyCoords.length; i++) {
+        const p1 = polyCoords[i];
+        const p2 = polyCoords[(i + 1) % polyCoords.length];
+
+        const x1 = p1[0] - cx;
+        const z1 = p1[1] - cy;
+        const x2 = p2[0] - cx;
+        const z2 = p2[1] - cy;
+
+        const dx = x2 - x1;
+        const dz = z2 - z1;
+        const wallLen = Math.hypot(dx, dz);
+
+        const wallGeo = new THREE.BoxGeometry(wallLen, wallHeight, 0.15);
+        const wallMesh = new THREE.Mesh(wallGeo, wallMat);
+
+        wallMesh.position.set((x1 + x2) / 2, wallHeight / 2, (z1 + z2) / 2);
+        wallMesh.rotation.y = -Math.atan2(dz, dx);
+        wallMesh.castShadow = true;
+        wallMesh.receiveShadow = true;
+        scene.add(wallMesh);
+      }
+
+      // Ground plane grid for context
+      const grid = new THREE.GridHelper(20, 20, 0x334155, 0x1e293b);
+      grid.position.y = -0.01;
+      scene.add(grid);
+
+      // Load Furniture GLB Assets
+      const loader = new GLTFLoader();
+      const loadPromises = result.items.map(item => {
+        return new Promise((resolve) => {
+          loader.load(
+            item.glb,
+            (gltf) => {
+              const model = gltf.scene;
+
+              // Shared transform: X_three = x - cx, Z_three = y - cy
+              const posX = item.position_m[0] - cx;
+              const posZ = item.position_m[1] - cy;
+              model.position.set(posX, 0, posZ);
+
+              // Rotation: (180 - alpha_deg) * (pi / 180)
+              model.rotation.y = (180.0 - item.rotation_deg) * (Math.PI / 180.0);
+
+              model.traverse((child) => {
+                if (child.isMesh) {
+                  child.castShadow = true;
+                  child.receiveShadow = true;
+                }
+              });
+
+              scene.add(model);
+              resolve();
+            },
+            undefined,
+            (err) => {
+              console.error('Failed to load asset:', item.glb, err);
+              // Fallback placeholder box
+              const boxGeo = new THREE.BoxGeometry(item.dimensions_m[0], item.dimensions_m[2], item.dimensions_m[1]);
+              const boxMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8 });
+              const boxMesh = new THREE.Mesh(boxGeo, boxMat);
+              boxMesh.position.set(item.position_m[0] - cx, item.dimensions_m[2]/2, item.position_m[1] - cy);
+              scene.add(boxMesh);
+              resolve();
+            }
+          );
+        });
+      });
+
+      await Promise.all(loadPromises);
+
+      // Render loop
+      function render() {
+        renderer.render(scene, camera);
+      }
+      render();
+
+      // Signal ready for screenshot capture
+      window.__SCENE_READY__ = true;
+      console.log('__SCENE_READY__ for room:', roomKey);
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

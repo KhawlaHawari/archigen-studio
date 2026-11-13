@@ -1,0 +1,164 @@
+# ArchiGen 3D - DVC Reproducible MLOps Pipeline
+# TEK-UP UNIVERSITÉ | Deep Learning Avancé & MLOps 2026/2027
+#
+# Pipeline stages (run with: `dvc repro`) - REAL DATA ONLY:
+#   1. rasterize_cubicasa          - CubiCasa5K SVG -> NPZ (official train/val/test splits)
+#   2. audit_data                  - Integrity / duplicates / class-frequency audit (both datasets)
+#   3. train_facade_baseline       - U-Net L1-only reference (CMP Facades)
+#   4. train_facade                - Pix2Pix cGAN (CMP Facades)
+#   5. train_floorplan             - UNet++ multi-task (CubiCasa5K) - needs a GPU
+#   6. evaluate_test               - Final test-split metrics (after protocol freeze)
+#   7. export_onnx_models          - Export PyTorch -> ONNX Runtime (refuses untrained weights)
+#   8. verify_onnx_parity          - Numerical parity PyTorch vs ONNX
+#   9. benchmark_inference_latency - Latency audit
+#  10. mlflow_tracking_and_registry - MLflow Model Registry promotion
+#  11. drift_baseline_and_monitor  - Drift reference profile from real data
+
+stages:
+  rasterize_cubicasa:
+    cmd: python -m src.data.rasterize_cubicasa
+    deps:
+      - src/data/rasterize_cubicasa.py
+      - data/raw/cubicasa5k
+    params:
+      - dataset.cubicasa
+    outs:
+      - data/processed/cubicasa_cache
+
+  audit_data:
+    cmd: python -m src.data.audit_data
+    deps:
+      - src/data/audit_data.py
+      - src/data/facade_dataset.py
+      - data/raw/facades
+      - data/raw/cubicasa5k
+      - data/processed/cubicasa_cache
+    metrics:
+      - data/processed/data_audit_summary.json:
+          cache: false
+
+  train_facade_baseline:
+    cmd: python -m src.training.train_facade --mode l1_baseline
+    deps:
+      - src/models/pix2pix_cgan.py
+      - src/training/trainer_base.py
+      - src/training/train_facade.py
+      - src/data/facade_dataset.py
+      - data/raw/facades
+    params:
+      - training_facade
+    outs:
+      - models/checkpoints/facade_unet_l1_best.pt
+    metrics:
+      - models/metrics/facade_unet_l1_val.json:
+          cache: false
+
+  train_facade:
+    cmd: python -m src.training.train_facade --mode pix2pix
+    deps:
+      - src/models/pix2pix_cgan.py
+      - src/training/trainer_base.py
+      - src/training/train_facade.py
+      - src/data/facade_dataset.py
+      - data/raw/facades
+    params:
+      - training_facade
+    outs:
+      - models/checkpoints/facade_pix2pix_best.pt
+    metrics:
+      - models/metrics/facade_pix2pix_val.json:
+          cache: false
+
+  train_floorplan:
+    cmd: python -m src.training.train_floorplan
+    deps:
+      - src/models/unet_plus_plus.py
+      - src/training/trainer_base.py
+      - src/training/train_floorplan.py
+      - data/processed/cubicasa_cache
+    params:
+      - training_floorplan
+    outs:
+      - models/checkpoints/floorplan_unetpp_best.pt
+    metrics:
+      - models/metrics/floorplan_unetpp_val.json:
+          cache: false
+
+  evaluate_test:
+    cmd: >-
+      python -m src.evaluation.evaluate facade --checkpoint models/checkpoints/facade_unet_l1_best.pt &&
+      python -m src.evaluation.evaluate facade --checkpoint models/checkpoints/facade_pix2pix_best.pt &&
+      python -m src.evaluation.evaluate floorplan --checkpoint models/checkpoints/floorplan_unetpp_best.pt
+    deps:
+      - src/evaluation/evaluate.py
+      - src/evaluation/metrics.py
+      - models/checkpoints/facade_unet_l1_best.pt
+      - models/checkpoints/facade_pix2pix_best.pt
+      - models/checkpoints/floorplan_unetpp_best.pt
+    metrics:
+      - models/metrics/facade_unet_l1_best_test.json:
+          cache: false
+      - models/metrics/facade_pix2pix_best_test.json:
+          cache: false
+      - models/metrics/floorplan_unetpp_best_test.json:
+          cache: false
+
+  export_onnx_models:
+    cmd: python -m src.mlops.export_onnx
+    deps:
+      - models/checkpoints/floorplan_unetpp_best.pt
+      - models/checkpoints/facade_pix2pix_best.pt
+      - src/models/unet_plus_plus.py
+      - src/models/pix2pix_cgan.py
+      - src/mlops/export_onnx.py
+    params:
+      - mlops.onnx_opset
+    outs:
+      - models/onnx/floorplan_unetpp.onnx
+      - models/onnx/facade_pix2pix.onnx
+
+  verify_onnx_parity:
+    cmd: python -m src.mlops.onnx_verifier
+    deps:
+      - models/onnx/floorplan_unetpp.onnx
+      - models/onnx/facade_pix2pix.onnx
+      - src/mlops/onnx_verifier.py
+    params:
+      - mlops.parity_atol_threshold
+    metrics:
+      - models/onnx/parity_report.json:
+          cache: false
+
+  benchmark_inference_latency:
+    cmd: python -m src.mlops.benchmark_latency
+    deps:
+      - models/onnx/floorplan_unetpp.onnx
+      - models/onnx/facade_pix2pix.onnx
+      - src/mlops/benchmark_latency.py
+    params:
+      - mlops.benchmark_iterations
+      - mlops.latency_sla_cpu_ms
+    metrics:
+      - models/onnx/latency_benchmark.json:
+          cache: false
+
+  mlflow_tracking_and_registry:
+    cmd: python -m src.mlops.model_registry
+    deps:
+      - models/onnx/floorplan_unetpp.onnx
+      - models/onnx/facade_pix2pix.onnx
+      - src/mlops/model_registry.py
+    params:
+      - mlops
+    metrics:
+      - models/mlflow_registry_summary.json:
+          cache: false
+
+  drift_baseline_and_monitor:
+    cmd: python -m src.mlops.drift_detector --mode baseline
+    deps:
+      - data/processed/cubicasa_cache
+      - data/raw/facades
+      - src/mlops/drift_detector.py
+    outs:
+      - data/monitoring/reference_profile.json

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Room Marker Facing & Wall Rendering Verification</title>
+  <style>
+    body, html { margin: 0; padding: 0; background: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow: hidden; }
+    #wrapper { display: flex; width: 1200px; height: 600px; }
+    .panel { position: relative; width: 600px; height: 600px; border-right: 2px solid #334155; }
+    .badge { position: absolute; top: 12px; left: 12px; z-index: 10; background: rgba(15, 23, 42, 0.85); border: 1px solid #38bdf8; color: #f8fafc; padding: 6px 12px; font-size: 13px; font-weight: bold; border-radius: 6px; }
+    .badge span { color: #38bdf8; }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="wrapper">
+    <div class="panel" id="panel-top">
+      <div class="badge">VIEW A: <span>TOP-DOWN VIEW (North is Up)</span> &mdash; FRONT FACES INTO ROOM</div>
+    </div>
+    <div class="panel" id="panel-persp">
+      <div class="badge">VIEW B: <span>INTERIOR PERSPECTIVE</span> &mdash; WALLS RENDER FROM INSIDE & OUTSIDE</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    // Room specification in Plan Space (Meters)
+    // Room dimensions: 6.0m wide (X: 1.0 to 7.0), 5.0m deep (Y: 1.0 to 6.0)
+    // Centroid: (cx=4.0, cy=3.5)
+    const cx = 4.0;
+    const cy = 3.5;
+
+    // Room boundaries (Plan coords in meters)
+    const ROOM_CORNER_NW = [1.0, 1.0];
+    const ROOM_CORNER_NE = [7.0, 1.0];
+    const ROOM_CORNER_SE = [7.0, 6.0];
+    const ROOM_CORNER_SW = [1.0, 6.0];
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf1f5f9);
+
+    // Ambient and directional lighting
+    const ambLight = new THREE.AmbientLight(0xffffff, 1.4);
+    scene.add(ambLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.8);
+    dirLight.position.set(10, 20, 10);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+
+    // Floor grid
+    const grid = new THREE.GridHelper(16, 16, 0x94a3b8, 0xcbd5e1);
+    grid.position.y = -0.01;
+    scene.add(grid);
+
+    // Floor slab (Plan coords: X_shape = x - cx, Y_shape = -(y - cy))
+    const floorShape = new THREE.Shape();
+    floorShape.moveTo(ROOM_CORNER_NW[0] - cx, -(ROOM_CORNER_NW[1] - cy));
+    floorShape.lineTo(ROOM_CORNER_NE[0] - cx, -(ROOM_CORNER_NE[1] - cy));
+    floorShape.lineTo(ROOM_CORNER_SE[0] - cx, -(ROOM_CORNER_SE[1] - cy));
+    floorShape.lineTo(ROOM_CORNER_SW[0] - cx, -(ROOM_CORNER_SW[1] - cy));
+    floorShape.closePath();
+
+    const floorGeo = new THREE.ShapeGeometry(floorShape);
+    floorGeo.rotateX(-Math.PI / 2);
+    const floorMesh = new THREE.Mesh(
+      floorGeo,
+      new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.8, side: THREE.DoubleSide })
+    );
+    floorMesh.position.y = 0.01;
+    scene.add(floorMesh);
+
+    // Helper: Build a wall segment with thickness 0.20m and DoubleSide material
+    function createWallSegment(p1, p2, height = 2.6, thickness = 0.20) {
+      // Vector along wall in plan meters
+      const dx = p2[0] - p1[0];
+      const dy = p2[1] - p1[1];
+      const len = Math.hypot(dx, dy);
+      if (len < 0.01) return;
+
+      const nx = -dy / len;
+      const ny = dx / len;
+      const ht = thickness / 2.0;
+
+      // 4 corners of wall footprint in plan space
+      const c1 = [p1[0] + nx * ht, p1[1] + ny * ht];
+      const c2 = [p2[0] + nx * ht, p2[1] + ny * ht];
+      const c3 = [p2[0] - nx * ht, p2[1] - ny * ht];
+      const c4 = [p1[0] - nx * ht, p1[1] - ny * ht];
+
+      const shape = new THREE.Shape();
+      shape.moveTo(c1[0] - cx, -(c1[1] - cy));
+      shape.lineTo(c2[0] - cx, -(c2[1] - cy));
+      shape.lineTo(c3[0] - cx, -(c3[1] - cy));
+      shape.lineTo(c4[0] - cx, -(c4[1] - cy));
+      shape.closePath();
+
+      const geo = new THREE.ExtrudeGeometry(shape, { steps: 1, depth: height, bevelEnabled: false });
+      geo.rotateX(-Math.PI / 2);
+
+      // Explicitly set DoubleSide to guarantee rendering from inside and outside
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0x334155,
+        roughness: 0.6,
+        side: THREE.DoubleSide
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      scene.add(mesh);
+    }
+
+    // Walls of the room:
+    // North wall (Y = 1.0, X from 1.0 to 7.0)
+    createWallSegment(ROOM_CORNER_NW, ROOM_CORNER_NE);
+    // East wall (X = 7.0, Y from 1.0 to 6.0)
+    createWallSegment(ROOM_CORNER_NE, ROOM_CORNER_SE);
+    // South wall with 1.0m door opening at center (X=3.5 to 4.5 is door)
+    createWallSegment([1.0, 6.0], [3.5, 6.0]);
+    createWallSegment([4.5, 6.0], [7.0, 6.0]);
+    // West wall (X = 1.0, Y from 1.0 to 6.0)
+    createWallSegment(ROOM_CORNER_SW, ROOM_CORNER_NW);
+
+    // Door indicator on floor
+    const doorShape = new THREE.Shape();
+    doorShape.moveTo(3.5 - cx, -(6.0 - cy));
+    doorShape.lineTo(4.5 - cx, -(6.0 - cy));
+    doorShape.lineTo(4.5 - cx, -(6.05 - cy));
+    doorShape.lineTo(3.5 - cx, -(6.05 - cy));
+    doorShape.closePath();
+    const doorGeo = new THREE.ShapeGeometry(doorShape);
+    doorGeo.rotateX(-Math.PI / 2);
+    const doorMesh = new THREE.Mesh(doorGeo, new THREE.MeshStandardMaterial({ color: 0x10b981 }));
+    doorMesh.position.y = 0.02;
+    scene.add(doorMesh);
+
+    // Asymmetric Marker / Furniture Builder
+    // Creates a piece of furniture with distinct front (+Z), back (-Z), headboard, and a large red arrow pointing forward!
+    function createFurnitureMarker(name, width, depth, height, colorHex) {
+      const group = new THREE.Group();
+
+      // Main body
+      const bodyGeo = new THREE.BoxGeometry(width, height * 0.6, depth);
+      const bodyMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.5 });
+      const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+      bodyMesh.position.y = (height * 0.6) / 2.0;
+      group.add(bodyMesh);
+
+      // Back / Headboard at -Z (sits against wall)
+      const backGeo = new THREE.BoxGeometry(width, height, depth * 0.2);
+      const backMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4 });
+      const backMesh = new THREE.Mesh(backGeo, backMat);
+      backMesh.position.set(0, height / 2.0, -depth / 2.0 + (depth * 0.2) / 2.0);
+      group.add(backMesh);
+
+      // Directional arrow on top pointing toward +Z (FRONT / INTO ROOM)
+      const arrowDir = new THREE.Vector3(0, 0, 1);
+      const arrowOrigin = new THREE.Vector3(0, height * 0.65, -depth * 0.2);
+      const arrowLen = depth * 0.7;
+      const arrowHelper = new THREE.ArrowHelper(arrowDir, arrowOrigin, arrowLen, 0xef4444, arrowLen * 0.35, arrowLen * 0.25);
+      group.add(arrowHelper);
+
+      // Label badge floating above
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, 256, 64);
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 24px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(name, 128, 32);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const spriteMat = new THREE.SpriteMaterial({ map: texture });
+      const sprite = new THREE.Sprite(spriteMat);
+      sprite.position.set(0, height + 0.35, 0);
+      sprite.scale.set(1.4, 0.35, 1.0);
+      group.add(sprite);
+
+      return group;
+    }
+
+    // Function to place furniture at Plan Coordinates [x_m, y_m] with Plan Clockwise Yaw alpha_deg from North
+    function placeItem(itemMesh, x_plan, y_plan, alpha_deg) {
+      // 1. Plan to World Transform (Unmirrored):
+      const x_three = x_plan - cx;
+      const z_three = y_plan - cy;
+      itemMesh.position.set(x_three, 0.0, z_three);
+
+      // 2. Rotation mapping: rotation.y = (180 - alpha) * (pi / 180)
+      const rad = (180.0 - alpha_deg) * (Math.PI / 180.0);
+      itemMesh.rotation.y = rad;
+
+      scene.add(itemMesh);
+    }
+
+    // Place 4 items along all 4 walls to prove "front faces into room":
+    // 1. Bed against NORTH wall (y=1.0, back at -Z). Wall inward normal points South (alpha=180 deg).
+    const bed = createFurnitureMarker("DOUBLE BED", 1.60, 2.00, 0.90, 0x3b82f6);
+    placeItem(bed, 4.0, 2.10, 180.0); // Facing South (180 deg)
+
+    // 2. Desk against WEST wall (x=1.0). Wall inward normal points East (alpha=90 deg).
+    const desk = createFurnitureMarker("WRITING DESK", 1.40, 0.70, 0.75, 0x10b981);
+    placeItem(desk, 1.45, 3.80, 90.0); // Facing East (90 deg)
+
+    // 3. Sideboard against EAST wall (x=7.0). Wall inward normal points West (alpha=270 deg).
+    const sideboard = createFurnitureMarker("SIDEBOARD", 1.40, 0.45, 0.80, 0xf59e0b);
+    placeItem(sideboard, 6.65, 3.50, 270.0); // Facing West (270 deg)
+
+    // 4. Armchair near SOUTH wall (y=6.0). Inward normal points North (alpha=0 deg).
+    const chair = createFurnitureMarker("ARMCHAIR", 0.85, 0.80, 0.80, 0x8b5cf6);
+    placeItem(chair, 2.30, 5.20, 0.0); // Facing North (0 deg)
+
+    // Setup Renderers for the two panels
+    const containerTop = document.getElementById('panel-top');
+    const containerPersp = document.getElementById('panel-persp');
+
+    const rendererTop = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    rendererTop.setSize(600, 600);
+    containerTop.appendChild(rendererTop.domElement);
+
+    const rendererPersp = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    rendererPersp.setSize(600, 600);
+    containerPersp.appendChild(rendererPersp.domElement);
+
+    // Camera A: Top-Down (North is screen Up)
+    const cameraTop = new THREE.PerspectiveCamera(45, 1.0, 0.1, 100);
+    cameraTop.position.set(0, 12.0, 0);
+    cameraTop.up.set(0, 0, -1);
+    cameraTop.lookAt(0, 0, 0);
+
+    // Camera B: Perspective View from inside/outside looking through room doorway
+    const cameraPersp = new THREE.PerspectiveCamera(45, 1.0, 0.1, 100);
+    cameraPersp.position.set(1.5, 4.5, 5.8);
+    cameraPersp.up.set(0, 1, 0);
+    cameraPersp.lookAt(0.0, 0.8, -0.5);
+
+    function render() {
+      rendererTop.render(scene, cameraTop);
+      rendererPersp.render(scene, cameraPersp);
+    }
+
+    render();
+
+    // Signal ready for screenshot capture
+    setTimeout(() => {
+      render();
+      window.__SCENE_READY__ = true;
+    }, 400);
+  </script>
+</body>
+</html>

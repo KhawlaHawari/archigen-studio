@@ -1,0 +1,6 @@
+outs:
+- md5: 0dfe70a3412b5a73917a2c6c74a72fb3.dir
+  size: 31228725
+  nfiles: 606
+  hash: md5
+  path: facades

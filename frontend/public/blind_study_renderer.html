@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ArchiGen 3D — Blind Study Renderer</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0f172a;
+    }
+    #viewport {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/vendor/three/build/three.module.js",
+        "three/addons/": "/vendor/three/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="viewport"></div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    let renderer, scene, camera, loader;
+    let currentMeshes = [];
+
+    function init() {
+      const container = document.getElementById('viewport');
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0f172a); // Architectural dark slate
+
+      camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+      camera.position.set(10, 15, 14);
+      camera.lookAt(0, 0.4, 0);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(window.devicePixelRatio || 1);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      container.appendChild(renderer.domElement);
+
+      // Lighting
+      const ambLight = new THREE.AmbientLight(0xffffff, 1.25);
+      scene.add(ambLight);
+
+      const dirLight = new THREE.DirectionalLight(0xfff7ed, 1.85);
+      dirLight.position.set(7, 14, 9);
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.width = 2048;
+      dirLight.shadow.mapSize.height = 2048;
+      dirLight.shadow.bias = -0.0008;
+      scene.add(dirLight);
+
+      const fillLight = new THREE.DirectionalLight(0x93c5fd, 0.75);
+      fillLight.position.set(-8, 9, -7);
+      scene.add(fillLight);
+
+      // Subtle ground grid
+      const grid = new THREE.GridHelper(30, 30, 0x334155, 0x1e293b);
+      grid.position.y = -0.01;
+      scene.add(grid);
+
+      loader = new GLTFLoader();
+      window.__RENDERER_INITIALIZED__ = true;
+      console.log('Renderer initialized');
+    }
+
+    function clearScene() {
+      for (const obj of currentMeshes) {
+        scene.remove(obj);
+        obj.traverse((child) => {
+          if (child.isMesh) {
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) {
+              if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+              else child.material.dispose();
+            }
+          }
+        });
+      }
+      currentMeshes = [];
+    }
+
+    window.renderRoom = async function(roomData, condition) {
+      window.__RENDER_DONE = false;
+      window.__RENDER_ERROR = null;
+      try {
+        clearScene();
+
+        const polyCoords = roomData.polygon_meters;
+        const roomType = roomData.room_type;
+        let items = roomData.engine_items;
+        if (condition === 'random' || condition === 'b1') {
+          items = roomData.random_items;
+        } else if (condition === 'b2') {
+          items = roomData.b2_items || roomData.random_items;
+        }
+
+        // 1. Calculate centroid
+        let cx = 0, cy = 0;
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        for (const p of polyCoords) {
+          cx += p[0];
+          cy += p[1];
+          if (p[0] < minX) minX = p[0];
+          if (p[0] > maxX) maxX = p[0];
+          if (p[1] < minY) minY = p[1];
+          if (p[1] > maxY) maxY = p[1];
+        }
+        cx /= polyCoords.length;
+        cy /= polyCoords.length;
+
+        const roomWidth = maxX - minX;
+        const roomDepth = maxY - minY;
+        const maxDim = Math.max(roomWidth, roomDepth, 3.0);
+
+        // 2. Camera pose (identical for both conditions on this room)
+        camera.position.set(maxDim * 0.95, maxDim * 1.55, maxDim * 1.40);
+        camera.lookAt(0, 0.4, 0);
+
+        // 3. Floor geometry
+        const floorShape = new THREE.Shape();
+        for (let i = 0; i < polyCoords.length; i++) {
+          const px = polyCoords[i][0] - cx;
+          const pz = polyCoords[i][1] - cy;
+          if (i === 0) floorShape.moveTo(px, -pz);
+          else floorShape.lineTo(px, -pz);
+        }
+        floorShape.closePath();
+
+        const floorGeo = new THREE.ShapeGeometry(floorShape);
+        floorGeo.rotateX(Math.PI / 2);
+
+        let floorColor = (roomType === 'bedroom' || roomType === 'living_room') ? 0xd7c4b7 : 0xcfd8dc;
+        const floorMat = new THREE.MeshStandardMaterial({
+          color: floorColor,
+          roughness: 0.65,
+          metalness: 0.05
+        });
+        const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+        floorMesh.position.y = 0.02;
+        floorMesh.receiveShadow = true;
+        scene.add(floorMesh);
+        currentMeshes.push(floorMesh);
+
+        // 4. Cutaway walls (height 1.35m)
+        const wallHeight = 1.35;
+        const wallMat = new THREE.MeshStandardMaterial({
+          color: 0xf1f5f9,
+          roughness: 0.8,
+          side: THREE.DoubleSide
+        });
+
+        for (let i = 0; i < polyCoords.length; i++) {
+          const p1 = polyCoords[i];
+          const p2 = polyCoords[(i + 1) % polyCoords.length];
+          const x1 = p1[0] - cx;
+          const z1 = p1[1] - cy;
+          const x2 = p2[0] - cx;
+          const z2 = p2[1] - cy;
+          const dx = x2 - x1;
+          const dz = z2 - z1;
+          const wallLen = Math.hypot(dx, dz);
+
+          const wallGeo = new THREE.BoxGeometry(wallLen, wallHeight, 0.15);
+          const wallMesh = new THREE.Mesh(wallGeo, wallMat);
+          wallMesh.position.set((x1 + x2) / 2, wallHeight / 2, (z1 + z2) / 2);
+          wallMesh.rotation.y = -Math.atan2(dz, dx);
+          wallMesh.castShadow = true;
+          wallMesh.receiveShadow = true;
+          scene.add(wallMesh);
+          currentMeshes.push(wallMesh);
+        }
+
+        // 5. Load and position furniture items
+        const loadPromises = items.map(item => {
+          return new Promise((resolve) => {
+            const isRug = item.category === 'rug' || (item.item_id && item.item_id.includes('rug'));
+            const posX = item.position_m[0] - cx;
+            const posZ = item.position_m[1] - cy;
+            const posY = isRug ? 0.024 : 0.02;
+
+            loader.load(
+              item.glb,
+              (gltf) => {
+                const model = gltf.scene;
+                model.position.set(posX, posY, posZ);
+                model.rotation.y = (180.0 - item.rotation_deg) * (Math.PI / 180.0);
+
+                model.traverse((child) => {
+                  if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                    if (isRug && child.material) {
+                      child.material.polygonOffset = true;
+                      child.material.polygonOffsetFactor = -2.0;
+                      child.material.polygonOffsetUnits = -4.0;
+                    }
+                  }
+                });
+
+                scene.add(model);
+                currentMeshes.push(model);
+                resolve();
+              },
+              undefined,
+              (err) => {
+                console.warn('Fallback placeholder box for:', item.glb);
+                const dims = item.dimensions_m || [1, 1, 1];
+                const boxGeo = new THREE.BoxGeometry(dims[0], dims[2], dims[1]);
+                const boxMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8 });
+                const boxMesh = new THREE.Mesh(boxGeo, boxMat);
+                boxMesh.position.set(posX, dims[2] / 2 + 0.02, posZ);
+                boxMesh.rotation.y = (180.0 - item.rotation_deg) * (Math.PI / 180.0);
+                scene.add(boxMesh);
+                currentMeshes.push(boxMesh);
+                resolve();
+              }
+            );
+          });
+        });
+
+        await Promise.all(loadPromises);
+
+        // Render scene
+        renderer.render(scene, camera);
+        window.__RENDER_DONE = true;
+        console.log(`Rendered ${condition} layout successfully!`);
+      } catch (err) {
+        console.error('Render error:', err);
+        window.__RENDER_ERROR = err.toString();
+        window.__RENDER_DONE = true;
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

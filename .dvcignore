@@ -1,0 +1,28 @@
+# DVC ignore patterns - files/dirs excluded from DVC tracking
+# Note: models/checkpoints (*.pt), models/onnx (*.onnx), and data/ are tracked by DVC, NOT ignored by DVC!
+
+# MLflow local tracking (use remote DB / artifact store in prod)
+/mlruns/
+/.mlflow/
+mlflow.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# CI / testing artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs & Monitoring raw logs
+*.log
+/data/monitoring/inference_buffer.jsonl
+
+# OS
+.DS_Store
+Thumbs.db

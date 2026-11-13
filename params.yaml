@@ -1,0 +1,61 @@
+# ArchiGen 3D - DVC Parameters Configuration
+# TEK-UP UNIVERSITÉ | Deep Learning Avancé & MLOps
+
+dataset:
+  cubicasa:
+    total_plans: 5000
+    train_split: 4200
+    val_split: 400
+    test_split: 400
+    resolution: [512, 512]
+    num_structure_classes: 5
+    num_room_classes: 12
+    structure_weights: [0.5, 4.0, 4.0, 25.0, 10.0]
+  cmp_facades:
+    total_pairs: 606
+    train_split: 400
+    val_split: 100
+    test_split: 106
+    resolution: [256, 256]
+    num_classes: 12
+
+training_floorplan:
+  architecture: "UNetPlusPlus"
+  backbone: "ResNet-34"
+  batch_size: 2
+  gradient_accumulation_steps: 4
+  epochs: 25
+  lr: 0.0001
+  weight_decay: 0.0001
+
+training_facade:
+  architecture: "Pix2Pix_cGAN"
+  ngf: 64
+  ndf: 64
+  spectral_norm: true
+  nearest_upsample: true
+  batch_size: 2
+  epochs: 50
+  lr_g: 0.0002
+  lr_d: 0.0002
+  lambda_l1: 30.0
+  lambda_fm: 10.0
+  lambda_perceptual: 10.0
+
+mlops:
+  onnx_opset: 17
+  parity_atol_threshold: 0.00001
+  latency_sla_gpu_ms: 400.0
+  latency_sla_cpu_ms: 2000.0
+  benchmark_iterations: 10
+
+monitoring:
+  window_size: 50
+  psi_warning_threshold: 0.10
+  psi_critical_threshold: 0.20
+  ks_alpha_threshold: 0.05
+  wasserstein_threshold: 0.15
+  entropy_drift_threshold: 0.25
+  trigger_retraining_on_drift: true
+  min_samples_for_drift: 10
+  reference_sample_count: 50

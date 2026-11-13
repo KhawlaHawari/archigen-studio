@@ -1,0 +1,7 @@
+node_modules
+dist
+.git
+.vite
+.env.local
+public/models/custom
+public/models/custom_furniture.json

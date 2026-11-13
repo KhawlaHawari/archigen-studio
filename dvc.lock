@@ -1,0 +1,303 @@
+schema: '2.0'
+stages:
+  audit_and_cache_data:
+    cmd: python -m src.data.npz_caching
+    deps:
+    - path: src/data/npz_caching.py
+      hash: md5
+      md5: 3eff66f9844f292d48acddecb720dfe5
+      size: 4633
+    - path: src/data/svg_preprocessor.py
+      hash: md5
+      md5: 98359c2fcc0722d52f7035223e766c8c
+      size: 6893
+    params:
+      params.yaml:
+        dataset.cmp_facades:
+          total_pairs: 606
+          train_split: 400
+          val_split: 100
+          test_split: 106
+          resolution:
+          - 256
+          - 256
+          num_classes: 12
+        dataset.cubicasa:
+          total_plans: 5000
+          train_split: 4200
+          val_split: 400
+          test_split: 400
+          resolution:
+          - 512
+          - 512
+          num_structure_classes: 5
+          num_room_classes: 12
+          structure_weights:
+          - 0.5
+          - 4.0
+          - 4.0
+          - 25.0
+          - 10.0
+    outs:
+    - path: data/processed/cmp_cache
+      hash: md5
+      md5: 629d9952e71b89d7815e209f585fd132.dir
+      size: 22956
+      nfiles: 10
+    - path: data/processed/cubicasa_cache
+      hash: md5
+      md5: 394129a92b99edf8addc9ce39594d368.dir
+      size: 155735
+      nfiles: 10
+    - path: data/processed/data_audit_summary.json
+      hash: md5
+      md5: f0393308a75c345536cbece999fce839
+      size: 1850
+  train_floorplan:
+    cmd: python -m src.training.train_floorplan
+    deps:
+    - path: data/processed/cubicasa_cache
+      hash: md5
+      md5: 394129a92b99edf8addc9ce39594d368.dir
+      size: 155735
+      nfiles: 10
+    - path: src/data/svg_preprocessor.py
+      hash: md5
+      md5: 98359c2fcc0722d52f7035223e766c8c
+      size: 6893
+    - path: src/models/unet_plus_plus.py
+      hash: md5
+      md5: 16fe393bb6f72e5e87f7efe515a5dbf3
+      size: 9475
+    - path: src/training/train_floorplan.py
+      hash: md5
+      md5: 91f665cb2c2f0761a11a5344a57277c9
+      size: 9066
+    - path: src/training/trainer_base.py
+      hash: md5
+      md5: fb6daa7ff44598e2a2caba2512fcd504
+      size: 9959
+    params:
+      params.yaml:
+        dataset.cubicasa:
+          total_plans: 5000
+          train_split: 4200
+          val_split: 400
+          test_split: 400
+          resolution:
+          - 512
+          - 512
+          num_structure_classes: 5
+          num_room_classes: 12
+          structure_weights:
+          - 0.5
+          - 4.0
+          - 4.0
+          - 25.0
+          - 10.0
+        training_floorplan:
+          architecture: UNetPlusPlus
+          backbone: ResNet-34
+          batch_size: 2
+          gradient_accumulation_steps: 4
+          epochs: 25
+          lr: 0.0001
+          weight_decay: 0.0001
+    outs:
+    - path: models/checkpoints/floorplan_unetpp_best.pt
+      hash: md5
+      md5: 07bcfbddceea406d6fe688be71437ea0
+      size: 105050204
+    - path: models/mlflow_run_summary.json
+      hash: md5
+      md5: 788a0d56ea02d533280e334e191a6fb4
+      size: 1469
+  train_facade:
+    cmd: python -m src.training.train_facade
+    deps:
+    - path: data/processed/cmp_cache
+      hash: md5
+      md5: 629d9952e71b89d7815e209f585fd132.dir
+      size: 22956
+      nfiles: 10
+    - path: src/data/svg_preprocessor.py
+      hash: md5
+      md5: 98359c2fcc0722d52f7035223e766c8c
+      size: 6893
+    - path: src/models/pix2pix_cgan.py
+      hash: md5
+      md5: 46a5c6528605358e339c315708d78614
+      size: 10637
+    - path: src/training/train_facade.py
+      hash: md5
+      md5: f8f36080da9898c3cb3e9a0fe796fd26
+      size: 8126
+    - path: src/training/trainer_base.py
+      hash: md5
+      md5: fb6daa7ff44598e2a2caba2512fcd504
+      size: 9959
+    params:
+      params.yaml:
+        dataset.cmp_facades:
+          total_pairs: 606
+          train_split: 400
+          val_split: 100
+          test_split: 106
+          resolution:
+          - 256
+          - 256
+          num_classes: 12
+        training_facade:
+          architecture: Pix2Pix_cGAN
+          ngf: 64
+          ndf: 64
+          spectral_norm: true
+          nearest_upsample: true
+          batch_size: 2
+          epochs: 50
+          lr_g: 0.0002
+          lr_d: 0.0002
+          lambda_l1: 30.0
+          lambda_fm: 10.0
+          lambda_perceptual: 10.0
+    outs:
+    - path: models/checkpoints/facade_pix2pix_best.pt
+      hash: md5
+      md5: 3836e856ebb63701aee0c98811a53832
+      size: 156977677
+    - path: models/mlflow_run_summary.json
+      hash: md5
+      md5: 788a0d56ea02d533280e334e191a6fb4
+      size: 1469
+  export_onnx_models:
+    cmd: python -m src.mlops.export_onnx
+    deps:
+    - path: models/checkpoints/facade_pix2pix_best.pt
+      hash: md5
+      md5: 3836e856ebb63701aee0c98811a53832
+      size: 156977677
+    - path: models/checkpoints/floorplan_unetpp_best.pt
+      hash: md5
+      md5: 07bcfbddceea406d6fe688be71437ea0
+      size: 105050204
+    - path: src/mlops/export_onnx.py
+      hash: md5
+      md5: 0127864a74f0bf144c477d0b7edd2eaa
+      size: 5371
+    - path: src/models/pix2pix_cgan.py
+      hash: md5
+      md5: 46a5c6528605358e339c315708d78614
+      size: 10637
+    - path: src/models/unet_plus_plus.py
+      hash: md5
+      md5: 16fe393bb6f72e5e87f7efe515a5dbf3
+      size: 9475
+    params:
+      params.yaml:
+        mlops.onnx_opset: 17
+    outs:
+    - path: models/onnx/facade_pix2pix.onnx
+      hash: md5
+      md5: f4205c9f0bba6fb1ae800eb2a4922d98
+      size: 14243
+    - path: models/onnx/floorplan_unetpp.onnx
+      hash: md5
+      md5: 85f93593722c0ac139d3877c6124cc8a
+      size: 43646
+  verify_onnx_parity:
+    cmd: python -m src.mlops.onnx_verifier
+    deps:
+    - path: models/onnx/facade_pix2pix.onnx
+      hash: md5
+      md5: f4205c9f0bba6fb1ae800eb2a4922d98
+      size: 14243
+    - path: models/onnx/floorplan_unetpp.onnx
+      hash: md5
+      md5: 85f93593722c0ac139d3877c6124cc8a
+      size: 43646
+    - path: src/mlops/onnx_verifier.py
+      hash: md5
+      md5: 6447cd9a5a809c3b60599f3c95686bdf
+      size: 6339
+    params:
+      params.yaml:
+        mlops.parity_atol_threshold: 1e-05
+    outs:
+    - path: models/onnx/parity_report.json
+      hash: md5
+      md5: c38c42e8b9eddd5c88018eea96a8861e
+      size: 956
+  benchmark_inference_latency:
+    cmd: python -m src.mlops.benchmark_latency
+    deps:
+    - path: models/onnx/facade_pix2pix.onnx
+      hash: md5
+      md5: f4205c9f0bba6fb1ae800eb2a4922d98
+      size: 14243
+    - path: models/onnx/floorplan_unetpp.onnx
+      hash: md5
+      md5: 85f93593722c0ac139d3877c6124cc8a
+      size: 43646
+    - path: src/mlops/benchmark_latency.py
+      hash: md5
+      md5: 46ebbcfd337fb42e22268dd766a31cc6
+      size: 3502
+    params:
+      params.yaml:
+        mlops.benchmark_iterations: 10
+        mlops.latency_sla_cpu_ms: 2000.0
+    outs:
+    - path: models/onnx/latency_benchmark.json
+      hash: md5
+      md5: 2bb2c956d74dd17de76fc2d2b9199f88
+      size: 620
+  mlflow_tracking_and_registry:
+    cmd: python -m src.mlops.model_registry
+    deps:
+    - path: models/onnx/facade_pix2pix.onnx
+      hash: md5
+      md5: f4205c9f0bba6fb1ae800eb2a4922d98
+      size: 14243
+    - path: models/onnx/floorplan_unetpp.onnx
+      hash: md5
+      md5: 85f93593722c0ac139d3877c6124cc8a
+      size: 43646
+    - path: src/mlops/model_registry.py
+      hash: md5
+      md5: f353606ff9c335d493554230cb1baf4a
+      size: 5914
+    params:
+      params.yaml:
+        mlops:
+          onnx_opset: 17
+          parity_atol_threshold: 1e-05
+          latency_sla_gpu_ms: 400.0
+          latency_sla_cpu_ms: 2000.0
+          benchmark_iterations: 10
+    outs:
+    - path: models/mlflow_registry_summary.json
+      hash: md5
+      md5: ade18c7ea1d6327b770d98f64be24247
+      size: 484
+  drift_baseline_and_monitor:
+    cmd: python -m src.mlops.drift_detector --mode baseline
+    deps:
+    - path: data/processed/cmp_cache
+      hash: md5
+      md5: 629d9952e71b89d7815e209f585fd132.dir
+      size: 22956
+      nfiles: 10
+    - path: data/processed/cubicasa_cache
+      hash: md5
+      md5: 394129a92b99edf8addc9ce39594d368.dir
+      size: 155735
+      nfiles: 10
+    - path: src/mlops/drift_detector.py
+      hash: md5
+      md5: abf4c80fddb48c3a618ee6b32aba5ded
+      size: 25192
+    outs:
+    - path: data/monitoring/reference_profile.json
+      hash: md5
+      md5: 10c06ae6f296c518d8821b35c145419d
+      size: 5987

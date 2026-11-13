@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArchiGen 3D | Plateforme MLOps & Deep Learning</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Three.js and OrbitControls via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <span class="badge-tekup">TEK-UP UNIVERSITÉ</span>
+                <h1>ArchiGen <span>3D</span></h1>
+                <p class="subtitle">Deep Learning Avancé & MLOps 2026/2027 · Encadrant : Haythem Ghazouani</p>
+            </div>
+            <div class="team-badge">
+                <span>Équipe : <strong>Khalil Ayeb · Amine Ben Fadhel · Khawla Hawari</strong></span>
+                <span class="status-pill"><span class="dot"></span> Inférence ONNX Runtime Active</span>
+            </div>
+        </div>
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="tab-floorplan">🏛️ Plans 2D & Extrusion 3D (UNet++)</button>
+            <button class="tab-btn" data-tab="tab-facade">🎨 Synthèse de Façades (Pix2Pix cGAN)</button>
+            <button class="tab-btn" data-tab="tab-mlops">📊 Métriques & Parité MLOps</button>
+            <a href="/monitoring/drift/dashboard" target="_blank" class="tab-btn" style="text-decoration: none; display: inline-flex; align-items: center; background: linear-gradient(135deg, #7928ca, #ff0080); color: white; margin-left: auto;">⚡ Monitoring & Drift (Niveau 3)</a>
+        </nav>
+    </header>
+
+    <main class="app-main">
+        <!-- TAB 1: 2D FLOORPLAN & 3D EXTRUSION -->
+        <section id="tab-floorplan" class="tab-pane active">
+            <div class="control-panel">
+                <div class="file-inputs">
+                    <label class="btn-file">
+                        📁 Importer un Plan 2D (Raster)
+                        <input type="file" id="floorplan-file" accept="image/*">
+                    </label>
+                    <button id="btn-demo-floorplan" class="btn-secondary">⚡ Charger Démo Synthétique</button>
+                    <button id="btn-reset-camera" class="btn-ghost">🎥 Réinitialiser Vue 3D</button>
+                </div>
+                <div class="kpi-strip">
+                    <div class="kpi-card">
+                        <span class="kpi-label">Surface Totale</span>
+                        <span id="kpi-area" class="kpi-value">-- m²</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">Portes Détectées</span>
+                        <span id="kpi-doors" class="kpi-value">--</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">Fenêtres Détectées</span>
+                        <span id="kpi-windows" class="kpi-value">--</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">Latence Inférence</span>
+                        <span id="kpi-latency" class="kpi-value">-- ms</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workspace-grid">
+                <!-- 2D Previews Column -->
+                <div class="previews-card">
+                    <h3>🔍 Cartes de Segmentation Multi-Tâches</h3>
+                    <div class="preview-box">
+                        <span class="tag">Plan Source Raster</span>
+                        <img id="img-source-plan" src="" alt="Plan Source" style="display: none;">
+                        <div id="placeholder-source" class="placeholder">En attente d'un plan...</div>
+                    </div>
+                    <div class="preview-box">
+                        <span class="tag">Tête 1 : Structures & Ouvertures (5 Cl.)</span>
+                        <img id="img-struct-mask" src="" alt="Masque Structures" style="display: none;">
+                        <div id="placeholder-struct" class="placeholder">Structures (Murs, Portes, Fenêtres)</div>
+                    </div>
+                    <div class="preview-box">
+                        <span class="tag">Tête 2 : Zonage des Pièces (12 Cl.)</span>
+                        <img id="img-room-mask" src="" alt="Masque Pièces" style="display: none;">
+                        <div id="placeholder-room" class="placeholder">Affectation sémantique des espaces</div>
+                    </div>
+                </div>
+
+                <!-- 3D WebGL Viewport -->
+                <div class="viewport-card">
+                    <div class="viewport-header">
+                        <h3>🌐 Extrusion Volumique 3D Temps Réel (Three.js / WebGL)</h3>
+                        <span class="hint">Clic gauche: Rotation · Molette: Zoom · Clic droit: Panoramique</span>
+                    </div>
+                    <div id="canvas-container-3d"></div>
+                    <div class="room-table-container">
+                        <h4>📐 Surfaces des Espaces Habitables</h4>
+                        <table id="room-table" class="room-table">
+                            <thead>
+                                <tr>
+                                    <th>Couleur</th>
+                                    <th>Nom de l'Espace</th>
+                                    <th>Surface Habitable</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="3" class="text-center">Aucune donnée disponible</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: FACADE SYNTHESIS (Pix2Pix cGAN) -->
+        <section id="tab-facade" class="tab-pane">
+            <div class="control-panel">
+                <div class="file-inputs">
+                    <label class="btn-file">
+                        🎨 Importer Masque d'Élévation (256x256)
+                        <input type="file" id="facade-file" accept="image/*">
+                    </label>
+                    <button id="btn-demo-facade" class="btn-secondary">⚡ Charger Élévation Démo</button>
+                    <span id="facade-latency" class="latency-badge">Latence: -- ms</span>
+                </div>
+            </div>
+
+            <div class="facade-dual-view">
+                <div class="facade-card">
+                    <h3>🗺️ Condition Sémantique (Masque CMP 12 Classes)</h3>
+                    <div class="facade-img-wrap">
+                        <img id="img-facade-input" src="" alt="Masque Conditionnel" style="display: none;">
+                        <div id="facade-input-ph" class="placeholder">Sélectionnez ou générez un masque</div>
+                    </div>
+                    <div class="facade-legend">
+                        <span class="legend-chip" style="--c: #0000ff">Mur/Façade</span>
+                        <span class="legend-chip" style="--c: #00ffff">Fenêtre</span>
+                        <span class="legend-chip" style="--c: #ffff00">Porte</span>
+                        <span class="legend-chip" style="--c: #ff0000">Corniche</span>
+                        <span class="legend-chip" style="--c: #008000">Balcon</span>
+                    </div>
+                </div>
+
+                <div class="facade-card highlight">
+                    <h3>✨ Rendu Photoréaliste Généré (Pix2Pix Perceptuel)</h3>
+                    <div class="facade-img-wrap">
+                        <img id="img-facade-output" src="" alt="Rendu Photoréaliste" style="display: none;">
+                        <div id="facade-output-ph" class="placeholder">Génération en &lt; 400 ms</div>
+                    </div>
+                    <div class="model-specs">
+                        <span>Architecture: <strong>UNet-256 + Nearest Upsample (Anti-Checkerboard)</strong></span>
+                        <span>Discriminateur: <strong>PatchGAN 70x70 + Spectral Normalization</strong></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: MLOPS METRICS & AUDIT -->
+        <section id="tab-mlops" class="tab-pane">
+            <div class="mlops-container">
+                <div class="mlops-overview-grid">
+                    <div class="stat-box">
+                        <span class="stat-title">Parité PyTorch / ONNX</span>
+                        <span class="stat-big success">Δ &lt; 10⁻⁵</span>
+                        <span class="stat-desc">Vérifiée sur sorties structures et pièces</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-title">Latence Inférence p95</span>
+                        <span class="stat-big success">&lt; 400 ms</span>
+                        <span class="stat-desc">Conforme au SLA matériel RTX 3050</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-title">I/O Cache .NPZ</span>
+                        <span class="stat-big success">&lt; 1.5 ms</span>
+                        <span class="stat-desc">Gain de vitesse ×1 600 vs SVG brut</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-title">Tracking d'Expériences</span>
+                        <span class="stat-big">MLflow + DVC</span>
+                        <span class="stat-desc">Pipelines reproductibles versionnés</span>
+                    </div>
+                </div>
+
+                <div class="tables-grid">
+                    <div class="metric-card" style="grid-column: 1 / -1;">
+                        <h3>📏 Métriques mesurées (source : /metrics/summary)</h3>
+                        <p>Seules les valeurs produites par un entraînement ou une évaluation réels sont affichées.
+                           Un modèle non encore entraîné apparaît « non mesuré ».</p>
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Modèle</th><th>Statut</th><th>Validation</th><th>Test</th></tr>
+                            </thead>
+                            <tbody id="measured-metrics-body">
+                                <tr><td colspan="4">Chargement…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <script>
+                (function () {
+                    const fmt = (v) => (v && typeof v === "object" && "mean" in v) ? v.mean : v;
+                    const pick = (o, keys) => keys.filter(k => o && o[k] !== undefined && o[k] !== null)
+                        .map(k => k + " = " + Number(fmt(o[k])).toFixed(4)).join("<br>") || "—";
+                    const keys = ["val_l1", "val_psnr", "val_ssim", "val_room_miou", "val_merged_wall_iou",
+                                  "l1", "psnr_db", "ssim", "lpips", "merged_wall_iou"];
+                    fetch("/metrics/summary").then(r => r.json()).then(d => {
+                        const body = document.getElementById("measured-metrics-body");
+                        const m = d.official_benchmark || {};
+                        body.innerHTML = Object.keys(m).map(name => {
+                            const e = m[name];
+                            const status = e.status === "measured" ? "mesuré" + (e.warning ? " (essai partiel)" : "") : "non mesuré";
+                            return "<tr><td>" + e.description + "</td><td>" + status + "</td><td>" +
+                                pick(e.validation, keys) + "</td><td>" + pick(e.test, keys) + "</td></tr>";
+                        }).join("") || '<tr><td colspan="4">Aucune métrique mesurée.</td></tr>';
+                    }).catch(() => {
+                        document.getElementById("measured-metrics-body").innerHTML =
+                            '<tr><td colspan="4">API indisponible.</td></tr>';
+                    });
+                })();
+                </script>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>ArchiGen 3D — Plateforme Intégrée de Deep Learning Avancé & MLOps · TEK-UP 2026/2027 · Khalil Ayeb, Amine Ben Fadhel, Khawla Hawari</p>
+    </footer>
+
+    <script src="/static/viewer3d.js"></script>
+</body>
+</html>

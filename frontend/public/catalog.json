@@ -1,0 +1,1603 @@
+{
+  "version": "1.2.0",
+  "description": "ArchiGen 3D Curated CC0 Furniture Catalog (Kenney Kit)",
+  "license": "CC0 1.0 Universal",
+  "scaling_policy": "Strict uniform scaling for 27 items; non-uniform scaling permitted solely for 6 simple box-like cabinet/appliance items.",
+  "box_like_non_uniform_items": [
+    "kitchen_counter",
+    "kitchen_sink_unit",
+    "refrigerator",
+    "sideboard",
+    "tv_unit",
+    "wardrobe"
+  ],
+  "coordinate_convention": {
+    "origin": "center of base at y=0, (x=0, z=0)",
+    "forward": "+Z (faces into room / open side)",
+    "backward": "-Z (against wall)",
+    "upward": "+Y",
+    "lateral": "+X (right)",
+    "unit": "meters"
+  },
+  "preset_support": {
+    "contemporary_minimal": {
+      "label": "Contemporary Minimal",
+      "description": "Clean low-profile silhouettes, glass accents, and neutral upholstery"
+    },
+    "warm_wood": {
+      "label": "Warm Wood",
+      "description": "Natural oak and timber frames, curved joinery, and warm textiles"
+    },
+    "tailored_classic": {
+      "label": "Tailored Classic",
+      "description": "Structured armchairs, draped surfaces, and formal framed silhouettes"
+    }
+  },
+  "preset_aliases": {
+    "preset_1": "contemporary_minimal",
+    "preset_2": "warm_wood",
+    "preset_3": "tailored_classic",
+    "modern": "contemporary_minimal",
+    "scandinavian": "warm_wood",
+    "classic": "tailored_classic"
+  },
+  "items": {
+    "bed_double": {
+      "id": "bed_double",
+      "name": "Double Bed",
+      "category": "bed",
+      "glb": "/models/furniture/bed_double.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.67,
+        1.67,
+        1.67
+      ],
+      "dimensions_m": [
+        1.597,
+        1.879,
+        0.626
+      ],
+      "bounds": {
+        "min": [
+          -0.798,
+          0.0,
+          -0.939
+        ],
+        "max": [
+          0.798,
+          0.626,
+          0.939
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.8,
+        "sides": 0.6,
+        "back": 0.0
+      },
+      "required": true,
+      "allowed_rooms": [
+        "bedroom"
+      ]
+    },
+    "bed_single": {
+      "id": "bed_single",
+      "name": "Single Bed",
+      "category": "bed_single",
+      "glb": "/models/furniture/bed_single.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.67,
+        1.67,
+        1.67
+      ],
+      "dimensions_m": [
+        0.954,
+        1.879,
+        0.626
+      ],
+      "bounds": {
+        "min": [
+          -0.477,
+          0.0,
+          -0.939
+        ],
+        "max": [
+          0.477,
+          0.626,
+          0.939
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.8,
+        "sides": 0.5,
+        "back": 0.0
+      },
+      "required": false,
+      "allowed_rooms": [
+        "bedroom"
+      ]
+    },
+    "nightstand": {
+      "id": "nightstand",
+      "name": "Nightstand",
+      "category": "nightstand",
+      "glb": "/models/furniture/nightstand.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.9,
+        1.9,
+        1.9
+      ],
+      "dimensions_m": [
+        0.505,
+        0.413,
+        0.5
+      ],
+      "bounds": {
+        "min": [
+          -0.253,
+          0.0,
+          -0.206
+        ],
+        "max": [
+          0.253,
+          0.5,
+          0.206
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "adjacent_anchor",
+      "clearance": {
+        "front": 0.5,
+        "sides": 0.05,
+        "back": 0.0
+      },
+      "required": false,
+      "allowed_rooms": [
+        "bedroom"
+      ]
+    },
+    "wardrobe": {
+      "id": "wardrobe",
+      "name": "Wardrobe Closet",
+      "category": "wardrobe",
+      "glb": "/models/furniture/wardrobe.glb",
+      "scaling_type": "non_uniform_box",
+      "scale_factors": [
+        2.5,
+        2.3529,
+        2.4
+      ],
+      "dimensions_m": [
+        1.0,
+        0.6,
+        2.0
+      ],
+      "bounds": {
+        "min": [
+          -0.5,
+          0.0,
+          -0.3
+        ],
+        "max": [
+          0.5,
+          2.0,
+          0.3
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.8,
+        "sides": 0.05,
+        "back": 0.0
+      },
+      "required": false,
+      "allowed_rooms": [
+        "bedroom"
+      ]
+    },
+    "sofa_3seater": {
+      "id": "sofa_3seater",
+      "name": "3-Seater Sofa (Neutral)",
+      "category": "sofa",
+      "glb": "/models/furniture/sofa_3seater.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        2.04,
+        2.04,
+        2.04
+      ],
+      "dimensions_m": [
+        1.999,
+        0.836,
+        0.938
+      ],
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -0.418
+        ],
+        "max": [
+          1.0,
+          0.938,
+          0.418
+        ]
+      },
+      "presets": [
+        "warm_wood"
+      ],
+      "styles": [
+        "warm_wood"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.8,
+        "sides": 0.3,
+        "back": 0.0
+      },
+      "required": true,
+      "allowed_rooms": [
+        "living"
+      ]
+    },
+    "sofa_modern": {
+      "id": "sofa_modern",
+      "name": "Low-Profile Sofa",
+      "category": "sofa",
+      "glb": "/models/furniture/sofa_modern.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.96,
+        1.96,
+        1.96
+      ],
+      "dimensions_m": [
+        2.195,
+        0.804,
+        0.784
+      ],
+      "bounds": {
+        "min": [
+          -1.098,
+          0.0,
+          -0.402
+        ],
+        "max": [
+          1.098,
+          0.784,
+          0.402
+        ]
+      },
+      "presets": [
+        "contemporary_minimal"
+      ],
+      "styles": [
+        "contemporary_minimal"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.8,
+        "sides": 0.3,
+        "back": 0.0
+      },
+      "required": true,
+      "allowed_rooms": [
+        "living"
+      ]
+    },
+    "sofa_classic": {
+      "id": "sofa_classic",
+      "name": "Standard Framed Sofa",
+      "category": "sofa",
+      "glb": "/models/furniture/sofa_classic.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        2.04,
+        2.04,
+        2.04
+      ],
+      "dimensions_m": [
+        1.999,
+        0.836,
+        0.938
+      ],
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -0.418
+        ],
+        "max": [
+          1.0,
+          0.938,
+          0.418
+        ]
+      },
+      "presets": [
+        "tailored_classic"
+      ],
+      "styles": [
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.8,
+        "sides": 0.3,
+        "back": 0.0
+      },
+      "required": true,
+      "allowed_rooms": [
+        "living"
+      ]
+    },
+    "armchair": {
+      "id": "armchair",
+      "name": "Contemporary Armchair",
+      "category": "armchair",
+      "glb": "/models/furniture/armchair.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "dimensions_m": [
+        1.094,
+        0.615,
+        0.6
+      ],
+      "bounds": {
+        "min": [
+          -0.547,
+          0.0,
+          -0.308
+        ],
+        "max": [
+          0.547,
+          0.6,
+          0.308
+        ]
+      },
+      "presets": [
+        "contemporary_minimal"
+      ],
+      "styles": [
+        "contemporary_minimal"
+      ],
+      "placement_rule": "facing_anchor",
+      "clearance": {
+        "front": 0.6,
+        "sides": 0.2,
+        "back": 0.1
+      },
+      "required": false,
+      "allowed_rooms": [
+        "living"
+      ]
+    },
+    "armchair_classic": {
+      "id": "armchair_classic",
+      "name": "Club Armchair",
+      "category": "armchair",
+      "glb": "/models/furniture/armchair_classic.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.78,
+        1.78,
+        1.78
+      ],
+      "dimensions_m": [
+        0.872,
+        0.73,
+        0.819
+      ],
+      "bounds": {
+        "min": [
+          -0.436,
+          0.0,
+          -0.365
+        ],
+        "max": [
+          0.436,
+          0.819,
+          0.365
+        ]
+      },
+      "presets": [
+        "tailored_classic"
+      ],
+      "styles": [
+        "tailored_classic"
+      ],
+      "placement_rule": "facing_anchor",
+      "clearance": {
+        "front": 0.6,
+        "sides": 0.2,
+        "back": 0.1
+      },
+      "required": false,
+      "allowed_rooms": [
+        "living"
+      ]
+    },
+    "armchair_scandi": {
+      "id": "armchair_scandi",
+      "name": "Timber Frame Chair",
+      "category": "armchair",
+      "glb": "/models/furniture/armchair_scandi.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.78,
+        1.78,
+        1.78
+      ],
+      "dimensions_m": [
+        0.356,
+        0.356,
+        0.819
+      ],
+      "bounds": {
+        "min": [
+          -0.178,
+          0.0,
+          -0.178
+        ],
+        "max": [
+          0.178,
+          0.819,
+          0.178
+        ]
+      },
+      "presets": [
+        "warm_wood"
+      ],
+      "styles": [
+        "warm_wood"
+      ],
+      "placement_rule": "facing_anchor",
+      "clearance": {
+        "front": 0.5,
+        "sides": 0.15,
+        "back": 0.1
+      },
+      "required": false,
+      "allowed_rooms": [
+        "living"
+      ]
+    },
+    "coffee_table": {
+      "id": "coffee_table",
+      "name": "Rectangular Coffee Table",
+      "category": "coffee_table",
+      "glb": "/models/furniture/coffee_table.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.67,
+        1.67,
+        1.67
+      ],
+      "dimensions_m": [
+        1.104,
+        0.668,
+        0.384
+      ],
+      "bounds": {
+        "min": [
+          -0.552,
+          0.0,
+          -0.334
+        ],
+        "max": [
+          0.552,
+          0.384,
+          0.334
+        ]
+      },
+      "presets": [
+        "warm_wood"
+      ],
+      "styles": [
+        "warm_wood"
+      ],
+      "placement_rule": "in_front_of_anchor",
+      "clearance": {
+        "front": 0.4,
+        "sides": 0.4,
+        "back": 0.4
+      },
+      "required": false,
+      "allowed_rooms": [
+        "living"
+      ]
+    },
+    "coffee_table_glass": {
+      "id": "coffee_table_glass",
+      "name": "Square Coffee Table",
+      "category": "coffee_table",
+      "glb": "/models/furniture/coffee_table_glass.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.7,
+        1.7,
+        1.7
+      ],
+      "dimensions_m": [
+        0.68,
+        0.68,
+        0.391
+      ],
+      "bounds": {
+        "min": [
+          -0.34,
+          0.0,
+          -0.34
+        ],
+        "max": [
+          0.34,
+          0.391,
+          0.34
+        ]
+      },
+      "presets": [
+        "contemporary_minimal"
+      ],
+      "styles": [
+        "contemporary_minimal"
+      ],
+      "placement_rule": "in_front_of_anchor",
+      "clearance": {
+        "front": 0.4,
+        "sides": 0.4,
+        "back": 0.4
+      },
+      "required": false,
+      "allowed_rooms": [
+        "living"
+      ]
+    },
+    "tv_unit": {
+      "id": "tv_unit",
+      "name": "Media TV Console",
+      "category": "tv_unit",
+      "glb": "/models/furniture/tv_unit.glb",
+      "scaling_type": "non_uniform_box",
+      "scale_factors": [
+        2.0,
+        1.6129,
+        1.8
+      ],
+      "dimensions_m": [
+        1.6,
+        0.45,
+        0.5
+      ],
+      "bounds": {
+        "min": [
+          -0.8,
+          0.0,
+          -0.225
+        ],
+        "max": [
+          0.8,
+          0.5,
+          0.225
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 1.0,
+        "sides": 0.1,
+        "back": 0.0
+      },
+      "required": false,
+      "allowed_rooms": [
+        "living"
+      ]
+    },
+    "rug_living": {
+      "id": "rug_living",
+      "name": "Area Floor Rug",
+      "category": "rug",
+      "glb": "/models/furniture/rug_living.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.6,
+        1.6,
+        1.6
+      ],
+      "dimensions_m": [
+        2.512,
+        1.472,
+        0.016
+      ],
+      "bounds": {
+        "min": [
+          -1.256,
+          0.0,
+          -0.736
+        ],
+        "max": [
+          1.256,
+          0.016,
+          0.736
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "under_anchor",
+      "clearance": {
+        "front": 0.0,
+        "sides": 0.0,
+        "back": 0.0
+      },
+      "required": false,
+      "allowed_rooms": [
+        "living"
+      ]
+    },
+    "potted_plant": {
+      "id": "potted_plant",
+      "name": "Potted Plant",
+      "category": "plant",
+      "glb": "/models/furniture/potted_plant.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        2.2,
+        2.2,
+        2.2
+      ],
+      "dimensions_m": [
+        0.467,
+        0.531,
+        1.439
+      ],
+      "bounds": {
+        "min": [
+          -0.233,
+          0.0,
+          -0.266
+        ],
+        "max": [
+          0.233,
+          1.439,
+          0.266
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "corner",
+      "clearance": {
+        "front": 0.1,
+        "sides": 0.1,
+        "back": 0.1
+      },
+      "required": false,
+      "allowed_rooms": [
+        "living",
+        "bedroom",
+        "office"
+      ]
+    },
+    "dining_table": {
+      "id": "dining_table",
+      "name": "Dining Table (Rectangular)",
+      "category": "dining_table",
+      "glb": "/models/furniture/dining_table.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.95,
+        1.95,
+        1.95
+      ],
+      "dimensions_m": [
+        1.641,
+        0.872,
+        0.637
+      ],
+      "bounds": {
+        "min": [
+          -0.82,
+          0.0,
+          -0.436
+        ],
+        "max": [
+          0.82,
+          0.637,
+          0.436
+        ]
+      },
+      "presets": [
+        "contemporary_minimal"
+      ],
+      "styles": [
+        "contemporary_minimal"
+      ],
+      "placement_rule": "center",
+      "clearance": {
+        "front": 0.8,
+        "sides": 0.8,
+        "back": 0.8
+      },
+      "required": true,
+      "allowed_rooms": [
+        "dining"
+      ]
+    },
+    "dining_table_round": {
+      "id": "dining_table_round",
+      "name": "Dining Table (Round)",
+      "category": "dining_table",
+      "glb": "/models/furniture/dining_table_round.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.8,
+        1.8,
+        1.8
+      ],
+      "dimensions_m": [
+        1.247,
+        1.44,
+        0.66
+      ],
+      "bounds": {
+        "min": [
+          -0.624,
+          0.0,
+          -0.72
+        ],
+        "max": [
+          0.624,
+          0.66,
+          0.72
+        ]
+      },
+      "presets": [
+        "warm_wood"
+      ],
+      "styles": [
+        "warm_wood"
+      ],
+      "placement_rule": "center",
+      "clearance": {
+        "front": 0.8,
+        "sides": 0.8,
+        "back": 0.8
+      },
+      "required": true,
+      "allowed_rooms": [
+        "dining"
+      ]
+    },
+    "dining_table_cloth": {
+      "id": "dining_table_cloth",
+      "name": "Dining Table (Draped)",
+      "category": "dining_table",
+      "glb": "/models/furniture/dining_table_cloth.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.95,
+        1.95,
+        1.95
+      ],
+      "dimensions_m": [
+        1.641,
+        0.872,
+        0.637
+      ],
+      "bounds": {
+        "min": [
+          -0.82,
+          0.0,
+          -0.436
+        ],
+        "max": [
+          0.82,
+          0.637,
+          0.436
+        ]
+      },
+      "presets": [
+        "tailored_classic"
+      ],
+      "styles": [
+        "tailored_classic"
+      ],
+      "placement_rule": "center",
+      "clearance": {
+        "front": 0.8,
+        "sides": 0.8,
+        "back": 0.8
+      },
+      "required": true,
+      "allowed_rooms": [
+        "dining"
+      ]
+    },
+    "dining_chair": {
+      "id": "dining_chair",
+      "name": "Modern Dining Chair",
+      "category": "dining_chair",
+      "glb": "/models/furniture/dining_chair.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.8,
+        1.8,
+        1.8
+      ],
+      "dimensions_m": [
+        0.36,
+        0.36,
+        0.828
+      ],
+      "bounds": {
+        "min": [
+          -0.18,
+          0.0,
+          -0.18
+        ],
+        "max": [
+          0.18,
+          0.828,
+          0.18
+        ]
+      },
+      "presets": [
+        "contemporary_minimal"
+      ],
+      "styles": [
+        "contemporary_minimal"
+      ],
+      "placement_rule": "around_anchor",
+      "clearance": {
+        "front": 0.4,
+        "sides": 0.1,
+        "back": 0.4
+      },
+      "required": false,
+      "allowed_rooms": [
+        "dining"
+      ]
+    },
+    "dining_chair_scandi": {
+      "id": "dining_chair_scandi",
+      "name": "Curved Dining Chair",
+      "category": "dining_chair",
+      "glb": "/models/furniture/dining_chair_scandi.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.8,
+        1.8,
+        1.8
+      ],
+      "dimensions_m": [
+        0.36,
+        0.36,
+        0.819
+      ],
+      "bounds": {
+        "min": [
+          -0.18,
+          0.0,
+          -0.18
+        ],
+        "max": [
+          0.18,
+          0.819,
+          0.18
+        ]
+      },
+      "presets": [
+        "warm_wood"
+      ],
+      "styles": [
+        "warm_wood"
+      ],
+      "placement_rule": "around_anchor",
+      "clearance": {
+        "front": 0.4,
+        "sides": 0.1,
+        "back": 0.4
+      },
+      "required": false,
+      "allowed_rooms": [
+        "dining"
+      ]
+    },
+    "dining_chair_classic": {
+      "id": "dining_chair_classic",
+      "name": "Framed Dining Chair",
+      "category": "dining_chair",
+      "glb": "/models/furniture/dining_chair_classic.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.75,
+        1.75,
+        1.75
+      ],
+      "dimensions_m": [
+        0.35,
+        0.35,
+        0.822
+      ],
+      "bounds": {
+        "min": [
+          -0.175,
+          0.0,
+          -0.175
+        ],
+        "max": [
+          0.175,
+          0.822,
+          0.175
+        ]
+      },
+      "presets": [
+        "tailored_classic"
+      ],
+      "styles": [
+        "tailored_classic"
+      ],
+      "placement_rule": "around_anchor",
+      "clearance": {
+        "front": 0.4,
+        "sides": 0.1,
+        "back": 0.4
+      },
+      "required": false,
+      "allowed_rooms": [
+        "dining"
+      ]
+    },
+    "sideboard": {
+      "id": "sideboard",
+      "name": "Low Sideboard Credenza",
+      "category": "sideboard",
+      "glb": "/models/furniture/sideboard.glb",
+      "scaling_type": "non_uniform_box",
+      "scale_factors": [
+        1.75,
+        2.5806,
+        1.7308
+      ],
+      "dimensions_m": [
+        1.4,
+        0.45,
+        0.8
+      ],
+      "bounds": {
+        "min": [
+          -0.7,
+          0.0,
+          -0.225
+        ],
+        "max": [
+          0.7,
+          0.8,
+          0.225
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.8,
+        "sides": 0.1,
+        "back": 0.0
+      },
+      "required": false,
+      "allowed_rooms": [
+        "dining"
+      ]
+    },
+    "desk": {
+      "id": "desk",
+      "name": "Writing Desk",
+      "category": "desk",
+      "glb": "/models/furniture/desk.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.85,
+        1.85,
+        1.85
+      ],
+      "dimensions_m": [
+        1.359,
+        0.726,
+        0.711
+      ],
+      "bounds": {
+        "min": [
+          -0.679,
+          0.0,
+          -0.363
+        ],
+        "max": [
+          0.679,
+          0.711,
+          0.363
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.9,
+        "sides": 0.2,
+        "back": 0.0
+      },
+      "required": true,
+      "allowed_rooms": [
+        "office"
+      ]
+    },
+    "desk_corner": {
+      "id": "desk_corner",
+      "name": "Corner Desk",
+      "category": "desk",
+      "glb": "/models/furniture/desk_corner.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.65,
+        1.65,
+        1.65
+      ],
+      "dimensions_m": [
+        1.608,
+        1.608,
+        0.634
+      ],
+      "bounds": {
+        "min": [
+          -0.804,
+          0.0,
+          -0.804
+        ],
+        "max": [
+          0.804,
+          0.634,
+          0.804
+        ]
+      },
+      "presets": [
+        "tailored_classic"
+      ],
+      "styles": [
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.9,
+        "sides": 0.2,
+        "back": 0.0
+      },
+      "required": true,
+      "allowed_rooms": [
+        "office"
+      ]
+    },
+    "office_chair": {
+      "id": "office_chair",
+      "name": "Desk Swivel Chair",
+      "category": "office_chair",
+      "glb": "/models/furniture/office_chair.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.8,
+        1.8,
+        1.8
+      ],
+      "dimensions_m": [
+        0.603,
+        0.566,
+        1.094
+      ],
+      "bounds": {
+        "min": [
+          -0.301,
+          0.0,
+          -0.283
+        ],
+        "max": [
+          0.301,
+          1.094,
+          0.283
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "facing_anchor",
+      "clearance": {
+        "front": 0.2,
+        "sides": 0.2,
+        "back": 0.6
+      },
+      "required": false,
+      "allowed_rooms": [
+        "office"
+      ]
+    },
+    "bookcase": {
+      "id": "bookcase",
+      "name": "Open Bookcase",
+      "category": "bookcase",
+      "glb": "/models/furniture/bookcase.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        2.1,
+        2.1,
+        2.1
+      ],
+      "dimensions_m": [
+        0.84,
+        0.525,
+        1.848
+      ],
+      "bounds": {
+        "min": [
+          -0.42,
+          0.0,
+          -0.263
+        ],
+        "max": [
+          0.42,
+          1.848,
+          0.263
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.6,
+        "sides": 0.05,
+        "back": 0.0
+      },
+      "required": false,
+      "allowed_rooms": [
+        "office",
+        "living"
+      ]
+    },
+    "floor_lamp": {
+      "id": "floor_lamp",
+      "name": "Floor Lamp",
+      "category": "lamp",
+      "glb": "/models/furniture/floor_lamp.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "dimensions_m": [
+        0.304,
+        0.351,
+        1.72
+      ],
+      "bounds": {
+        "min": [
+          -0.152,
+          0.0,
+          -0.176
+        ],
+        "max": [
+          0.152,
+          1.72,
+          0.176
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "corner",
+      "clearance": {
+        "front": 0.1,
+        "sides": 0.1,
+        "back": 0.1
+      },
+      "required": false,
+      "allowed_rooms": [
+        "living",
+        "office"
+      ]
+    },
+    "kitchen_counter": {
+      "id": "kitchen_counter",
+      "name": "Kitchen Base Counter",
+      "category": "kitchen_counter",
+      "glb": "/models/furniture/kitchen_counter.glb",
+      "scaling_type": "non_uniform_box",
+      "scale_factors": [
+        2.093,
+        1.9556,
+        1.3333
+      ],
+      "dimensions_m": [
+        0.9,
+        0.6,
+        0.88
+      ],
+      "bounds": {
+        "min": [
+          -0.45,
+          0.0,
+          -0.3
+        ],
+        "max": [
+          0.45,
+          0.88,
+          0.3
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.9,
+        "sides": 0.0,
+        "back": 0.0
+      },
+      "required": true,
+      "allowed_rooms": [
+        "kitchen"
+      ]
+    },
+    "kitchen_sink_unit": {
+      "id": "kitchen_sink_unit",
+      "name": "Kitchen Sink Counter",
+      "category": "kitchen_sink",
+      "glb": "/models/furniture/kitchen_sink_unit.glb",
+      "scaling_type": "non_uniform_box",
+      "scale_factors": [
+        2.093,
+        1.7959,
+        1.3333
+      ],
+      "dimensions_m": [
+        0.9,
+        0.6,
+        0.88
+      ],
+      "bounds": {
+        "min": [
+          -0.45,
+          0.0,
+          -0.3
+        ],
+        "max": [
+          0.45,
+          0.88,
+          0.3
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.9,
+        "sides": 0.0,
+        "back": 0.0
+      },
+      "required": false,
+      "allowed_rooms": [
+        "kitchen"
+      ]
+    },
+    "refrigerator": {
+      "id": "refrigerator",
+      "name": "Tall Refrigerator",
+      "category": "refrigerator",
+      "glb": "/models/furniture/refrigerator.glb",
+      "scaling_type": "non_uniform_box",
+      "scale_factors": [
+        1.4423,
+        1.9565,
+        1.7073
+      ],
+      "dimensions_m": [
+        0.75,
+        0.692,
+        1.8
+      ],
+      "bounds": {
+        "min": [
+          -0.375,
+          0.0,
+          -0.346
+        ],
+        "max": [
+          0.375,
+          1.8,
+          0.346
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.9,
+        "sides": 0.05,
+        "back": 0.05
+      },
+      "required": false,
+      "allowed_rooms": [
+        "kitchen"
+      ]
+    },
+    "toilet": {
+      "id": "toilet",
+      "name": "Floor Toilet",
+      "category": "toilet",
+      "glb": "/models/furniture/toilet.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "dimensions_m": [
+        0.469,
+        0.716,
+        0.676
+      ],
+      "bounds": {
+        "min": [
+          -0.234,
+          0.0,
+          -0.358
+        ],
+        "max": [
+          0.234,
+          0.676,
+          0.358
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.6,
+        "sides": 0.25,
+        "back": 0.0
+      },
+      "required": true,
+      "allowed_rooms": [
+        "bathroom"
+      ]
+    },
+    "bathroom_vanity": {
+      "id": "bathroom_vanity",
+      "name": "Bathroom Vanity Sink",
+      "category": "bathroom_sink",
+      "glb": "/models/furniture/bathroom_vanity.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.8,
+        1.8,
+        1.8
+      ],
+      "dimensions_m": [
+        0.612,
+        0.522,
+        1.008
+      ],
+      "bounds": {
+        "min": [
+          -0.306,
+          0.0,
+          -0.261
+        ],
+        "max": [
+          0.306,
+          1.008,
+          0.261
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "back_to_wall",
+      "clearance": {
+        "front": 0.7,
+        "sides": 0.15,
+        "back": 0.0
+      },
+      "required": false,
+      "allowed_rooms": [
+        "bathroom"
+      ]
+    },
+    "bathtub": {
+      "id": "bathtub",
+      "name": "Full Bathtub",
+      "category": "bathtub",
+      "glb": "/models/furniture/bathtub.glb",
+      "scaling_type": "strict_uniform",
+      "scale_factors": [
+        1.4,
+        1.4,
+        1.4
+      ],
+      "dimensions_m": [
+        1.666,
+        0.784,
+        0.588
+      ],
+      "bounds": {
+        "min": [
+          -0.833,
+          0.0,
+          -0.392
+        ],
+        "max": [
+          0.833,
+          0.588,
+          0.392
+        ]
+      },
+      "presets": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "styles": [
+        "contemporary_minimal",
+        "warm_wood",
+        "tailored_classic"
+      ],
+      "placement_rule": "corner_or_wall",
+      "clearance": {
+        "front": 0.7,
+        "sides": 0.0,
+        "back": 0.0
+      },
+      "required": false,
+      "allowed_rooms": [
+        "bathroom"
+      ]
+    }
+  }
+}
