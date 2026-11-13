@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ArchiGen 3D · AI Floorplan Reconstructor & 3D Studio</title>
+  <meta name="description" content="Every house starts as a plan. ArchiGen 3D transforms 2D architectural blueprints and sketches into watertight 3D models with neural room segmentation and facade generation." />
+  <meta name="theme-color" content="#0b0e12" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23efebe2'/%3E%3Cpath d='M9 6v20h15v-5h-9V6z' fill='%23b8452a'/%3E%3C/svg%3E" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="ArchiGen 3D · AI Floorplan-to-3D Studio" />
+  <meta property="og:description" content="Every house starts as a plan. Scroll to walk through the drawing, then upload any 2D floorplan to generate custom 3D architecture." />
+  <meta property="og:url" content="/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Saira+Stencil+One&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="shared/fx-ui.css" />
+  <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="publish.css" />
+</head>
+<body>
+  <canvas id="gl" aria-hidden="true"></canvas>
+
+  <div class="loader" id="loader">
+    <p class="loader__place">ArchiGen 3D<br />AI Architecture Studio</p>
+    <div class="loader__story" aria-live="polite">
+      <p>Every building we design begins as a plan.</p>
+      <p>From flat ink lines to rising walls and living rooms.</p>
+      <p>This is what AI does with the drawing.</p>
+    </div>
+    <div class="loader__bar"><span>Drawing</span><i><b id="loadFill"></b></i><span id="loadPct">0%</span></div>
+    <p class="loader__note">Live WebGL Architecture<span> · Best on desktop</span></p>
+  </div>
+
+  <header class="topbar">
+    <a class="mark" href="#" data-to="0">ArchiGen 3D</a>
+    <button class="pill pill--cta" id="topLaunchStudioBtn" onclick="launchStudioApp()">Launch AI Generator / Upload Floorplan →</button>
+  </header>
+
+  <section class="hero" id="hero" aria-label="ArchiGen 3D, ground floor plan">
+    <p class="hero__kicker">ArchiGen 3D <span>·</span> Neural 2D-to-3D Studio <span>·</span> 2026</p>
+    <h1 class="hero__title">
+      <span class="mask"><span>Every house</span></span>
+      <span class="mask"><span>starts as</span></span>
+      <span class="mask"><span>a <em>plan.</em></span></span>
+    </h1>
+    <p class="hero__lede">Scroll to walk through the drawing. Then upload any 2D sketch or CAD plan to generate your own watertight 3D architecture.</p>
+    <div class="titleblock" aria-hidden="true">
+      <div><span>Project</span><b>ArchiGen 3D</b></div>
+      <div><span>Segmentation</span><b>UNet++ (87.5% Acc)</b></div>
+      <div><span>Generative AI</span><b>Pix2Pix cGAN</b></div>
+      <div><span>Geometry</span><b>Watertight 3D Shell</b></div>
+    </div>
+  </section>
+
+  <div class="spots" id="spots"></div>
+
+  <nav class="ruler" id="ruler" aria-label="Progress">
+    <div class="ruler__ticks" id="rulerTicks"></div>
+    <div class="ruler__now" id="rulerNow"><i></i></div>
+  </nav>
+  <p class="count" id="count"><b>00</b> / 07 rooms</p>
+
+  <div class="hint" id="hint">
+    <span class="hint__text" id="hintText">Scroll to walk in</span>
+    <i class="hint__line"><b id="hintFill"></b></i>
+  </div>
+
+  <div class="veil" id="veil" aria-hidden="true"></div>
+
+  <footer class="corner">
+    <a href="#hero" data-to="0">Blueprint</a><span></span>
+    <a href="#finale" data-to="end">Walkthrough</a><span></span>
+    <button onclick="launchStudioApp()" style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;padding:0;">AI Studio ›</button>
+  </footer>
+
+  <main class="track" id="track"></main>
+
+  <section class="finale" id="finale">
+    <div class="finale__inner">
+      <p class="eyebrow" data-rise>ArchiGen 3D <span>·</span> Deep Learning Architectural Studio</p>
+      <h2 class="finale__title">
+        <span class="mask"><span data-line>Every building starts flat.</span></span>
+        <span class="mask"><span data-line>Ours don't <em>stay</em> that way.</span></span>
+      </h2>
+      <p class="finale__lede" data-rise>ArchiGen 3D turns 2D floorplan drawings and CAD blueprints into watertight 3D models with room semantic segmentation, structural boundary extraction, and cGAN facade texturing.</p>
+      <div class="finale__cta" data-rise>
+        <button class="pill pill--solid pill--cta" id="finaleLaunchStudioBtn" onclick="launchStudioApp()">Launch AI Generator / Upload Floorplan →</button>
+        <a class="link" href="#hero" data-to="0">Back to Top Plan ↑</a>
+      </div>
+    </div>
+    <p class="ghost" aria-hidden="true">ArchiGen</p>
+    <div class="finale__meta">
+      <span>Khalil Ayeb · Amine Ben Fadhel · Khawla Hawari</span>
+      <span>Multi-Task UNet++ (CubiCasa5K) &amp; Pix2Pix cGAN (CMP Facades)</span>
+      <span>Watertight 3D Geometry · Fast Inference (&lt;400 ms)</span>
+      <span>CC BY-NC 4.0 License</span>
+    </div>
+    <p class="credit">ArchiGen 3D Production Studio · Concept Experience powered by Three.js &amp; WebGL</p>
+  </section>
+
+  <aside class="file" id="file" aria-hidden="true" aria-labelledby="fileTitle">
+    <button class="file__close" id="fileClose">Close ×</button>
+    <p class="file__no" id="fileNo"></p>
+    <h3 class="file__title" id="fileTitle"></h3>
+    <p class="file__time" id="fileTime"></p>
+    <p class="file__text" id="fileText"></p>
+    <ul class="file__facts" id="fileFacts"></ul>
+  </aside>
+
+  <div class="nogl" id="nogl" hidden><p>This page builds a house in real time and needs WebGL 2.</p></div>
+
+  <script>
+    function launchStudioApp() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'LAUNCH_STUDIO' }, '*');
+      } else {
+        window.location.href = '/#studio';
+      }
+    }
+  </script>
+  <script src="gate.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+  <script src="shared/fx-core.js"></script>
+  <script src="shared/fx-post.js"></script>
+  <script src="shared/fx-paint.js"></script>
+  <script src="shared/fx-experience.js"></script>
+  <script>if (window.LINTEL_GATE && !LINTEL_GATE.ok) FX.experience = function () {};</script>
+  <script src="staging.js"></script>
+  <script src="hero-options.js"></script>
+  <script src="light-options.js"></script>
+  <script src="scene.js"></script>
+</body>
+</html>
