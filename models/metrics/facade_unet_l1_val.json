@@ -1,0 +1,34 @@
+{
+  "model_name": "facade_unet_l1",
+  "split": "val",
+  "selection_metric": "val_l1",
+  "best": {
+    "loss": 0.3273044526576996,
+    "val_l1": 0.3273044526576996,
+    "val_psnr": 13.929801940917969,
+    "val_ssim": 0.33373892307281494,
+    "val_n_images": 100.0,
+    "epoch": 8
+  },
+  "hparams": {
+    "mode": "l1_baseline",
+    "epochs": 50,
+    "batch_size": 2,
+    "lr_g": 0.0002,
+    "lr_d": null,
+    "seed": 42,
+    "lambda_l1": 1.0,
+    "lambda_fm": 0.0,
+    "lambda_perceptual": 0.0,
+    "ngf": 64,
+    "ndf": 64,
+    "image_size": 256
+  },
+  "epochs_completed": 18,
+  "max_train_batches": null,
+  "device": "cuda",
+  "stopped_by_time_budget": false,
+  "time_budget_min": 18.0,
+  "mlflow_run_id": null,
+  "checkpoint": "/kaggle/working/archigen/models/checkpoints/facade_unet_l1_best.pt"
+}

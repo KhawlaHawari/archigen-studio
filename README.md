@@ -40,10 +40,31 @@ flowchart LR
 ## 📊 Results
 
 > Metrics are **never typed in by hand**: the training and evaluation scripts write them to `models/metrics/*.json`,
-> and they are served by the API (`GET /metrics/summary`) and shown in the UI.
-> **The models in this version are currently being trained**; the tables below are filled from the measured values only.
+> the API serves them (`GET /metrics/summary`) and the UI displays them.
+> The tables below contain measured values only.
 
-### Test results (to be filled)
+**Status:** Run 1 is finished (reduced budget). A full run following the 50-epoch protocol is still to come, so these results are **preliminary**.
+
+### Run 1: Kaggle, GPU T4 ×2 (reduced budget, both datasets in one run)
+
+#### Facades (CMP test split, 106 images, 256×256)
+
+| Model | Epochs | L1 ↓ | PSNR ↑ | SSIM ↑ | LPIPS ↓ |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| U-Net, L1 only (baseline) | 18 | 0.334 | 13.76 dB | 0.332 | 0.613 |
+| Pix2Pix (U-Net + PatchGAN) | 11 | 0.360 | 13.09 dB | 0.299 | 0.660 |
+
+Validation L1: baseline 0.3273, Pix2Pix 0.3506. Pix2Pix is 7.1 % worse than the baseline, so the target (≥ 5 % improvement) is **not met**.
+
+> ⚠️ Both models stopped far short of the 50-epoch protocol (time budgets of 18 and 32 min, 18 vs 11 epochs), so this comparison is not conclusive. A full facades-only run follows.
+
+#### Floor plans (CubiCasa5K test split, 400 plans, 256×256, mixed precision, ~50 min)
+
+| Structure mIoU ↑ | Wall IoU ↑ | Room mIoU ↑ | Room pixel accuracy ↑ |
+| ---: | ---: | ---: | ---: |
+| [value] | [value] | [value] | [value] |
+
+Source: `models/metrics/*.json`, written by `src.evaluation.evaluate`.
 
 **Facades — test split (106 pairs), per-image means** — source: `models/metrics/facade_unet_l1_best_test.json`, `facade_pix2pix_best_test.json`
 

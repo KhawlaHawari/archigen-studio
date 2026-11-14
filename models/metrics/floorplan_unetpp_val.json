@@ -1,0 +1,62 @@
+{
+  "model_name": "floorplan_unetpp",
+  "split": "val",
+  "selection_metric": "val_room_miou",
+  "best": {
+    "loss": 0.8969001360237598,
+    "val_struct_miou": 0.7036211043413846,
+    "val_room_miou": 0.48910172302681254,
+    "val_room_pixel_acc": 0.9106996691255993,
+    "val_merged_wall_iou": 0.652528,
+    "val_door_iou": 0.552369,
+    "val_window_iou": 0.687729,
+    "epoch": 9,
+    "structure_per_class_iou": {
+      "background": 0.972951,
+      "exterior_wall": 0.715941,
+      "interior_wall": 0.589115,
+      "door": 0.552369,
+      "window": 0.687729
+    },
+    "room_per_class_iou": {
+      "background": 0.946023,
+      "living_room": 0.744081,
+      "bedroom": 0.717479,
+      "kitchen": 0.661017,
+      "bathroom": 0.6575,
+      "hallway": 0.671354,
+      "closet": 0.342712,
+      "balcony": 0.598519,
+      "dining": 0.0,
+      "office": 0.0,
+      "storage": 0.530536,
+      "technical": 0.0
+    }
+  },
+  "hparams": {
+    "epochs": 25,
+    "batch_size": 2,
+    "lr": 0.0001,
+    "weight_decay": 0.0001,
+    "gradient_accumulation_steps": 4,
+    "seed": 42,
+    "structure_weights": [
+      0.5,
+      4.0,
+      4.0,
+      25.0,
+      10.0
+    ],
+    "input_size": 256,
+    "amp": true
+  },
+  "epochs_completed": 9,
+  "max_train_batches": null,
+  "n_train": 4200,
+  "stopped_by_time_budget": true,
+  "time_budget_min": 50.0,
+  "n_val": 400,
+  "device": "cuda",
+  "mlflow_run_id": null,
+  "checkpoint": "/kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt"
+}

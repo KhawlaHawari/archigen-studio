@@ -1,0 +1,57 @@
+{
+  "task": "facade",
+  "split": "test",
+  "n_images": 106,
+  "checkpoint": "/kaggle/working/archigen/models/checkpoints/facade_unet_l1_best.pt",
+  "checkpoint_meta": {
+    "data_source": "real:cmp_facades",
+    "mode": "l1_baseline",
+    "epoch": 7,
+    "seed": 42,
+    "hparams": {
+      "mode": "l1_baseline",
+      "epochs": 50,
+      "batch_size": 2,
+      "lr_g": 0.0002,
+      "lr_d": null,
+      "seed": 42,
+      "lambda_l1": 1.0,
+      "lambda_fm": 0.0,
+      "lambda_perceptual": 0.0,
+      "ngf": 64,
+      "ndf": 64,
+      "image_size": 256
+    }
+  },
+  "l1": {
+    "mean": 0.33351996541023254,
+    "std": 0.07006648182868958,
+    "min": 0.20154039561748505,
+    "max": 0.49734601378440857
+  },
+  "psnr_db": {
+    "mean": 13.756464004516602,
+    "std": 1.5197077989578247,
+    "min": 10.456022262573242,
+    "max": 17.40436363220215
+  },
+  "ssim": {
+    "mean": 0.3317664563655853,
+    "std": 0.09409895539283752,
+    "min": 0.16327957808971405,
+    "max": 0.5998411774635315
+  },
+  "lpips": {
+    "mean": 0.6129047274589539,
+    "std": 0.07933694124221802,
+    "min": 0.42821887135505676,
+    "max": 0.835776686668396
+  },
+  "averaging": "per image",
+  "env": {
+    "device": "cuda",
+    "torch": "2.11.0+cu130",
+    "python": "3.13.16",
+    "date": "2026-11-14 16:00:02"
+  }
+}
