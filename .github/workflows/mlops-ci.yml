@@ -111,6 +111,38 @@ jobs:
           name: locust-results
           path: locust_results_*
 
+  # Continuous deployment of the static showcase (frontend/public/showcase) to GitHub Pages.
+  # Requires: Settings > Pages > Build and deployment > Source = "GitHub Actions".
+  deploy-pages:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: test-and-verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Showcase as Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/public/showcase
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
   docker-build-verify:
     needs: test-and-verify
     runs-on: ubuntu-latest

@@ -10,7 +10,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="ArchiGen 3D · AI Floorplan-to-3D Studio" />
   <meta property="og:description" content="Every house starts as a plan. Scroll to walk through the drawing, then upload any 2D floorplan to generate custom 3D architecture." />
-  <meta property="og:url" content="/" />
+  <meta property="og:url" content="https://khawlahawari.github.io/archigen-studio/" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Saira+Stencil+One&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -111,11 +111,16 @@
   <div class="nogl" id="nogl" hidden><p>This page builds a house in real time and needs WebGL 2.</p></div>
 
   <script>
+    // Where "Open studio" goes when this page is viewed on its own (e.g. GitHub Pages),
+    // outside the React app's iframe. The studio needs the API backend, which is not
+    // hosted on Pages, so this points at the project for now. Change it once the full
+    // app is deployed somewhere.
+    var STANDALONE_STUDIO_URL = 'https://github.com/KhawlaHawari/archigen-studio';
     function launchStudioApp() {
       if (window.parent && window.parent !== window) {
         window.parent.postMessage({ type: 'LAUNCH_STUDIO' }, '*');
       } else {
-        window.location.href = '/#studio';
+        window.location.href = STANDALONE_STUDIO_URL;
       }
     }
   </script>
