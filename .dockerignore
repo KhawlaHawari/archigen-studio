@@ -15,3 +15,12 @@ tests/
 data/cache/
 *.npz
 *.log
+
+# Not needed in the API image (and very large on a dev machine)
+data/
+models/
+dist/
+frontend/
+kaggle/
+node_modules/
+mlflow.db
