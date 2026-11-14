@@ -229,6 +229,9 @@ Tests: `pytest tests/ -v`
 - The floor-plan model is trained with a **reduced budget**: 256×256 input, mixed precision, about 50 minutes on a Kaggle T4
   (`--image-size 256 --amp --time-budget-min 50`), and evaluated at that resolution. Its scores are a lower bound compared
   with the full 512×512 protocol.
+- The inference-latency SLA (p95 < 2 s on CPU) is measured in CI by `src.mlops.benchmark_latency`, but a miss does **not**
+  fail the pipeline: GitHub's shared runners are slow and the figure is informative only there. Misses appear as warning
+  annotations in the run summary. Set `ARCHIGEN_LATENCY_STRICT=1` (or pass `--strict`) to make them fail the build.
 
 ---
 

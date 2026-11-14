@@ -1,10 +1,16 @@
 """
 Inference Latency Benchmark & SLA Auditor (OS 5)
-Evaluates execution speed across N=100 iterations.
-Computes latency percentiles (p50, p90, p95, p99) and asserts SLA targets:
+Evaluates execution speed across N iterations (default 10, see params.yaml).
+Computes latency percentiles (p50, p90, p95, p99) and checks the SLA targets:
 SLA: p95 < 400 ms on GPU / < 2 000 ms on CPU
+
+A missed SLA is reported as a GitHub Actions warning annotation (::warning::) and in the
+step summary, but does NOT fail the run by default: CI runs on slow shared CPUs, where the
+figure is informative only. Set ARCHIGEN_LATENCY_STRICT=1 (or pass --strict) to exit 1 on a miss.
 """
 
+import os
+import sys
 import time
 import numpy as np
 import onnxruntime as ort
@@ -100,12 +106,33 @@ def run_latency_benchmark(num_iterations: int = 10) -> Dict[str, Any]:
     with open(out_file, "w") as f:
         json.dump(results, f, indent=2)
 
-    print(f"Floorplan UNet++ p95: {floorplan_bench['p95_ms']} ms (SLA < {cpu_sla} ms: {'PASS' if floorplan_sla_ok else 'FAIL'})")
-    print(f"Facade Pix2Pix   p95: {facade_bench['p95_ms']} ms (SLA < {cpu_sla} ms: {'PASS' if facade_sla_ok else 'FAIL'})")
+    rows = [("Floorplan UNet++", floorplan_bench, floorplan_sla_ok), ("Facade Pix2Pix", facade_bench, facade_sla_ok)]
+    for name, bench, ok in rows:
+        print(f"{name:17s} p95: {bench['p95_ms']} ms (SLA < {cpu_sla} ms: {'PASS' if ok else 'FAIL'})")
+        if not ok:
+            # GitHub Actions turns this line into a visible warning annotation on the run summary.
+            print(f"::warning title=Latency SLA missed::{name} p95 = {bench['p95_ms']} ms > {cpu_sla} ms "
+                  f"(CPU, N={num_iterations}). Informative only on shared CI runners.")
     print(f"Benchmark results written to {out_file}")
+
+    # Step summary table (only inside GitHub Actions, where GITHUB_STEP_SUMMARY is set).
+    summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary_path:
+        lines = ["### Inference latency (CPU, ONNX Runtime)", "",
+                 f"| Model | p50 ms | p95 ms | SLA p95 | Status |", "| :--- | ---: | ---: | ---: | :---: |"]
+        for name, bench, ok in rows:
+            lines.append(f"| {name} | {bench['p50_ms']} | {bench['p95_ms']} | < {cpu_sla:g} | {'PASS' if ok else 'WARN'} |")
+        lines.append("")
+        lines.append("A missed SLA is a warning here (shared runner); set `ARCHIGEN_LATENCY_STRICT=1` to make it fail.")
+        with open(summary_path, "a", encoding="utf8") as f:
+            f.write("\n".join(lines) + "\n")
 
     return results
 
 
 if __name__ == "__main__":
-    run_latency_benchmark()
+    strict = "--strict" in sys.argv[1:] or os.environ.get("ARCHIGEN_LATENCY_STRICT") == "1"
+    res = run_latency_benchmark()
+    if strict and not res["all_sla_met"]:
+        print("::error title=Latency SLA missed::Strict mode enabled: failing the run.")
+        sys.exit(1)
