@@ -1,5 +1,6 @@
 # 🏛️ ArchiGen 3D — From 2D floor plan to 3D building, and from layout to facade
 
+[![CI/CD](https://github.com/KhawlaHawari/archigen-studio/actions/workflows/mlops-ci.yml/badge.svg)](https://github.com/KhawlaHawari/archigen-studio/actions/workflows/mlops-ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.14-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.x-ee4c2c.svg)](https://pytorch.org/)
 [![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-1.x-005ced.svg)](https://onnxruntime.ai/)
