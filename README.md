@@ -41,7 +41,27 @@ flowchart LR
 
 > Metrics are **never typed in by hand**: the training and evaluation scripts write them to `models/metrics/*.json`,
 > and they are served by the API (`GET /metrics/summary`) and shown in the UI.
-> **The models in this version are currently being trained**; this section will be filled with the measured values.
+> **The models in this version are currently being trained**; the tables below are filled from the measured values only.
+
+### Test results (to be filled)
+
+**Facades — test split (106 pairs), per-image means** — source: `models/metrics/facade_unet_l1_best_test.json`, `facade_pix2pix_best_test.json`
+
+| Model | `l1` ↓ | `psnr_db` ↑ | `ssim` ↑ | `lpips` ↓ |
+| :--- | :---: | :---: | :---: | :---: |
+| U-Net, L1 only (baseline) | pending | pending | pending | pending |
+| Pix2Pix (U-Net + PatchGAN) | pending | pending | pending | pending |
+
+Headline comparison (validation, selection metric): Pix2Pix `val_l1` vs baseline `val_l1` → gain **pending** (target ≥ 5 %).
+
+**Floor plans — test split (400 plans)** — source: `models/metrics/floorplan_unetpp_best_test.json`
+
+| Model | `rooms.miou` ↑ | `rooms.pixel_acc` ↑ | `structure.miou` ↑ | `merged_wall_iou` ↑ | `eval_resolution` |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| UNet++ multi-task (ResNet-34) | pending | pending | pending | pending | pending |
+
+Column names are the keys written by `src/evaluation/evaluate.py`.
+Trained weights will be published at: **`<link to be added>`** (GitHub Release or DVC remote); they are not stored in Git.
 
 ### Evaluation protocol (facades)
 - Official splits **400 / 100 / 106**, **256×256** resolution, identical data for the baseline and Pix2Pix.
@@ -206,6 +226,9 @@ Tests: `pytest tests/ -v`
   generating facades and furniture from the studio currently returns an error.
 - The CMP label maps in the pix2pix archive are JPEG-compressed, so exact per-class pixel counts for facades are not possible.
 - The 5 train/val duplicate groups in CubiCasa5K are kept to respect the official splits; they are documented by the audit.
+- The floor-plan model is trained with a **reduced budget**: 256×256 input, mixed precision, about 50 minutes on a Kaggle T4
+  (`--image-size 256 --amp --time-budget-min 50`), and evaluated at that resolution. Its scores are a lower bound compared
+  with the full 512×512 protocol.
 
 ---
 
