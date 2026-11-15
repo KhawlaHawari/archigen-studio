@@ -78,3 +78,4 @@ htmlcov/
 .pytest_cache/
 # Build output & Kaggle bundle
 dist/
+.claude/

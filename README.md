@@ -43,45 +43,41 @@ flowchart LR
 > the API serves them (`GET /metrics/summary`) and the UI displays them.
 > The tables below contain measured values only.
 
-**Status:** Run 1 is finished (reduced budget). A full run following the 50-epoch protocol is still to come, so these results are **preliminary**.
+**Status:** Run 1 is finished (reduced budget). These results are **preliminary**; a longer run is planned.
 
 ### Run 1: Kaggle, GPU T4 ×2 (reduced budget, both datasets in one run)
 
-#### Facades (CMP test split, 106 images, 256×256)
+#### Facades (CMP test split, 106 images, 256×256, per-image means)
 
-| Model | Epochs | L1 ↓ | PSNR ↑ | SSIM ↑ | LPIPS ↓ |
-| :--- | ---: | ---: | ---: | ---: | ---: |
-| U-Net, L1 only (baseline) | 18 | 0.334 | 13.76 dB | 0.332 | 0.613 |
-| Pix2Pix (U-Net + PatchGAN) | 11 | 0.360 | 13.09 dB | 0.299 | 0.660 |
+| Model | Epochs run | Best epoch | L1 ↓ | PSNR ↑ | SSIM ↑ | LPIPS ↓ |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| U-Net, L1 only (baseline) | 18 | 8 | **0.334** | **13.76 dB** | **0.332** | **0.613** |
+| Pix2Pix (U-Net + PatchGAN) | 11 | 1 | 0.360 | 13.09 dB | 0.299 | 0.660 |
 
-Validation L1: baseline 0.3273, Pix2Pix 0.3506. Pix2Pix is 7.1 % worse than the baseline, so the target (≥ 5 % improvement) is **not met**.
+Validation L1 (selection metric): baseline 0.3273, Pix2Pix 0.3506. Pix2Pix is **7.1 % worse** than the baseline,
+so the target (≥ 5 % improvement) is **not met**. The baseline is better on all four test metrics.
 
-> ⚠️ Both models stopped far short of the 50-epoch protocol (time budgets of 18 and 32 min, 18 vs 11 epochs), so this comparison is not conclusive. A full facades-only run follows.
+> ⚠️ **Why both runs are short.** Neither model hit its time budget (`stopped_by_time_budget: false`): both were stopped
+> by **early stopping** (10 epochs without a better validation L1). Pix2Pix had its best validation L1 at **epoch 1**:
+> the adversarial loss trades pixel accuracy for sharper, more realistic textures, so selecting and stopping on L1 ends
+> its training almost immediately. This comparison is therefore not conclusive. The next run will train Pix2Pix without
+> L1-based early stopping.
 
-#### Floor plans (CubiCasa5K test split, 400 plans, 256×256, mixed precision, ~50 min)
+#### Floor plans (CubiCasa5K test split, 400 plans, 256×256, mixed precision, 9 epochs, stopped by the 50-min time budget)
 
-| Structure mIoU ↑ | Wall IoU ↑ | Room mIoU ↑ | Room pixel accuracy ↑ |
-| ---: | ---: | ---: | ---: |
-| [value] | [value] | [value] | [value] |
+| Structure mIoU ↑ | Wall IoU ↑ | Room mIoU ↑ | Room pixel accuracy ↑ | Structure pixel accuracy ↑ |
+| ---: | ---: | ---: | ---: | ---: |
+| 0.704 | 0.653 | 0.465 | 0.907 | 0.969 |
 
-Source: `models/metrics/*.json`, written by `src.evaluation.evaluate`.
+| IoU per class | |
+| :--- | :--- |
+| **Structure** | background 0.972 · exterior wall 0.718 · window 0.692 · interior wall 0.587 · door 0.551 |
+| **Rooms** | bedroom 0.729 · living room 0.722 · hallway 0.643 · bathroom 0.641 · kitchen 0.627 · balcony 0.611 · storage 0.374 · closet 0.290 · **dining 0.000 · office 0.000 · technical 0.000** |
 
-**Facades — test split (106 pairs), per-image means** — source: `models/metrics/facade_unet_l1_best_test.json`, `facade_pix2pix_best_test.json`
+The three rooms at 0.000 are rare classes (≈ 0.5 %, 0.1 % and 0.4 % of room pixels): with 9 epochs the model never predicts them.
 
-| Model | `l1` ↓ | `psnr_db` ↑ | `ssim` ↑ | `lpips` ↓ |
-| :--- | :---: | :---: | :---: | :---: |
-| U-Net, L1 only (baseline) | pending | pending | pending | pending |
-| Pix2Pix (U-Net + PatchGAN) | pending | pending | pending | pending |
-
-Headline comparison (validation, selection metric): Pix2Pix `val_l1` vs baseline `val_l1` → gain **pending** (target ≥ 5 %).
-
-**Floor plans — test split (400 plans)** — source: `models/metrics/floorplan_unetpp_best_test.json`
-
-| Model | `rooms.miou` ↑ | `rooms.pixel_acc` ↑ | `structure.miou` ↑ | `merged_wall_iou` ↑ | `eval_resolution` |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| UNet++ multi-task (ResNet-34) | pending | pending | pending | pending | pending |
-
-Column names are the keys written by `src/evaluation/evaluate.py`.
+Sources: `models/metrics/facade_unet_l1_best_test.json`, `facade_pix2pix_best_test.json`, `floorplan_unetpp_best_test.json`
+and the matching `*_val.json`, written by `src.evaluation.evaluate` and the training scripts.
 Trained weights will be published at: **`<link to be added>`** (GitHub Release or DVC remote); they are not stored in Git.
 
 ### Evaluation protocol (facades)
@@ -242,7 +238,8 @@ Tests: `pytest tests/ -v`
 
 ## ⚠️ Known limitations
 
-- **Models are still being trained**: without checkpoints the API starts, but its predictions are not meaningful.
+- **Preliminary models**: Run 1 used a reduced budget; Pix2Pix does not yet beat the L1 baseline. Without checkpoints
+  in `models/`, the API starts but its predictions are not meaningful.
 - The frontend calls `/design`, `/facade/generate` and `/furniture/*`, which are **not implemented** in this version of the backend:
   generating facades and furniture from the studio currently returns an error.
 - The CMP label maps in the pix2pix archive are JPEG-compressed, so exact per-class pixel counts for facades are not possible.
