@@ -193,6 +193,29 @@ class PerceptualLoss(nn.Module):
         return F.l1_loss(feat_pred, feat_target)
 
 
+class LPIPSLoss(nn.Module):
+    """Real LPIPS perceptual loss (Zhang et al. 2018) with a frozen pretrained backbone.
+
+    Used by training recipe v2 in place of `PerceptualLoss` (whose filters are random).
+    Inputs in [-1, 1]. Requires `pip install lpips` (downloads backbone weights once).
+    """
+    def __init__(self, net: str = "squeeze"):
+        super().__init__()
+        import lpips  # type: ignore
+        self.metric = lpips.LPIPS(net=net, verbose=False)
+        for param in self.metric.parameters():
+            param.requires_grad = False
+        self.metric.eval()
+
+    def train(self, mode: bool = True):  # keep the frozen metric in eval mode
+        super().train(mode)
+        self.metric.eval()
+        return self
+
+    def forward(self, pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        return self.metric(pred, target).mean()
+
+
 class FacadeCompositeLoss(nn.Module):
     """
     Composite Objective as formulated in Cahier des Charges:

@@ -43,7 +43,57 @@ flowchart LR
 > the API serves them (`GET /metrics/summary`) and the UI displays them.
 > The tables below contain measured values only.
 
-**Status:** Run 1 is finished (reduced budget). These results are **preliminary**; a longer run is planned.
+**Status:** Run 2 (recipe v2, ~8 h on Kaggle) is the current reference. Run 1 is kept below for comparison.
+
+### Run 2: Kaggle, GPU T4 ×2, recipe v2 (current results)
+
+Notebook: [`kaggle/archigen_kaggle_run2.ipynb`](kaggle/archigen_kaggle_run2.ipynb). Neither job hit its time budget
+(`stopped_by_time_budget: false`).
+
+#### Facades (CMP test split, 106 images, 256×256, per-image means)
+
+| Model | Epochs run | Best epoch | L1 ↓ | PSNR ↑ | SSIM ↑ | LPIPS (Alex) ↓ | LPIPS (Squeeze) ↓ | KID ×10³ ↓ |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| U-Net, L1 only (baseline) | 72 | 52 | **0.323** | **13.91 dB** | **0.344** | 0.587 | 0.509 | 129.10 ± 9.20 |
+| Pix2Pix (U-Net + PatchGAN, recipe v2) | 100 | 81 | 0.363 | 12.49 dB | 0.271 | **0.414** | **0.316** | **66.03 ± 7.80** |
+
+Recipe v2 for Pix2Pix: L1 weight 30, LPIPS (SqueezeNet) perceptual loss ×10, feature-matching loss ×10, EMA generator
+(decay 0.999), constant → linear LR decay from epoch 50, crop jitter, and checkpoint selection on **validation LPIPS**
+(no L1-based early stopping). Batch size 2, seed 42.
+
+- **Perceptual quality:** Pix2Pix is clearly better than the baseline. KID is **49 % lower** (66.0 vs 129.1) and
+  LPIPS (AlexNet) is 29 % lower (0.414 vs 0.587). Compared with Run 1, Pix2Pix LPIPS (AlexNet) went from 0.660 to 0.414.
+- **Pixel metrics:** the L1 baseline still wins on L1, PSNR and SSIM. This is expected: L1 training gives blurry
+  "average" images that score well pixel-wise but look less realistic.
+- **Against the historical reference** (EMA model, same test split: L1 0.340, PSNR 12.97 dB, SSIM 0.289,
+  LPIPS-Squeeze 0.310, KID 63.55): Run 2 is close (LPIPS-Squeeze +0.006, KID +2.5) but does not beat it.
+
+#### Floor plans (CubiCasa5K test split, 400 plans, 512×512, mixed precision, 25 epochs, best epoch 24)
+
+Recipe v2: UNet++ with an **ImageNet ResNet-34 encoder**, cosine LR, class weights for rare rooms, batch 4 × 2
+(gradient accumulation), selection on validation room mIoU.
+
+| Evaluation | Wall IoU ↑ | Door IoU ↑ | Window IoU ↑ | Structure mIoU ↑ | Room mIoU (11 rooms) ↑ | Room pixel accuracy ↑ | Structure pixel accuracy ↑ |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Single pass | 0.733 | 0.668 | 0.772 | 0.777 | 0.640 | 0.940 | 0.978 |
+| 4-fold TTA (flips) | **0.743** | **0.680** | **0.784** | **0.786** | **0.669** | **0.945** | **0.979** |
+| *Run 1 (for comparison)* | *0.653* | *0.551* | *0.692* | *0.704* | – | *0.907* | *0.969* |
+| *Historical reference, TTA* | *0.749* | *0.632* | *0.747* | – | *0.582\** | *0.881* | – |
+
+\* The reference room mIoU uses 10 CubiCasa classes; ArchiGen uses 11 room classes (background excluded). The class
+sets differ, so treat that comparison as indicative only. Wall, door and window IoU use the same definitions.
+
+| IoU per class (TTA) | |
+| :--- | :--- |
+| **Structure** | background 0.981 · exterior wall 0.791 · window 0.784 · interior wall 0.696 · door 0.680 |
+| **Rooms** | bedroom 0.884 · bathroom 0.840 · living room 0.793 · hallway 0.780 · kitchen 0.770 · balcony 0.770 · storage 0.659 · closet 0.612 · technical 0.560 · dining 0.538 · office 0.153 |
+
+Run 2 beats the reference on doors, windows and room accuracy and is level on walls (−0.6 pt). The three rare rooms
+that scored 0.000 in Run 1 are now predicted (dining 0.54, technical 0.56, office 0.15). Office (0.04 % of room
+pixels) is still the weakest class.
+
+Sources: `models/metrics/facade_pix2pix_best_test.json`, `facade_unet_l1_best_test.json`,
+`floorplan_unetpp_best_test.json`, `floorplan_unetpp_best_test_tta.json` and the matching `*_val.json`.
 
 ### Run 1: Kaggle, GPU T4 ×2 (reduced budget, both datasets in one run)
 
@@ -76,14 +126,15 @@ so the target (≥ 5 % improvement) is **not met**. The baseline is better on al
 
 The three rooms at 0.000 are rare classes (≈ 0.5 %, 0.1 % and 0.4 % of room pixels): with 9 epochs the model never predicts them.
 
-Sources: `models/metrics/facade_unet_l1_best_test.json`, `facade_pix2pix_best_test.json`, `floorplan_unetpp_best_test.json`
-and the matching `*_val.json`, written by `src.evaluation.evaluate` and the training scripts.
+Run 1 values were measured with the same scripts; their JSON files were replaced by the Run 2 outputs.
+All metric files are written by `src.evaluation.evaluate` and the training scripts.
 Trained weights will be published at: **`<link to be added>`** (GitHub Release or DVC remote); they are not stored in Git.
 
 ### Evaluation protocol (facades)
 - Official splits **400 / 100 / 106**, **256×256** resolution, identical data for the baseline and Pix2Pix.
-- Checkpoint selection on **validation only** (L1); the test split is evaluated once, after the protocol is frozen.
-- Test metrics **averaged per image**: L1, PSNR, SSIM, LPIPS (AlexNet).
+- Checkpoint selection on **validation only** (L1 for the baseline and Run 1; validation LPIPS for Pix2Pix in Run 2);
+  the test split is evaluated once, after the protocol is frozen.
+- Test metrics **averaged per image**: L1, PSNR, SSIM, LPIPS (AlexNet and SqueezeNet); KID ×10³ over 100 subsets of 50.
 - Target: Pix2Pix validation L1 **at least 5 % better** than the U-Net baseline — a miss is reported as is.
 
 ### Evaluation protocol (floor plans)

@@ -76,12 +76,15 @@ class CMPFacadesDataset(Dataset):
         image_size: int = 256,
         augment: Optional[bool] = None,
         limit: Optional[int] = None,
+        jitter: bool = False,
     ):
         assert split in SPLITS, split
         self.split = split
         self.image_size = image_size
         self.augment = (split == "train") if augment is None else augment
         self.files = list_split(split, root)
+        # Scale/crop jitter (recipe v2), only ever applied together with `augment` (train split).
+        self.jitter = bool(jitter and self.augment)
         if limit:
             self.files = self.files[:limit]
 
@@ -90,7 +93,14 @@ class CMPFacadesDataset(Dataset):
 
     def __getitem__(self, idx: int):
         sem_map, photo = load_pair(self.files[idx], self.image_size)
-        m, p = to_tensor(sem_map), to_tensor(photo)
+        if self.jitter:
+            big = int(round(self.image_size * 286 / 256))
+            sem_map = np.asarray(Image.fromarray(sem_map).resize((big, big), Image.Resampling.NEAREST))
+            photo = np.asarray(Image.fromarray(photo).resize((big, big), Image.Resampling.BICUBIC))
+            y, x = (int(v) for v in torch.randint(0, big - self.image_size + 1, (2,)))
+            sem_map = sem_map[y:y + self.image_size, x:x + self.image_size]
+            photo = photo[y:y + self.image_size, x:x + self.image_size]
+        m, p = to_tensor(np.ascontiguousarray(sem_map)), to_tensor(np.ascontiguousarray(photo))
         if self.augment and torch.rand(1).item() < 0.5:
             m, p = m.flip(-1), p.flip(-1)
         return m, p
@@ -102,10 +112,11 @@ def make_facade_loaders(
     num_workers: int = 0,
     limit: Optional[int] = None,
     seed: int = 42,
+    jitter: bool = False,
 ) -> Tuple[DataLoader, DataLoader]:
     """Train (shuffled, flipped) and validation (fixed order) loaders. Test is never loaded here."""
     g = torch.Generator().manual_seed(seed)
-    train = CMPFacadesDataset("train", root, limit=limit)
+    train = CMPFacadesDataset("train", root, limit=limit, jitter=jitter)
     val = CMPFacadesDataset("val", root, limit=limit)
     pin = torch.cuda.is_available()
     return (

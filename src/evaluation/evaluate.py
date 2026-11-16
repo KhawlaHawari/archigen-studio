@@ -55,8 +55,10 @@ def evaluate_facade(checkpoint: Path, batch_size: int = 8, split: str = "test") 
 
     ds = CMPFacadesDataset(split, augment=False)
     loader = DataLoader(ds, batch_size=batch_size, shuffle=False)
-    lp = OptionalLPIPS(device=device)
-    l1s, psnrs, ssims, lpips_v, rows = [], [], [], [], []
+    lp = OptionalLPIPS(net="alex", device=device)
+    lp_sq = OptionalLPIPS(net="squeeze", device=device)   # same backbone as the historical benchmark
+    kid = _optional_kid(device)
+    l1s, psnrs, ssims, lpips_v, lpips_sq, rows = [], [], [], [], [], []
     for masks, reals in loader:
         masks, reals = masks.to(device), reals.to(device)
         fakes = gen(masks)
@@ -66,6 +68,13 @@ def evaluate_facade(checkpoint: Path, batch_size: int = 8, split: str = "test") 
         v = lp(fakes, reals)
         if v is not None:
             lpips_v.append(v.cpu())
+        v = lp_sq(fakes, reals)
+        if v is not None:
+            lpips_sq.append(v.cpu())
+        if kid is not None:
+            to_u8 = lambda t: ((t.clamp(-1, 1) + 1) * 127.5).round().to(torch.uint8)
+            kid.update(to_u8(reals), real=True)
+            kid.update(to_u8(fakes), real=False)
         if len(rows) < 6:
             for m, f, r in zip(masks, fakes, reals):
                 if len(rows) < 6:
@@ -77,6 +86,8 @@ def evaluate_facade(checkpoint: Path, batch_size: int = 8, split: str = "test") 
         "checkpoint_meta": {k: meta.get(k) for k in ("data_source", "mode", "epoch", "seed", "hparams")},
         "l1": _stats(l1), "psnr_db": _stats(ps), "ssim": _stats(ss),
         "lpips": _stats(torch.cat(lpips_v)) if lpips_v else {"status": "not computed", "reason": lp.reason},
+        "lpips_squeeze": _stats(torch.cat(lpips_sq)) if lpips_sq else {"status": "not computed", "reason": lp_sq.reason},
+        "kid_x1000": _kid_result(kid),
         "averaging": "per image", "env": _env(),
     }
     METRICS_DIR.mkdir(parents=True, exist_ok=True)
@@ -87,7 +98,7 @@ def evaluate_facade(checkpoint: Path, batch_size: int = 8, split: str = "test") 
 
 
 @torch.no_grad()
-def evaluate_floorplan(checkpoint: Path, batch_size: int = 2, split: str = "test") -> Dict[str, Any]:
+def evaluate_floorplan(checkpoint: Path, batch_size: int = 2, split: str = "test", tta: bool = False) -> Dict[str, Any]:
     from src.models.unet_plus_plus import UNetPlusPlusMultiTask
     from src.training.train_floorplan import NPZFloorplanDataset, split_files
 
@@ -104,7 +115,8 @@ def evaluate_floorplan(checkpoint: Path, batch_size: int = 2, split: str = "test
     cm_s = ConfusionMatrix(len(STRUCTURE_CLASSES), 255, device)
     cm_r = ConfusionMatrix(len(ROOM_CLASSES), 255, device)
     for images, s_t, r_t in loader:
-        s_logits, r_logits = model(images.to(device))
+        images = images.to(device)
+        s_logits, r_logits = _predict_tta(model, images) if tta else model(images)
         cm_s.update(s_logits.argmax(1), s_t.to(device))
         cm_r.update(r_logits.argmax(1), r_t.to(device))
     s, r = cm_s.compute(STRUCTURE_CLASSES), cm_r.compute(ROOM_CLASSES)
@@ -115,12 +127,45 @@ def evaluate_floorplan(checkpoint: Path, batch_size: int = 2, split: str = "test
         "structure": s, "rooms": r,
         "merged_wall_iou": float(np.mean(walls)) if walls else None,
         "eval_resolution": image_size,
+        "tta": "4-fold (identity, h-flip, v-flip, hv-flip; mean of softmax)" if tta else None,
         "note": "room pixels labelled 255 (unknown type) are excluded from all metrics",
         "env": _env(),
     }
     METRICS_DIR.mkdir(parents=True, exist_ok=True)
-    (METRICS_DIR / f"{Path(checkpoint).stem}_{split}.json").write_text(json.dumps(result, indent=2, default=str))
+    suffix = "_tta" if tta else ""
+    (METRICS_DIR / f"{Path(checkpoint).stem}_{split}{suffix}.json").write_text(json.dumps(result, indent=2, default=str))
     return result
+
+
+def _predict_tta(model, images: torch.Tensor):
+    """4-fold flip TTA: predict on flipped inputs, un-flip, average class probabilities."""
+    s_acc, r_acc = 0.0, 0.0
+    for dims in ((), (-1,), (-2,), (-2, -1)):
+        x = images.flip(dims) if dims else images
+        s, r = model(x)
+        s, r = s.softmax(1), r.softmax(1)
+        if dims:
+            s, r = s.flip(dims), r.flip(dims)
+        s_acc, r_acc = s_acc + s, r_acc + r
+    return s_acc / 4, r_acc / 4
+
+
+def _optional_kid(device):
+    """KID (x1000) with torchmetrics, 100 subsets of 50 images as in the historical benchmark."""
+    try:
+        from torchmetrics.image.kid import KernelInceptionDistance  # needs torch-fidelity
+        torch.manual_seed(42)
+        return KernelInceptionDistance(subset_size=50, subsets=100).to(device)
+    except Exception as exc:  # not installed / weights unavailable offline
+        _optional_kid.reason = f"{type(exc).__name__}: {exc}"
+        return None
+
+
+def _kid_result(kid) -> Dict[str, Any]:
+    if kid is None:
+        return {"status": "not computed", "reason": getattr(_optional_kid, "reason", "unavailable")}
+    mean, std = kid.compute()
+    return {"mean": float(mean) * 1000, "std": float(std) * 1000, "subset_size": 50, "subsets": 100}
 
 
 if __name__ == "__main__":
@@ -131,12 +176,14 @@ if __name__ == "__main__":
     ap.add_argument("--checkpoint", type=Path, required=True)
     ap.add_argument("--split", default="test", choices=["val", "test"])
     ap.add_argument("--batch-size", type=int, default=None)
+    ap.add_argument("--tta", action="store_true", help="Floorplan only: 4-fold flip test-time augmentation")
     a = ap.parse_args()
     if a.task == "facade":
         res = evaluate_facade(a.checkpoint, a.batch_size or 8, a.split)
-        print(json.dumps({k: res[k] for k in ("n_images", "l1", "psnr_db", "ssim", "lpips")}, indent=2))
+        print(json.dumps({k: res[k] for k in ("n_images", "l1", "psnr_db", "ssim", "lpips", "lpips_squeeze", "kid_x1000")},
+                         indent=2))
     else:
-        res = evaluate_floorplan(a.checkpoint, a.batch_size or 2, a.split)
+        res = evaluate_floorplan(a.checkpoint, a.batch_size or 2, a.split, tta=a.tta)
         print(json.dumps({"n_images": res["n_images"], "merged_wall_iou": res["merged_wall_iou"],
                           "struct_miou": res["structure"]["miou"], "room_miou": res["rooms"]["miou"],
                           "room_pixel_acc": res["rooms"]["pixel_acc"]}, indent=2))

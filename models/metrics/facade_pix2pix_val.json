@@ -1,18 +1,20 @@
 {
   "model_name": "facade_pix2pix",
   "split": "val",
-  "selection_metric": "val_l1",
+  "selection_metric": "val_lpips",
   "best": {
-    "loss": 0.3505769371986389,
-    "val_l1": 0.3505769371986389,
-    "val_psnr": 13.41137409210205,
-    "val_ssim": 0.2990524172782898,
+    "loss": 0.35378187894821167,
+    "val_l1": 0.35378187894821167,
+    "val_psnr": 12.768628120422363,
+    "val_ssim": 0.2800659239292145,
     "val_n_images": 100.0,
-    "epoch": 1
+    "val_lpips": 0.4017740488052368,
+    "epoch": 81
   },
   "hparams": {
     "mode": "pix2pix",
-    "epochs": 50,
+    "recipe": "v2",
+    "epochs": 100,
     "batch_size": 2,
     "lr_g": 0.0002,
     "lr_d": 0.0002,
@@ -20,15 +22,20 @@
     "lambda_l1": 30.0,
     "lambda_fm": 10.0,
     "lambda_perceptual": 10.0,
+    "perceptual_loss": "lpips_squeeze",
+    "ema_decay": 0.999,
+    "lr_decay_start_epoch": 50,
+    "jitter": true,
+    "early_stopping_patience": 101,
     "ngf": 64,
     "ndf": 64,
     "image_size": 256
   },
-  "epochs_completed": 11,
+  "epochs_completed": 100,
   "max_train_batches": null,
   "device": "cuda",
   "stopped_by_time_budget": false,
-  "time_budget_min": 32.0,
+  "time_budget_min": 360.0,
   "mlflow_run_id": null,
   "checkpoint": "/kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt"
 }

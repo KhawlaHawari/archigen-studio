@@ -27,7 +27,7 @@ from torch.utils.data import DataLoader, Dataset
 
 from src.config import BASE_DIR, DATA_DIR, FLOORPLAN_CFG, MODELS_DIR, ROOM_CLASSES, STRUCTURE_CLASSES
 from src.evaluation.metrics import ConfusionMatrix
-from src.models.unet_plus_plus import FloorplanMultiTaskLoss, UNetPlusPlusMultiTask
+from src.models.unet_plus_plus import FloorplanMultiTaskLoss, UNetPlusPlusMultiTask, load_imagenet_resnet34
 from src.training.trainer_base import BaseTrainer, TrainResult
 
 CACHE_DIR = DATA_DIR / "processed" / "cubicasa_cache"
@@ -100,6 +100,27 @@ def load_floorplan_params() -> Dict[str, Any]:
         return yaml.safe_load(f).get("training_floorplan", {})
 
 
+RECIPES = ("v1", "v2")
+
+
+def compute_room_class_weights(cache_dir: Path = CACHE_DIR, max_files: int = 600,
+                               power: float = 0.5, cap: float = 10.0) -> List[float]:
+    """Inverse-frequency^power room weights from the TRAIN split (ignore label 255 excluded).
+
+    Normalised to mean 1 and capped, so rare rooms (dining, office, technical) receive gradient
+    without letting a class with a handful of pixels dominate the loss.
+    """
+    counts = np.zeros(len(ROOM_CLASSES), dtype=np.float64)
+    for f in split_files("train", cache_dir)[:max_files]:
+        with np.load(f) as d:
+            room = d["room_mask"]
+        counts += np.bincount(room[room != IGNORE_INDEX].ravel(), minlength=len(ROOM_CLASSES))[: len(ROOM_CLASSES)]
+    freq = counts / max(1.0, counts.sum())
+    w = np.where(freq > 0, (freq + 1e-12) ** (-power), 0.0)
+    w = w / w[w > 0].mean()
+    return [float(min(cap, x)) for x in w]
+
+
 class FloorplanTrainer(BaseTrainer):
     def __init__(
         self,
@@ -113,7 +134,14 @@ class FloorplanTrainer(BaseTrainer):
         tag: str = "",
         image_size: int = 512,
         amp: bool = False,
+        recipe: str = "v1",
+        room_weights: Optional[List[float]] = None,
     ):
+        assert recipe in RECIPES, recipe
+        # recipe v2: ImageNet-pretrained ResNet-34 encoder, cosine LR, per-class room weights.
+        self.recipe = recipe
+        self.room_weights = room_weights
+        self.pretrained_tensors = 0
         self.image_size = image_size
         self.epochs = epochs
         self.batch_size = batch_size
@@ -132,27 +160,42 @@ class FloorplanTrainer(BaseTrainer):
         # Mixed precision (CUDA only): ~2x faster on T4 GPUs.
         self.amp = bool(amp and self.device == "cuda")
         self.scaler = torch.amp.GradScaler("cuda", enabled=self.amp)
-        self.criterion = FloorplanMultiTaskLoss(struct_weights=FLOORPLAN_CFG.structure_weights).to(self.device)
-        self.checkpoint_meta = {"data_source": "real:cubicasa5k", "dataset_split": "official train/val"}
+        self.criterion = FloorplanMultiTaskLoss(
+            struct_weights=FLOORPLAN_CFG.structure_weights, room_weights=room_weights).to(self.device)
+        self.checkpoint_meta = {"data_source": "real:cubicasa5k", "dataset_split": "official train/val",
+                                "recipe": recipe}
         self.hparams = {
             "epochs": epochs, "batch_size": batch_size, "lr": lr, "weight_decay": weight_decay,
             "gradient_accumulation_steps": self.gradient_accumulation_steps, "seed": seed,
             "structure_weights": FLOORPLAN_CFG.structure_weights, "input_size": image_size,
-            "amp": self.amp,
+            "amp": self.amp, "recipe": recipe,
+            "pretrained_encoder": "imagenet_resnet34" if self.pretrained_tensors else None,
+            "pretrained_tensors": self.pretrained_tensors,
+            "room_weights": [round(w, 4) for w in room_weights] if room_weights else None,
+            "scheduler": "cosine" if recipe == "v2" else "reduce_on_plateau",
+            "early_stopping_patience": early_stopping_patience,
         }
         self.best_val_metrics: Dict[str, Any] = {}
 
     def build_model(self) -> torch.nn.Module:
-        return UNetPlusPlusMultiTask(
+        model = UNetPlusPlusMultiTask(
             in_channels=FLOORPLAN_CFG.in_channels,
             num_structure_classes=FLOORPLAN_CFG.num_structure_classes,
             num_room_classes=FLOORPLAN_CFG.num_room_classes,
         )
+        if self.recipe == "v2":
+            self.pretrained_tensors = load_imagenet_resnet34(model.encoder)
+            print(f"[Floorplan] ImageNet ResNet-34 weights loaded into encoder ({self.pretrained_tensors} tensors)",
+                  flush=True)
+        return model
 
     def build_optimizers(self) -> Dict[str, torch.optim.Optimizer]:
         return {"optimizer": torch.optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay)}
 
     def build_schedulers(self) -> Dict[str, Any]:
+        if self.recipe == "v2":
+            return {"scheduler": torch.optim.lr_scheduler.CosineAnnealingLR(
+                self.optimizers["optimizer"], T_max=max(1, self.epochs), eta_min=1e-6)}
         return {"scheduler": torch.optim.lr_scheduler.ReduceLROnPlateau(
             self.optimizers["optimizer"], mode="max", factor=0.5, patience=3)}
 
@@ -255,19 +298,31 @@ def train_floorplan(
     image_size: int = 512,
     amp: bool = False,
     time_budget_min: Optional[float] = None,
+    recipe: str = "v1",
 ) -> TrainResult:
-    """Train on REAL rasterized CubiCasa5K. Unspecified hyperparameters come from params.yaml."""
+    """Train on REAL rasterized CubiCasa5K. Unspecified hyperparameters come from params.yaml.
+
+    recipe v2 defaults (overridable): batch 4 x accumulation 2 (effective 8, as in v1), lr 3e-4 with
+    cosine decay, ImageNet encoder, room class weights from the training split, early stopping patience 8.
+    """
     p = load_floorplan_params()
+    v2 = recipe == "v2"
+    room_weights = compute_room_class_weights(cache_dir or CACHE_DIR) if v2 else None
+    if room_weights:
+        print("[Floorplan] room class weights:", [round(w, 2) for w in room_weights], flush=True)
     trainer = FloorplanTrainer(
         epochs=epochs or p.get("epochs", 25),
-        batch_size=batch_size or p.get("batch_size", 2),
-        lr=lr or p.get("lr", 1e-4),
+        batch_size=batch_size or (4 if v2 else p.get("batch_size", 2)),
+        lr=lr or (3e-4 if v2 else p.get("lr", 1e-4)),
         weight_decay=p.get("weight_decay", 1e-4),
-        gradient_accumulation_steps=p.get("gradient_accumulation_steps", 4),
+        gradient_accumulation_steps=2 if v2 else p.get("gradient_accumulation_steps", 4),
+        early_stopping_patience=8 if v2 else 5,
         seed=seed,
         tag=tag,
         image_size=image_size,
         amp=amp,
+        recipe=recipe,
+        room_weights=room_weights,
     )
     trainer.max_train_batches = max_batches
     trainer.time_budget_s = time_budget_min * 60 if time_budget_min else None
@@ -295,7 +350,9 @@ if __name__ == "__main__":
     ap.add_argument("--image-size", type=int, default=512, help="Train resolution (256 = ~4x faster)")
     ap.add_argument("--amp", action="store_true", help="Mixed precision (CUDA only)")
     ap.add_argument("--time-budget-min", type=float, default=None, help="Stop before exceeding this many minutes")
+    ap.add_argument("--recipe", choices=RECIPES, default="v1",
+                    help="v1 = Run-1 behaviour; v2 = ImageNet encoder + cosine LR + room class weights")
     a = ap.parse_args()
     r = train_floorplan(a.epochs, a.batch_size, a.lr, a.seed, a.cache_dir, a.max_batches, a.limit, a.tag,
-                        a.workers, a.image_size, a.amp, a.time_budget_min)
+                        a.workers, a.image_size, a.amp, a.time_budget_min, a.recipe)
     print(f"Floorplan training finished: run_id={r.run_id}, best {r.best_metric_name}={r.best_metric:.4f}")

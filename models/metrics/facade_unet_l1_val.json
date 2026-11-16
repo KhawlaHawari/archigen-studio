@@ -3,16 +3,17 @@
   "split": "val",
   "selection_metric": "val_l1",
   "best": {
-    "loss": 0.3273044526576996,
-    "val_l1": 0.3273044526576996,
-    "val_psnr": 13.929801940917969,
-    "val_ssim": 0.33373892307281494,
+    "loss": 0.32171958684921265,
+    "val_l1": 0.32171958684921265,
+    "val_psnr": 13.927983283996582,
+    "val_ssim": 0.34683212637901306,
     "val_n_images": 100.0,
-    "epoch": 8
+    "epoch": 52
   },
   "hparams": {
     "mode": "l1_baseline",
-    "epochs": 50,
+    "recipe": "v2",
+    "epochs": 100,
     "batch_size": 2,
     "lr_g": 0.0002,
     "lr_d": null,
@@ -20,15 +21,20 @@
     "lambda_l1": 1.0,
     "lambda_fm": 0.0,
     "lambda_perceptual": 0.0,
+    "perceptual_loss": null,
+    "ema_decay": null,
+    "lr_decay_start_epoch": 50,
+    "jitter": true,
+    "early_stopping_patience": 20,
     "ngf": 64,
     "ndf": 64,
     "image_size": 256
   },
-  "epochs_completed": 18,
+  "epochs_completed": 72,
   "max_train_batches": null,
   "device": "cuda",
   "stopped_by_time_budget": false,
-  "time_budget_min": 18.0,
+  "time_budget_min": 180.0,
   "mlflow_run_id": null,
   "checkpoint": "/kaggle/working/archigen/models/checkpoints/facade_unet_l1_best.pt"
 }
