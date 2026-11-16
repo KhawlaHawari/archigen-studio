@@ -13,6 +13,7 @@ onnxscript>=0.7.0
 
 # Geometry & Topological Vectorization (OS 4)
 shapely>=2.0.0
+opencv-python-headless>=4.8.0
 
 # Production API & Web Backend (OS 5)
 fastapi>=0.100.0

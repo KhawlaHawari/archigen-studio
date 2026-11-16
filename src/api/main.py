@@ -11,7 +11,9 @@ from PIL import Image
 import io
 import torch
 import onnxruntime as ort
-from fastapi import FastAPI, UploadFile, File, HTTPException
+import json
+from typing import Optional
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
@@ -164,6 +166,38 @@ async def predict_floorplan_endpoint(file: UploadFile = File(...)):
         room_mask_base64=result["room_mask_base64"],
         processing_time_ms=result["processing_time_ms"]
     )
+
+
+@app.post("/predict/floorplan/layout", tags=["3D Extrusion"])
+async def floorplan_layout_endpoint(
+    file: UploadFile = File(...),
+    scale_override: Optional[float] = Form(default=None),
+    reference_rooms: Optional[str] = Form(default=None),
+):
+    """
+    Upload a 2D floor plan image. Returns the vector layout used by the web studio's 3D view:
+    walls (axis, thickness, openings), rooms (type, polygon, area, confidence), doors, windows
+    and the building envelope, all in meters.
+    """
+    try:
+        pil_img = Image.open(io.BytesIO(await file.read()))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid image file: {e}")
+    try:
+        regions = json.loads(reference_rooms) if reference_rooms else None
+        if regions is not None and not isinstance(regions, list):
+            raise ValueError("expected a list")
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=f"Invalid reference room polygons: {e}")
+    if scale_override is not None and scale_override <= 0:
+        scale_override = None
+
+    service = ModelService.get_instance()
+    try:
+        result = service.analyze_floorplan_layout(pil_img, scale_override=scale_override, reference_rooms=regions)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Floorplan vectorization failed: {e}")
+    return JSONResponse(content=result, headers={"X-Inference-Latency-Ms": str(result["processing_time_ms"])})
 
 
 @app.post("/vectorize/floorplan", response_model=Floorplan3DResponse, tags=["3D Extrusion"])

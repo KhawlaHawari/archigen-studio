@@ -30,6 +30,7 @@ from src.data.svg_preprocessor import (
     generate_synthetic_facade_sample
 )
 from src.geometry.vectorizer_3d import vectorize_floorplan_pipeline
+from src.geometry.layout_vectorizer import FloorplanVectorizer, ROOM_NAMES, score_room_polygon
 from src.models.unet_plus_plus import UNetPlusPlusMultiTask
 from src.models.pix2pix_cgan import FacadeGenerator
 from src.mlops.drift_detector import (
@@ -190,6 +191,91 @@ class ModelService:
             "structure_mask_base64": self.numpy_to_base64_png(struct_rgb),
             "room_mask_base64": self.numpy_to_base64_png(room_rgb),
             "processing_time_ms": proc_time,
+        }
+
+    def _floorplan_probabilities(self, boxed_img: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """Softmax probabilities (C, H, W) for the structure and room heads on a 512x512 letterboxed RGB image."""
+        norm_tensor = (boxed_img.astype(np.float32) / 255.0).transpose(2, 0, 1)[np.newaxis, ...]
+        if self.ort_floorplan is not None:
+            struct_logits, room_logits = self.ort_floorplan.run(None, {"image": norm_tensor})[:2]
+            struct_logits, room_logits = torch.from_numpy(struct_logits), torch.from_numpy(room_logits)
+        else:
+            with torch.no_grad():
+                struct_logits, room_logits = self.pt_floorplan(torch.from_numpy(norm_tensor))
+        prob_s = torch.softmax(struct_logits, dim=1)[0].numpy()
+        prob_r = torch.softmax(room_logits, dim=1)[0].numpy()
+        return prob_s, prob_r
+
+    def analyze_floorplan_layout(
+        self,
+        input_image: Image.Image,
+        scale_override: Optional[float] = None,
+        reference_rooms: Optional[list] = None,
+    ) -> Dict[str, Any]:
+        """
+        Segments a floor plan and vectorizes it into the wall / room / opening layout
+        that the web studio extrudes into a 3D house.
+        """
+        t0 = time.perf_counter()
+        raw_rgb = np.array(input_image.convert("RGB"))
+        boxed_img, _ = isotropic_letterbox(raw_rgb, target_size=(512, 512), is_mask=False, fill_value=255)
+        prob_s, prob_r = self._floorplan_probabilities(boxed_img)
+        struct_mask = np.argmax(prob_s, axis=0).astype(np.uint8)
+        room_mask = np.argmax(prob_r, axis=0).astype(np.uint8)
+
+        # The layout vectorizer expects: 1 = any wall, 2 = door, 3 = window ...
+        opening_mask = np.zeros_like(struct_mask)
+        opening_mask[(struct_mask == 1) | (struct_mask == 2)] = 1
+        opening_mask[struct_mask == 3] = 2
+        opening_mask[struct_mask == 4] = 3
+        # ... and a structure mask with 1 = interior wall, 2 = exterior wall (ArchiGen uses the reverse).
+        legacy_struct = struct_mask.copy()
+        legacy_struct[struct_mask == 1] = 2
+        legacy_struct[struct_mask == 2] = 1
+
+        if not hasattr(self, "layout_vectorizer"):
+            self.layout_vectorizer = FloorplanVectorizer()
+        layout = self.layout_vectorizer.vectorize(
+            mask=opening_mask,
+            struct_mask=legacy_struct,
+            room_mask=room_mask,
+            scale_override_m_per_px=scale_override,
+            room_probabilities=prob_r,
+            source_gray=np.asarray(Image.fromarray(boxed_img).convert("L")),
+        )
+
+        # Default front facade: the longest exterior wall (the user can pick another one in the studio).
+        def wall_length(wall: Dict[str, Any]) -> float:
+            axis = wall.get("axis_meters")
+            return float(np.hypot(axis[1][0] - axis[0][0], axis[1][1] - axis[0][1])) if axis else 0.0
+        exterior = [w for w in layout.get("walls", []) if w.get("is_exterior")]
+        front = max(exterior, key=wall_length) if exterior else None
+        for wall in layout.get("walls", []):
+            wall["is_front"] = wall is front
+
+        reference_confidences = None
+        if reference_rooms is not None:
+            class_ids = {name: idx for idx, name in ROOM_NAMES.items() if idx}
+            reference_confidences = {}
+            for region in reference_rooms:
+                class_id = class_ids.get(region.get("room_type"))
+                polygon = region.get("polygon_px") or []
+                reference_confidences[region.get("id")] = (
+                    score_room_polygon(prob_r, class_id, polygon) if class_id is not None and len(polygon) >= 3 else None
+                )
+
+        rooms = layout.get("rooms", [])
+        return {
+            "total_area_m2": round(sum(r.get("surface_m2", 0.0) for r in rooms), 2),
+            "num_rooms": len(rooms),
+            "rooms": [{**r, "polygon_points": r["polygon_meters"]} for r in rooms],
+            "walls": layout.get("walls", []),
+            "doors": layout.get("doors", []),
+            "windows": layout.get("windows", []),
+            "envelope": layout.get("envelope", []),
+            "metadata": layout.get("metadata", {}),
+            "reference_room_confidences": reference_confidences,
+            "processing_time_ms": round((time.perf_counter() - t0) * 1000.0, 2),
         }
 
     def predict_facade(self, mask_image: Image.Image) -> Dict[str, Any]:

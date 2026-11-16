@@ -232,7 +232,7 @@ export default function App() {
     }
 
     try {
-      const response = await axios.post('/predict/floorplan', formData, {
+      const response = await axios.post('/predict/floorplan/layout', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (request !== analysisRequest.current) return;
