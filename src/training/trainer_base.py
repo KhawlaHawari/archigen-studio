@@ -128,11 +128,15 @@ class BaseTrainer:
     # ------------------------------------------------------------------
     # Checkpointing
     # ------------------------------------------------------------------
+    def export_state_dict(self) -> Dict[str, Any]:
+        """Weights written as `model_state_dict` (subclasses may return e.g. EMA weights)."""
+        return self.model.state_dict()
+
     def save_checkpoint(self, epoch: int, metrics: Dict[str, float], is_best: bool = False) -> Path:
         """Save a training checkpoint with model, optimizers, and RNG state."""
         checkpoint = {
             "epoch": epoch,
-            "model_state_dict": self.model.state_dict(),
+            "model_state_dict": self.export_state_dict(),
             "optimizers": {name: opt.state_dict() for name, opt in self.optimizers.items()},
             "schedulers": {name: sch.state_dict() for name, sch in self.schedulers.items()},
             "metrics": metrics,

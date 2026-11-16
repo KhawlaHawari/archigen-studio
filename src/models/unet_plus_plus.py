@@ -105,6 +105,30 @@ class ResNet34Encoder(nn.Module):
         return x0_0, x1_0, x2_0, x3_0, x4_0
 
 
+def load_imagenet_resnet34(encoder: "ResNet34Encoder", source_state: Optional[Dict[str, torch.Tensor]] = None) -> int:
+    """Copy ImageNet ResNet-34 weights into `ResNet34Encoder` wherever names and shapes match.
+
+    Mapping: torchvision `layerK.i.{conv1,bn1,conv2,bn2}` -> same names, `downsample.{0,1}` -> `shortcut.{0,1}`.
+    The 3x3 stem (`init_conv`) and the extra stride-2 shortcut of layer1.0 have no ImageNet
+    counterpart and keep their random init. Returns the number of tensors copied.
+    `source_state` lets tests pass a state dict; by default torchvision downloads IMAGENET1K_V1.
+    """
+    if source_state is None:
+        import torchvision  # type: ignore
+        source_state = torchvision.models.resnet34(weights="IMAGENET1K_V1").state_dict()
+    target = encoder.state_dict()
+    copied = 0
+    for name, tensor in source_state.items():
+        if not name.startswith("layer"):
+            continue
+        mapped = name.replace("downsample.0", "shortcut.0").replace("downsample.1", "shortcut.1")
+        if mapped in target and target[mapped].shape == tensor.shape:
+            target[mapped] = tensor.clone()
+            copied += 1
+    encoder.load_state_dict(target)
+    return copied
+
+
 class UNetPlusPlusMultiTask(nn.Module):
     """
     Nested UNet++ with multi-task dual heads for floorplan segmentation.
@@ -220,15 +244,20 @@ class FloorplanMultiTaskLoss(nn.Module):
     L_floorplan = L_Struct(WCE + Dice) + 0.5 * L_Room(CE + Dice)
     With structure weights: Bg=0.5, ExtWall=4.0, IntWall=4.0, Door=25.0, Window=10.0
     """
-    def __init__(self, struct_weights: Optional[List[float]] = None):
+    def __init__(self, struct_weights: Optional[List[float]] = None, room_weights: Optional[List[float]] = None):
         super().__init__()
         if struct_weights is None:
             struct_weights = [0.5, 4.0, 4.0, 25.0, 10.0]
-        
+
         self.register_buffer("struct_weights", torch.tensor(struct_weights, dtype=torch.float32))
         # 255 = unknown/unmapped label (e.g. CubiCasa "Space Undefined"): no gradient.
         self.struct_ce = nn.CrossEntropyLoss(weight=self.struct_weights, ignore_index=255)
-        self.room_ce = nn.CrossEntropyLoss(ignore_index=255)
+        # Optional per-class room weights (recipe v2) so rare rooms (dining, office, technical) get gradient.
+        if room_weights is not None:
+            self.register_buffer("room_weights", torch.tensor(room_weights, dtype=torch.float32))
+            self.room_ce = nn.CrossEntropyLoss(weight=self.room_weights, ignore_index=255)
+        else:
+            self.room_ce = nn.CrossEntropyLoss(ignore_index=255)
         self.dice = SoftDiceLoss()
 
     def forward(

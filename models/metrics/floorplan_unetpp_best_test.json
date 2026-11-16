@@ -5,14 +5,14 @@
   "checkpoint": "/kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt",
   "checkpoint_meta": {
     "data_source": "real:cubicasa5k",
-    "epoch": 8,
+    "epoch": 23,
     "seed": 42,
     "hparams": {
       "epochs": 25,
-      "batch_size": 2,
-      "lr": 0.0001,
+      "batch_size": 4,
+      "lr": 0.0003,
       "weight_decay": 0.0001,
-      "gradient_accumulation_steps": 4,
+      "gradient_accumulation_steps": 2,
       "seed": 42,
       "structure_weights": [
         0.5,
@@ -21,67 +21,87 @@
         25.0,
         10.0
       ],
-      "input_size": 256,
-      "amp": true
+      "input_size": 512,
+      "amp": true,
+      "recipe": "v2",
+      "pretrained_encoder": "imagenet_resnet34",
+      "pretrained_tensors": 210,
+      "room_weights": [
+        0.1237,
+        0.3229,
+        0.3511,
+        0.4387,
+        0.6594,
+        0.5135,
+        1.2135,
+        0.4673,
+        1.2449,
+        3.7809,
+        1.0654,
+        1.8188
+      ],
+      "scheduler": "cosine",
+      "early_stopping_patience": 8
     }
   },
   "structure": {
-    "pixel_acc": 0.9691914749145508,
-    "miou": 0.7041854324341345,
+    "pixel_acc": 0.9784373378753662,
+    "miou": 0.7773794138917567,
     "per_class_iou": {
-      "background": 0.972141,
-      "exterior_wall": 0.718211,
-      "interior_wall": 0.587128,
-      "door": 0.551468,
-      "window": 0.691979
+      "background": 0.980615,
+      "exterior_wall": 0.782808,
+      "interior_wall": 0.684151,
+      "door": 0.667558,
+      "window": 0.771765
     },
     "gt_pixels": {
-      "background": 24071248,
-      "exterior_wall": 1098098,
-      "interior_wall": 518113,
-      "door": 171418,
-      "window": 355523
+      "background": 96267861,
+      "exterior_wall": 4406306,
+      "interior_wall": 2072928,
+      "door": 686632,
+      "window": 1423873
     }
   },
   "rooms": {
-    "pixel_acc": 0.9067472988538763,
-    "miou": 0.46504247386563835,
+    "pixel_acc": 0.9398883386460728,
+    "miou": 0.6663548025359247,
     "per_class_iou": {
-      "background": 0.943683,
-      "living_room": 0.722303,
-      "bedroom": 0.728921,
-      "kitchen": 0.626919,
-      "bathroom": 0.640739,
-      "hallway": 0.643274,
-      "closet": 0.290238,
-      "balcony": 0.610836,
-      "dining": 0.0,
-      "office": 0.0,
-      "storage": 0.373597,
-      "technical": 0.0
+      "background": 0.957952,
+      "living_room": 0.774434,
+      "bedroom": 0.87337,
+      "kitchen": 0.750761,
+      "bathroom": 0.824175,
+      "hallway": 0.76829,
+      "closet": 0.58401,
+      "balcony": 0.756851,
+      "dining": 0.467003,
+      "office": 0.106836,
+      "storage": 0.614857,
+      "technical": 0.517717
     },
     "gt_pixels": {
-      "background": 15620928,
-      "living_room": 1964025,
-      "bedroom": 1784798,
-      "kitchen": 1154960,
-      "bathroom": 581464,
-      "hallway": 810845,
-      "closet": 165077,
-      "balcony": 1272397,
-      "dining": 119151,
-      "office": 11963,
-      "storage": 255448,
-      "technical": 107154
+      "background": 62485048,
+      "living_room": 7855034,
+      "bedroom": 7139689,
+      "kitchen": 4620772,
+      "bathroom": 2325115,
+      "hallway": 3242499,
+      "closet": 660314,
+      "balcony": 5088652,
+      "dining": 476622,
+      "office": 47678,
+      "storage": 1021688,
+      "technical": 427099
     }
   },
-  "merged_wall_iou": 0.6526695,
-  "eval_resolution": 256,
+  "merged_wall_iou": 0.7334795,
+  "eval_resolution": 512,
+  "tta": null,
   "note": "room pixels labelled 255 (unknown type) are excluded from all metrics",
   "env": {
     "device": "cuda",
     "torch": "2.11.0+cu130",
     "python": "3.13.16",
-    "date": "2026-11-14 16:00:50"
+    "date": "2026-11-15 20:12:48"
   }
 }
