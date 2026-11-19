@@ -1,0 +1,108 @@
+{
+  "task": "floorplan",
+  "split": "test",
+  "n_images": 400,
+  "checkpoint": "/kaggle/working/archigen/models/checkpoints/floorplan_unetpp_run2.pt",
+  "checkpoint_meta": {
+    "data_source": "real:cubicasa5k",
+    "epoch": 23,
+    "seed": 42,
+    "hparams": {
+      "epochs": 25,
+      "batch_size": 4,
+      "lr": 0.0003,
+      "weight_decay": 0.0001,
+      "gradient_accumulation_steps": 2,
+      "seed": 42,
+      "structure_weights": [
+        0.5,
+        4.0,
+        4.0,
+        25.0,
+        10.0
+      ],
+      "input_size": 512,
+      "amp": true,
+      "recipe": "v2",
+      "pretrained_encoder": "imagenet_resnet34",
+      "pretrained_tensors": 210,
+      "room_weights": [
+        0.1237,
+        0.3229,
+        0.3511,
+        0.4387,
+        0.6594,
+        0.5135,
+        1.2135,
+        0.4673,
+        1.2449,
+        3.7809,
+        1.0654,
+        1.8188
+      ],
+      "scheduler": "cosine",
+      "early_stopping_patience": 8
+    }
+  },
+  "structure": {
+    "pixel_acc": 0.9579028415679932,
+    "miou": 0.5964907088234359,
+    "per_class_iou": {
+      "background": 0.961077,
+      "exterior_wall": 0.575953,
+      "interior_wall": 0.53252,
+      "door": 0.427675,
+      "window": 0.485229
+    },
+    "gt_pixels": {
+      "background": 96267861,
+      "exterior_wall": 4406306,
+      "interior_wall": 2072928,
+      "door": 686632,
+      "window": 1423873
+    }
+  },
+  "rooms": {
+    "pixel_acc": 0.8133077912293096,
+    "miou": 0.3624306077651851,
+    "per_class_iou": {
+      "background": 0.846934,
+      "living_room": 0.478401,
+      "bedroom": 0.506921,
+      "kitchen": 0.404599,
+      "bathroom": 0.500737,
+      "hallway": 0.480086,
+      "closet": 0.257312,
+      "balcony": 0.28694,
+      "dining": 0.152733,
+      "office": 0.02464,
+      "storage": 0.261828,
+      "technical": 0.148036
+    },
+    "gt_pixels": {
+      "background": 62485048,
+      "living_room": 7855034,
+      "bedroom": 7139689,
+      "kitchen": 4620772,
+      "bathroom": 2325115,
+      "hallway": 3242499,
+      "closet": 660314,
+      "balcony": 5088652,
+      "dining": 476622,
+      "office": 47678,
+      "storage": 1021688,
+      "technical": 427099
+    }
+  },
+  "merged_wall_iou": 0.5542365,
+  "eval_resolution": 512,
+  "tta": null,
+  "styled": "every plan re-drawn by src.data.style_augment (seed 102026 + index)",
+  "note": "room pixels labelled 255 (unknown type) are excluded from all metrics",
+  "env": {
+    "device": "cuda",
+    "torch": "2.11.0+cu130",
+    "python": "3.13.16",
+    "date": "2026-11-16 21:56:52"
+  }
+}

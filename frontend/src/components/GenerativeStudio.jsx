@@ -92,6 +92,19 @@ export default function GenerativeStudio({
   const [isGeneratingFacade, setIsGeneratingFacade] = useState(false);
   const [facadeDraft, setFacadeDraft] = useState(null);
   const [studioError, setStudioError] = useState(null);
+  // The studio uses only the ControlNet fine-tuned in Run 3 (512 px). Pix2Pix stays available in the API.
+  const facadeQuality = 'high';
+  const [highQuality, setHighQuality] = useState({ available: false, reason: 'Checking…' });
+  const [superResAvailable, setSuperResAvailable] = useState(false);
+  const [superResolution, setSuperResolution] = useState(true);
+  useEffect(() => {
+    axios.get('/facade/capabilities')
+      .then(res => {
+        setHighQuality(res.data?.high || { available: false, reason: 'Unknown' });
+        setSuperResAvailable(Boolean(res.data?.super_resolution?.available));
+      })
+      .catch(() => setHighQuality({ available: false, reason: 'Backend not reachable.' }));
+  }, []);
   const targetWall = layout?.walls.find(wall => wall.id === frontWallId && wall.is_exterior);
   const appliedFacade = targetWall?.facade_texture;
   const facadeResult = facadeDraft && facadeDraft.wall_id === frontWallId && facadeDraft.style === selectedStyle
@@ -455,7 +468,7 @@ export default function GenerativeStudio({
     setIsGeneratingFacade(true);
     setStudioError(null);
     try {
-      const draft = await requestFacade(selectedStyle);
+      const draft = await requestFacade(selectedStyle, facadeQuality, superResAvailable && superResolution);
       if (draft) setFacadeDraft(draft);
     } catch (err) {
       console.error('Facade generation error:', err);
@@ -908,11 +921,36 @@ export default function GenerativeStudio({
               </div>
             </div>
 
+            {/* Generator quality: fast Pix2Pix or high-quality ControlNet (Run 3) */}
+            <div className="space-y-2">
+              <label className="font-stencil text-xs uppercase tracking-wider text-[#ece6da] flex items-center space-x-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#e8a33d]" />
+                <span>03 / Generator</span>
+              </label>
+              <div className={`p-2.5 rounded-xl border bg-parchment-card ${highQuality.available ? 'border-[#e8a33d]' : 'border-red-400/40'}`}>
+                <span className="block font-stencil text-xs uppercase tracking-wider text-[#ece6da]">
+                  ControlNet · Stable Diffusion fine-tuned on CMP facades
+                </span>
+                <span className="block font-mono text-[9.5px] text-[#ece6da]/60 mt-0.5 leading-tight">
+                  512 px · KID 19.8 on the CMP test set · {highQuality.device === 'cuda' ? '~5 s per wall segment' : '~6 min per wall segment on this CPU'}
+                </span>
+              </div>
+              {!highQuality.available && (
+                <p className="text-[10px] text-red-300/80 leading-snug">Generator not ready: {highQuality.reason}</p>
+              )}
+              <label className={`flex items-center gap-2 text-[11px] text-[#ece6da]/80 ${superResAvailable ? 'cursor-pointer' : 'opacity-40'}`}
+                title="Real-ESRGAN x4 post-processing: sharper frames and edges (~0.5 s). It does not add detail the model did not generate.">
+                <input type="checkbox" checked={superResAvailable && superResolution} disabled={!superResAvailable || isGeneratingFacade}
+                  onChange={e => setSuperResolution(e.target.checked)} className="accent-[#e8a33d]" />
+                <span>AI sharpening (super-resolution ×4)</span>
+              </label>
+            </div>
+
             <div className="sticky bottom-0 z-10 space-y-2 bg-[#0b0e12] py-2">
             <button
               data-testid="generate-facade"
               onClick={handleGenerateFacade}
-              disabled={!targetWall || isGeneratingFacade}
+              disabled={!targetWall || isGeneratingFacade || !highQuality.available}
               className="w-full h-11 px-5 rounded-full bg-[#e8a33d] hover:bg-[#d18f2c] text-[#0b0e12] font-stencil text-xs uppercase tracking-wider flex items-center justify-center space-x-2 transition-all shadow-md shadow-[#e8a33d]/20 disabled:opacity-50"
             >
               {isGeneratingFacade ? (
@@ -1023,6 +1061,9 @@ export default function GenerativeStudio({
                     <div className="flex flex-col items-center justify-center space-y-2 text-[#e8a33d]">
                       <RefreshCw className="w-8 h-8 animate-spin" />
                       <span className="font-mono text-xs">Neural Inference in Progress...</span>
+                      {facadeQuality === 'high' && (
+                        <span className="font-mono text-[10px] text-[#ece6da]/60">ControlNet diffusion on CPU: about 6 minutes per wall segment. Keep this page open.</span>
+                      )}
                     </div>
                   ) : facadeResult?.texture_base64 ? (
                     <img

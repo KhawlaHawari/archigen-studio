@@ -1,0 +1,185 @@
+[WARN] MLflow not available (No module named 'mlflow'). Training will run without tracking.
+/usr/local/lib/python3.13/dist-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/usr/local/lib/python3.13/dist-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=SqueezeNet1_1_Weights.IMAGENET1K_V1`. You can also use `weights=SqueezeNet1_1_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Downloading: "https://download.pytorch.org/models/squeezenet1_1-b8a52dc0.pth" to /root/.cache/torch/hub/checkpoints/squeezenet1_1-b8a52dc0.pth
+  0%|          | 0.00/4.73M [00:00<?, ?B/s]100%|██████████| 4.73M/4.73M [00:00<00:00, 53.2MB/s]
+/usr/local/lib/python3.13/dist-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Downloading: "https://download.pytorch.org/models/alexnet-owt-7be5be79.pth" to /root/.cache/torch/hub/checkpoints/alexnet-owt-7be5be79.pth
+  0%|          | 0.00/233M [00:00<?, ?B/s]  8%|▊         | 18.4M/233M [00:00<00:01, 192MB/s] 17%|█▋        | 40.1M/233M [00:00<00:00, 213MB/s] 26%|██▋       | 61.8M/233M [00:00<00:00, 219MB/s] 36%|███▌      | 84.4M/233M [00:00<00:00, 226MB/s] 45%|████▌     | 106M/233M [00:00<00:00, 226MB/s]  56%|█████▌    | 130M/233M [00:00<00:00, 235MB/s] 65%|██████▌   | 153M/233M [00:00<00:00, 235MB/s] 75%|███████▌  | 175M/233M [00:00<00:00, 234MB/s] 85%|████████▍ | 197M/233M [00:00<00:00, 219MB/s] 94%|█████████▎| 218M/233M [00:01<00:00, 211MB/s]100%|██████████| 233M/233M [00:01<00:00, 221MB/s]
+/usr/local/lib/python3.13/dist-packages/torchmetrics/utilities/prints.py:43: UserWarning: Metric `Kernel Inception Distance` will save all extracted features in buffer. For large datasets this may lead to large memory footprint.
+  warnings.warn(*args, **kwargs)
+Downloading: "https://github.com/toshas/torch-fidelity/releases/download/v0.2.0/weights-inception-2015-12-05-6726825d.pth" to /root/.cache/torch/hub/checkpoints/weights-inception-2015-12-05-6726825d.pth
+  0%|          | 0.00/91.2M [00:00<?, ?B/s]  0%|          | 384k/91.2M [00:00<00:29, 3.24MB/s]  3%|▎         | 2.62M/91.2M [00:00<00:06, 14.0MB/s] 11%|█         | 10.1M/91.2M [00:00<00:03, 27.4MB/s] 22%|██▏       | 20.1M/91.2M [00:00<00:02, 36.7MB/s] 31%|███       | 28.1M/91.2M [00:00<00:01, 47.6MB/s] 36%|███▋      | 33.1M/91.2M [00:00<00:01, 38.1MB/s] 44%|████▍     | 40.1M/91.2M [00:01<00:01, 36.0MB/s] 55%|█████▍    | 50.1M/91.2M [00:01<00:01, 38.3MB/s] 66%|██████▌   | 60.1M/91.2M [00:01<00:01, 31.2MB/s] 77%|███████▋  | 70.1M/91.2M [00:02<00:00, 35.8MB/s] 88%|████████▊ | 80.1M/91.2M [00:02<00:00, 39.2MB/s] 99%|█████████▉| 90.1M/91.2M [00:02<00:00, 41.1MB/s]100%|██████████| 91.2M/91.2M [00:02<00:00, 36.8MB/s]
+[Facade] mode=pix2pix recipe=v3 train=400 val=100 epochs=100 select=val_kid_x1000 device=cuda
+[Trainer] Starting training for facade_pix2pix on cuda
+[Trainer] Epoch 1/100 | train_loss=17.6779 | val_loss=0.3857 | val_kid_x1000=413.3409
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=413.3409261703491)
+[Trainer] Epoch 2/100 | train_loss=17.3511 | val_loss=0.3780 | val_kid_x1000=247.2789
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=247.2788542509079)
+[Trainer] Epoch 3/100 | train_loss=17.5642 | val_loss=0.3707 | val_kid_x1000=204.1217
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=204.12172377109528)
+[Trainer] Epoch 4/100 | train_loss=17.6140 | val_loss=0.3680 | val_kid_x1000=209.3060
+[Trainer] Epoch 5/100 | train_loss=17.4464 | val_loss=0.3676 | val_kid_x1000=195.5995
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=195.5995112657547)
+[Trainer] Epoch 6/100 | train_loss=17.4970 | val_loss=0.3630 | val_kid_x1000=163.8831
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=163.88310492038727)
+[Trainer] Epoch 7/100 | train_loss=17.4860 | val_loss=0.3609 | val_kid_x1000=173.6115
+[Trainer] Epoch 8/100 | train_loss=17.3521 | val_loss=0.3667 | val_kid_x1000=175.5235
+[Trainer] Epoch 9/100 | train_loss=17.2636 | val_loss=0.3505 | val_kid_x1000=132.7469
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=132.7468752861023)
+[Trainer] Epoch 10/100 | train_loss=17.2984 | val_loss=0.3545 | val_kid_x1000=126.5310
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=126.5309602022171)
+[Trainer] Epoch 11/100 | train_loss=17.1590 | val_loss=0.3490 | val_kid_x1000=125.0315
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=125.0315010547638)
+[Trainer] Epoch 12/100 | train_loss=17.0945 | val_loss=0.3532 | val_kid_x1000=125.4545
+[Trainer] Epoch 13/100 | train_loss=17.0148 | val_loss=0.3440 | val_kid_x1000=119.5172
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=119.51719224452972)
+[Trainer] Epoch 14/100 | train_loss=17.0022 | val_loss=0.3757 | val_kid_x1000=131.6170
+[Trainer] Epoch 15/100 | train_loss=16.9787 | val_loss=0.3461 | val_kid_x1000=113.8752
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=113.87519538402557)
+[Trainer] Epoch 16/100 | train_loss=17.0223 | val_loss=0.3455 | val_kid_x1000=118.5383
+[Trainer] Epoch 17/100 | train_loss=16.9079 | val_loss=0.3496 | val_kid_x1000=121.3690
+[Trainer] Epoch 18/100 | train_loss=16.8445 | val_loss=0.3583 | val_kid_x1000=124.3808
+[Trainer] Epoch 19/100 | train_loss=16.7628 | val_loss=0.3815 | val_kid_x1000=149.3495
+[Trainer] Epoch 20/100 | train_loss=16.7644 | val_loss=0.3638 | val_kid_x1000=133.2653
+[Trainer] Epoch 21/100 | train_loss=16.8387 | val_loss=0.3461 | val_kid_x1000=131.2955
+[Trainer] Epoch 22/100 | train_loss=16.6764 | val_loss=0.3449 | val_kid_x1000=117.3743
+[Trainer] Epoch 23/100 | train_loss=16.5260 | val_loss=0.3465 | val_kid_x1000=115.0766
+[Trainer] Epoch 24/100 | train_loss=16.5459 | val_loss=0.3431 | val_kid_x1000=124.9985
+[Trainer] Epoch 25/100 | train_loss=16.5666 | val_loss=0.3438 | val_kid_x1000=107.1013
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=107.10125416517258)
+[Trainer] Epoch 26/100 | train_loss=16.4853 | val_loss=0.3350 | val_kid_x1000=109.7891
+[Trainer] Epoch 27/100 | train_loss=16.3242 | val_loss=0.3421 | val_kid_x1000=111.2861
+[Trainer] Epoch 28/100 | train_loss=16.4252 | val_loss=0.3373 | val_kid_x1000=111.6222
+[Trainer] Epoch 29/100 | train_loss=16.3614 | val_loss=0.3415 | val_kid_x1000=115.1969
+[Trainer] Epoch 30/100 | train_loss=16.4400 | val_loss=0.3372 | val_kid_x1000=121.8594
+[Trainer] Epoch 31/100 | train_loss=16.2999 | val_loss=0.3420 | val_kid_x1000=122.8846
+[Trainer] Epoch 32/100 | train_loss=16.3103 | val_loss=0.3548 | val_kid_x1000=118.8735
+[Trainer] Epoch 33/100 | train_loss=16.1667 | val_loss=0.3427 | val_kid_x1000=117.8351
+[Trainer] Epoch 34/100 | train_loss=16.0658 | val_loss=0.3383 | val_kid_x1000=106.3930
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=106.393001973629)
+[Trainer] Epoch 35/100 | train_loss=16.0354 | val_loss=0.3428 | val_kid_x1000=104.2868
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=104.28681969642639)
+[Trainer] Epoch 36/100 | train_loss=15.9851 | val_loss=0.3453 | val_kid_x1000=108.0154
+[Trainer] Epoch 37/100 | train_loss=16.0901 | val_loss=0.3505 | val_kid_x1000=103.5328
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=103.53275388479233)
+[Trainer] Epoch 38/100 | train_loss=16.0615 | val_loss=0.3568 | val_kid_x1000=116.3912
+[Trainer] Epoch 39/100 | train_loss=16.0190 | val_loss=0.3425 | val_kid_x1000=108.9778
+[Trainer] Epoch 40/100 | train_loss=15.8841 | val_loss=0.3406 | val_kid_x1000=103.4175
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=103.4175157546997)
+[Trainer] Epoch 41/100 | train_loss=15.8262 | val_loss=0.3458 | val_kid_x1000=105.2143
+[Trainer] Epoch 42/100 | train_loss=15.8210 | val_loss=0.3450 | val_kid_x1000=98.2914
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=98.29142689704895)
+[Trainer] Epoch 43/100 | train_loss=15.7203 | val_loss=0.3378 | val_kid_x1000=94.6712
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=94.67121213674545)
+[Trainer] Epoch 44/100 | train_loss=15.6393 | val_loss=0.3393 | val_kid_x1000=98.4980
+[Trainer] Epoch 45/100 | train_loss=15.6609 | val_loss=0.3420 | val_kid_x1000=98.3719
+[Trainer] Epoch 46/100 | train_loss=15.6161 | val_loss=0.3389 | val_kid_x1000=90.6321
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=90.6321108341217)
+[Trainer] Epoch 47/100 | train_loss=15.5064 | val_loss=0.3385 | val_kid_x1000=95.9246
+[Trainer] Epoch 48/100 | train_loss=15.5046 | val_loss=0.3473 | val_kid_x1000=95.6860
+[Trainer] Epoch 49/100 | train_loss=15.4463 | val_loss=0.3457 | val_kid_x1000=96.5511
+[Trainer] Epoch 50/100 | train_loss=15.2978 | val_loss=0.3440 | val_kid_x1000=91.6890
+[Trainer] Epoch 51/100 | train_loss=15.3597 | val_loss=0.3462 | val_kid_x1000=92.1444
+[Trainer] Epoch 52/100 | train_loss=15.4195 | val_loss=0.3411 | val_kid_x1000=94.0450
+[Trainer] Epoch 53/100 | train_loss=15.2057 | val_loss=0.3547 | val_kid_x1000=101.0220
+[Trainer] Epoch 54/100 | train_loss=15.2783 | val_loss=0.3377 | val_kid_x1000=105.4507
+[Trainer] Epoch 55/100 | train_loss=15.0905 | val_loss=0.3580 | val_kid_x1000=83.4353
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=83.43527466058731)
+[Trainer] Epoch 56/100 | train_loss=15.1931 | val_loss=0.3385 | val_kid_x1000=89.3517
+[Trainer] Epoch 57/100 | train_loss=15.0457 | val_loss=0.3420 | val_kid_x1000=94.4514
+[Trainer] Epoch 58/100 | train_loss=14.9728 | val_loss=0.3374 | val_kid_x1000=93.1723
+[Trainer] Epoch 59/100 | train_loss=14.8909 | val_loss=0.3406 | val_kid_x1000=88.4485
+[Trainer] Epoch 60/100 | train_loss=14.8438 | val_loss=0.3368 | val_kid_x1000=95.3139
+[Trainer] Epoch 61/100 | train_loss=14.8110 | val_loss=0.3388 | val_kid_x1000=88.3376
+[Trainer] Epoch 62/100 | train_loss=14.6298 | val_loss=0.3379 | val_kid_x1000=88.4404
+[Trainer] Epoch 63/100 | train_loss=14.7029 | val_loss=0.3396 | val_kid_x1000=87.6274
+[Trainer] Epoch 64/100 | train_loss=14.5159 | val_loss=0.3401 | val_kid_x1000=81.3444
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=81.344373524189)
+[Trainer] Epoch 65/100 | train_loss=14.6331 | val_loss=0.3389 | val_kid_x1000=87.1427
+[Trainer] Epoch 66/100 | train_loss=14.5231 | val_loss=0.3432 | val_kid_x1000=87.5008
+[Trainer] Epoch 67/100 | train_loss=14.4997 | val_loss=0.3414 | val_kid_x1000=83.1196
+[Trainer] Epoch 68/100 | train_loss=14.4134 | val_loss=0.3376 | val_kid_x1000=89.8052
+[Trainer] Epoch 69/100 | train_loss=14.3957 | val_loss=0.3399 | val_kid_x1000=82.3366
+[Trainer] Epoch 70/100 | train_loss=14.3829 | val_loss=0.3439 | val_kid_x1000=87.2700
+[Trainer] Epoch 71/100 | train_loss=14.2866 | val_loss=0.3443 | val_kid_x1000=83.0749
+[Trainer] Epoch 72/100 | train_loss=14.2283 | val_loss=0.3463 | val_kid_x1000=82.7133
+[Trainer] Epoch 73/100 | train_loss=14.1916 | val_loss=0.3444 | val_kid_x1000=78.3388
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=78.33875715732574)
+[Trainer] Epoch 74/100 | train_loss=14.0880 | val_loss=0.3438 | val_kid_x1000=82.5025
+[Trainer] Epoch 75/100 | train_loss=14.0442 | val_loss=0.3496 | val_kid_x1000=83.6918
+[Trainer] Epoch 76/100 | train_loss=14.0216 | val_loss=0.3405 | val_kid_x1000=85.9548
+[Trainer] Epoch 77/100 | train_loss=14.0016 | val_loss=0.3467 | val_kid_x1000=78.8688
+[Trainer] Epoch 78/100 | train_loss=14.0745 | val_loss=0.3538 | val_kid_x1000=71.2879
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=71.28787785768509)
+[Trainer] Epoch 79/100 | train_loss=14.0780 | val_loss=0.3535 | val_kid_x1000=72.9277
+[Trainer] Epoch 80/100 | train_loss=13.9263 | val_loss=0.3505 | val_kid_x1000=77.2909
+[Trainer] Epoch 81/100 | train_loss=13.8571 | val_loss=0.3492 | val_kid_x1000=72.9316
+[Trainer] Epoch 82/100 | train_loss=13.7360 | val_loss=0.3477 | val_kid_x1000=75.5084
+[Trainer] Epoch 83/100 | train_loss=13.7174 | val_loss=0.3472 | val_kid_x1000=74.3808
+[Trainer] Epoch 84/100 | train_loss=13.7693 | val_loss=0.3498 | val_kid_x1000=75.0588
+[Trainer] Epoch 85/100 | train_loss=13.7469 | val_loss=0.3458 | val_kid_x1000=76.7568
+[Trainer] Epoch 86/100 | train_loss=13.6988 | val_loss=0.3535 | val_kid_x1000=73.4793
+[Trainer] Epoch 87/100 | train_loss=13.6245 | val_loss=0.3505 | val_kid_x1000=76.8756
+[Trainer] Epoch 88/100 | train_loss=13.6027 | val_loss=0.3499 | val_kid_x1000=72.8999
+[Trainer] Epoch 89/100 | train_loss=13.5299 | val_loss=0.3499 | val_kid_x1000=75.5012
+[Trainer] Epoch 90/100 | train_loss=13.5746 | val_loss=0.3529 | val_kid_x1000=72.8188
+[Trainer] Epoch 91/100 | train_loss=13.5276 | val_loss=0.3516 | val_kid_x1000=74.1286
+[Trainer] Epoch 92/100 | train_loss=13.5170 | val_loss=0.3530 | val_kid_x1000=78.5029
+[Trainer] Epoch 93/100 | train_loss=13.4895 | val_loss=0.3532 | val_kid_x1000=73.5855
+[Trainer] Epoch 94/100 | train_loss=13.4589 | val_loss=0.3496 | val_kid_x1000=78.0536
+[Trainer] Epoch 95/100 | train_loss=13.3966 | val_loss=0.3541 | val_kid_x1000=75.8079
+[Trainer] Epoch 96/100 | train_loss=13.3696 | val_loss=0.3553 | val_kid_x1000=69.9376
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt (metric=69.93764638900757)
+[Trainer] Epoch 97/100 | train_loss=13.3578 | val_loss=0.3546 | val_kid_x1000=71.7231
+[Trainer] Epoch 98/100 | train_loss=13.2913 | val_loss=0.3537 | val_kid_x1000=73.0671
+[Trainer] Epoch 99/100 | train_loss=13.3178 | val_loss=0.3520 | val_kid_x1000=79.0506
+[Trainer] Epoch 100/100 | train_loss=13.2682 | val_loss=0.3546 | val_kid_x1000=75.4303
+[Trainer] Training complete. Best val_kid_x1000=69.9376
+Facade training finished: run_id=, best val_kid_x1000=69.9376
+Downloading: "https://download.pytorch.org/models/resnet50-0676ba61.pth" to /root/.cache/torch/hub/checkpoints/resnet50-0676ba61.pth
+  0%|          | 0.00/97.8M [00:00<?, ?B/s] 17%|█▋        | 16.9M/97.8M [00:00<00:00, 177MB/s] 35%|███▌      | 34.4M/97.8M [00:00<00:00, 180MB/s] 53%|█████▎    | 51.6M/97.8M [00:00<00:00, 178MB/s] 71%|███████   | 69.2M/97.8M [00:00<00:00, 181MB/s] 90%|█████████ | 88.1M/97.8M [00:00<00:00, 186MB/s]100%|██████████| 97.8M/97.8M [00:00<00:00, 185MB/s]
+[Parser] Epoch 1/40 | loss=1.8895 | val_miou=0.1850 | val_acc=0.5161
+[Parser] Epoch 2/40 | loss=1.3258 | val_miou=0.2470 | val_acc=0.5871
+[Parser] Epoch 3/40 | loss=1.1584 | val_miou=0.2891 | val_acc=0.5986
+[Parser] Epoch 4/40 | loss=1.0465 | val_miou=0.3111 | val_acc=0.6177
+[Parser] Epoch 5/40 | loss=0.9696 | val_miou=0.3231 | val_acc=0.6316
+[Parser] Epoch 6/40 | loss=0.8983 | val_miou=0.3464 | val_acc=0.6323
+[Parser] Epoch 7/40 | loss=0.8410 | val_miou=0.3546 | val_acc=0.6415
+[Parser] Epoch 8/40 | loss=0.7993 | val_miou=0.3567 | val_acc=0.6484
+[Parser] Epoch 9/40 | loss=0.7653 | val_miou=0.3629 | val_acc=0.6502
+[Parser] Epoch 10/40 | loss=0.7204 | val_miou=0.3679 | val_acc=0.6577
+[Parser] Epoch 11/40 | loss=0.6957 | val_miou=0.3625 | val_acc=0.6516
+[Parser] Epoch 12/40 | loss=0.6729 | val_miou=0.3808 | val_acc=0.6615
+[Parser] Epoch 13/40 | loss=0.6456 | val_miou=0.3782 | val_acc=0.6555
+[Parser] Epoch 14/40 | loss=0.6169 | val_miou=0.3807 | val_acc=0.6690
+[Parser] Epoch 15/40 | loss=0.5999 | val_miou=0.3817 | val_acc=0.6667
+[Parser] Epoch 16/40 | loss=0.5791 | val_miou=0.3876 | val_acc=0.6674
+[Parser] Epoch 17/40 | loss=0.5642 | val_miou=0.3904 | val_acc=0.6677
+[Parser] Epoch 18/40 | loss=0.5466 | val_miou=0.3868 | val_acc=0.6718
+[Parser] Epoch 19/40 | loss=0.5361 | val_miou=0.3823 | val_acc=0.6650
+[Parser] Epoch 20/40 | loss=0.5123 | val_miou=0.3895 | val_acc=0.6696
+[Parser] Epoch 21/40 | loss=0.5051 | val_miou=0.3877 | val_acc=0.6676
+[Parser] Epoch 22/40 | loss=0.4999 | val_miou=0.3916 | val_acc=0.6742
+[Parser] Epoch 23/40 | loss=0.4873 | val_miou=0.3939 | val_acc=0.6737
+[Parser] Epoch 24/40 | loss=0.4848 | val_miou=0.3925 | val_acc=0.6734
+[Parser] Epoch 25/40 | loss=0.4711 | val_miou=0.3901 | val_acc=0.6722
+[Parser] Epoch 26/40 | loss=0.4623 | val_miou=0.3934 | val_acc=0.6734
+[Parser] Epoch 27/40 | loss=0.4577 | val_miou=0.3970 | val_acc=0.6773
+[Parser] Epoch 28/40 | loss=0.4521 | val_miou=0.3963 | val_acc=0.6734
+[Parser] Epoch 29/40 | loss=0.4431 | val_miou=0.3960 | val_acc=0.6749
+[Parser] Epoch 30/40 | loss=0.4453 | val_miou=0.3955 | val_acc=0.6744
+[Parser] Epoch 31/40 | loss=0.4386 | val_miou=0.3961 | val_acc=0.6763
+[Parser] Epoch 32/40 | loss=0.4342 | val_miou=0.3937 | val_acc=0.6769
+[Parser] Epoch 33/40 | loss=0.4303 | val_miou=0.3968 | val_acc=0.6777
+[Parser] Epoch 34/40 | loss=0.4276 | val_miou=0.3963 | val_acc=0.6777
+[Parser] Epoch 35/40 | loss=0.4262 | val_miou=0.3943 | val_acc=0.6740
+[Parser] Epoch 36/40 | loss=0.4263 | val_miou=0.3960 | val_acc=0.6759
+[Parser] Epoch 37/40 | loss=0.4220 | val_miou=0.3958 | val_acc=0.6753
+[Parser] Epoch 38/40 | loss=0.4224 | val_miou=0.3955 | val_acc=0.6768
+[Parser] Epoch 39/40 | loss=0.4230 | val_miou=0.3959 | val_acc=0.6756
+[Parser] Epoch 40/40 | loss=0.4265 | val_miou=0.3951 | val_acc=0.6775
+Parser best val mIoU=0.3970 (epoch 27)

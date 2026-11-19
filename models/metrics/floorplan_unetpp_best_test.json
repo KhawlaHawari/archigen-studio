@@ -5,12 +5,12 @@
   "checkpoint": "/kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt",
   "checkpoint_meta": {
     "data_source": "real:cubicasa5k",
-    "epoch": 23,
+    "epoch": 9,
     "seed": 42,
     "hparams": {
-      "epochs": 25,
+      "epochs": 10,
       "batch_size": 4,
-      "lr": 0.0003,
+      "lr": 0.0001,
       "weight_decay": 0.0001,
       "gradient_accumulation_steps": 2,
       "seed": 42,
@@ -23,9 +23,9 @@
       ],
       "input_size": 512,
       "amp": true,
-      "recipe": "v2",
-      "pretrained_encoder": "imagenet_resnet34",
-      "pretrained_tensors": 210,
+      "recipe": "v3",
+      "pretrained_encoder": null,
+      "pretrained_tensors": 0,
       "room_weights": [
         0.1237,
         0.3229,
@@ -41,18 +41,22 @@
         1.8188
       ],
       "scheduler": "cosine",
+      "init_checkpoint": "/kaggle/working/archigen/models/checkpoints/floorplan_unetpp_run2.pt",
+      "style_augment_p": 0.5,
+      "room_lovasz_weight": 0.5,
+      "rare_room_oversample": 2.0,
       "early_stopping_patience": 8
     }
   },
   "structure": {
-    "pixel_acc": 0.9784373378753662,
-    "miou": 0.7773794138917567,
+    "pixel_acc": 0.978109016418457,
+    "miou": 0.7733007410526702,
     "per_class_iou": {
-      "background": 0.980615,
-      "exterior_wall": 0.782808,
-      "interior_wall": 0.684151,
-      "door": 0.667558,
-      "window": 0.771765
+      "background": 0.980363,
+      "exterior_wall": 0.782337,
+      "interior_wall": 0.675866,
+      "door": 0.661969,
+      "window": 0.765968
     },
     "gt_pixels": {
       "background": 96267861,
@@ -63,21 +67,21 @@
     }
   },
   "rooms": {
-    "pixel_acc": 0.9398883386460728,
-    "miou": 0.6663548025359247,
+    "pixel_acc": 0.9416466008409039,
+    "miou": 0.6741297493910139,
     "per_class_iou": {
-      "background": 0.957952,
-      "living_room": 0.774434,
-      "bedroom": 0.87337,
-      "kitchen": 0.750761,
-      "bathroom": 0.824175,
-      "hallway": 0.76829,
-      "closet": 0.58401,
-      "balcony": 0.756851,
-      "dining": 0.467003,
-      "office": 0.106836,
-      "storage": 0.614857,
-      "technical": 0.517717
+      "background": 0.958157,
+      "living_room": 0.793602,
+      "bedroom": 0.87717,
+      "kitchen": 0.76565,
+      "bathroom": 0.836643,
+      "hallway": 0.76306,
+      "closet": 0.591322,
+      "balcony": 0.749321,
+      "dining": 0.454357,
+      "office": 0.163814,
+      "storage": 0.604325,
+      "technical": 0.532137
     },
     "gt_pixels": {
       "background": 62485048,
@@ -94,14 +98,15 @@
       "technical": 427099
     }
   },
-  "merged_wall_iou": 0.7334795,
+  "merged_wall_iou": 0.7291015,
   "eval_resolution": 512,
   "tta": null,
+  "styled": null,
   "note": "room pixels labelled 255 (unknown type) are excluded from all metrics",
   "env": {
     "device": "cuda",
     "torch": "2.11.0+cu130",
     "python": "3.13.16",
-    "date": "2026-11-15 20:12:48"
+    "date": "2026-11-16 21:36:27"
   }
 }

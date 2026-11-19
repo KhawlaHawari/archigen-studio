@@ -1,0 +1,112 @@
+[Floorplan] room class weights: [0.12, 0.32, 0.35, 0.44, 0.66, 0.51, 1.21, 0.47, 1.24, 3.78, 1.07, 1.82]
+[Floorplan] fine-tuning from /kaggle/working/archigen/models/checkpoints/floorplan_unetpp_run2.pt (epoch 23)
+[WARN] MLflow not available (No module named 'mlflow'). Training will run without tracking.
+[Floorplan] rare-room oversampling: 35% of train plans weighted x3
+[Floorplan] train=4200 val=400 device=cuda size=512 amp=True
+[Trainer] Starting training for floorplan_unetpp on cuda
+[Trainer] Epoch 1/10 | train_loss=0.7791 | val_loss=0.8205 | val_score=0.6080
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt (metric=0.6080232745626277)
+[Trainer] Epoch 2/10 | train_loss=0.7146 | val_loss=0.7986 | val_score=0.6181
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt (metric=0.6180753476942926)
+[Trainer] Epoch 3/10 | train_loss=0.7049 | val_loss=0.7889 | val_score=0.6130
+[Trainer] Epoch 4/10 | train_loss=0.6711 | val_loss=0.8238 | val_score=0.6198
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt (metric=0.6197961656924731)
+[Trainer] Epoch 5/10 | train_loss=0.6223 | val_loss=0.8070 | val_score=0.6301
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt (metric=0.6300507537071716)
+[Trainer] Epoch 6/10 | train_loss=0.6237 | val_loss=0.7963 | val_score=0.6367
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt (metric=0.636733400236776)
+[Trainer] Epoch 7/10 | train_loss=0.5959 | val_loss=0.8156 | val_score=0.6302
+[Trainer] Epoch 8/10 | train_loss=0.5901 | val_loss=0.8007 | val_score=0.6373
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt (metric=0.6373214295664287)
+[Trainer] Epoch 9/10 | train_loss=0.5645 | val_loss=0.7977 | val_score=0.6396
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt (metric=0.6395702118401897)
+[Trainer] Epoch 10/10 | train_loss=0.5793 | val_loss=0.7991 | val_score=0.6402
+[Trainer] New best checkpoint saved: /kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt (metric=0.6402447040782323)
+[Trainer] Training complete. Best val_score=0.6402
+Floorplan training finished: run_id=, best val_score=0.6402
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/196 [00:00<?, ?it/s]Loading weights:  90%|████████▉ | 176/196 [00:00<00:00, 1753.56it/s]Loading weights: 100%|██████████| 196/196 [00:00<00:00, 1795.59it/s]
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py:206: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+[ControlNet] step 100/8000 | loss=0.1404 | 3 min
+[ControlNet] step 200/8000 | loss=0.1249 | 6 min
+[ControlNet] step 300/8000 | loss=0.1194 | 10 min
+[ControlNet] step 400/8000 | loss=0.1302 | 13 min
+[ControlNet] step 500/8000 | loss=0.1403 | 16 min
+[ControlNet] step 600/8000 | loss=0.1383 | 19 min
+[ControlNet] step 700/8000 | loss=0.1306 | 23 min
+[ControlNet] step 800/8000 | loss=0.1411 | 26 min
+[ControlNet] step 900/8000 | loss=0.1255 | 29 min
+[ControlNet] step 1000/8000 | loss=0.1162 | 32 min
+[ControlNet] step 1100/8000 | loss=0.1190 | 36 min
+[ControlNet] step 1200/8000 | loss=0.1355 | 39 min
+[ControlNet] step 1300/8000 | loss=0.1285 | 42 min
+[ControlNet] step 1400/8000 | loss=0.1251 | 45 min
+[ControlNet] step 1500/8000 | loss=0.1279 | 48 min
+[ControlNet] step 1600/8000 | loss=0.1351 | 52 min
+[ControlNet] step 1700/8000 | loss=0.1268 | 55 min
+[ControlNet] step 1800/8000 | loss=0.1262 | 58 min
+[ControlNet] step 1900/8000 | loss=0.1212 | 61 min
+[ControlNet] step 2000/8000 | loss=0.1212 | 65 min
+[ControlNet] step 2100/8000 | loss=0.1379 | 68 min
+[ControlNet] step 2200/8000 | loss=0.1267 | 71 min
+[ControlNet] step 2300/8000 | loss=0.1294 | 74 min
+[ControlNet] step 2400/8000 | loss=0.1370 | 78 min
+[ControlNet] step 2500/8000 | loss=0.1286 | 81 min
+[ControlNet] step 2600/8000 | loss=0.1259 | 84 min
+[ControlNet] step 2700/8000 | loss=0.1331 | 87 min
+[ControlNet] step 2800/8000 | loss=0.1246 | 90 min
+[ControlNet] step 2900/8000 | loss=0.1314 | 94 min
+[ControlNet] step 3000/8000 | loss=0.1402 | 97 min
+[ControlNet] step 3100/8000 | loss=0.1267 | 100 min
+[ControlNet] step 3200/8000 | loss=0.1247 | 103 min
+[ControlNet] step 3300/8000 | loss=0.1150 | 107 min
+[ControlNet] step 3400/8000 | loss=0.1297 | 110 min
+[ControlNet] step 3500/8000 | loss=0.1382 | 113 min
+[ControlNet] step 3600/8000 | loss=0.1239 | 116 min
+[ControlNet] step 3700/8000 | loss=0.1449 | 119 min
+[ControlNet] step 3800/8000 | loss=0.1291 | 123 min
+[ControlNet] step 3900/8000 | loss=0.1316 | 126 min
+[ControlNet] step 4000/8000 | loss=0.1301 | 129 min
+[ControlNet] step 4100/8000 | loss=0.1175 | 132 min
+[ControlNet] step 4200/8000 | loss=0.1256 | 136 min
+[ControlNet] step 4300/8000 | loss=0.1396 | 139 min
+[ControlNet] step 4400/8000 | loss=0.1134 | 142 min
+[ControlNet] step 4500/8000 | loss=0.1213 | 145 min
+[ControlNet] step 4600/8000 | loss=0.1224 | 149 min
+[ControlNet] step 4700/8000 | loss=0.1273 | 152 min
+[ControlNet] step 4800/8000 | loss=0.1262 | 155 min
+[ControlNet] step 4900/8000 | loss=0.1297 | 158 min
+[ControlNet] step 5000/8000 | loss=0.1203 | 161 min
+[ControlNet] step 5100/8000 | loss=0.1185 | 165 min
+[ControlNet] step 5200/8000 | loss=0.1247 | 168 min
+[ControlNet] step 5300/8000 | loss=0.1387 | 171 min
+[ControlNet] step 5400/8000 | loss=0.1303 | 174 min
+[ControlNet] step 5500/8000 | loss=0.1457 | 178 min
+[ControlNet] step 5600/8000 | loss=0.1208 | 181 min
+[ControlNet] step 5700/8000 | loss=0.1317 | 184 min
+[ControlNet] step 5800/8000 | loss=0.1202 | 187 min
+[ControlNet] step 5900/8000 | loss=0.1365 | 191 min
+[ControlNet] step 6000/8000 | loss=0.1312 | 194 min
+[ControlNet] step 6100/8000 | loss=0.1264 | 197 min
+[ControlNet] step 6200/8000 | loss=0.1318 | 200 min
+[ControlNet] step 6300/8000 | loss=0.1196 | 203 min
+[ControlNet] step 6400/8000 | loss=0.1318 | 207 min
+[ControlNet] step 6500/8000 | loss=0.1286 | 210 min
+[ControlNet] step 6600/8000 | loss=0.1193 | 213 min
+[ControlNet] step 6700/8000 | loss=0.1252 | 216 min
+[ControlNet] step 6800/8000 | loss=0.1252 | 220 min
+[ControlNet] step 6900/8000 | loss=0.1200 | 223 min
+[ControlNet] step 7000/8000 | loss=0.1324 | 226 min
+[ControlNet] step 7100/8000 | loss=0.1296 | 229 min
+[ControlNet] step 7200/8000 | loss=0.1536 | 233 min
+[ControlNet] step 7300/8000 | loss=0.1287 | 236 min
+[ControlNet] step 7400/8000 | loss=0.1233 | 239 min
+[ControlNet] step 7500/8000 | loss=0.1309 | 242 min
+[ControlNet] step 7600/8000 | loss=0.1274 | 245 min
+[ControlNet] step 7700/8000 | loss=0.1184 | 249 min
+[ControlNet] step 7800/8000 | loss=0.1274 | 252 min
+[ControlNet] step 7900/8000 | loss=0.1263 | 255 min
+[ControlNet] step 8000/8000 | loss=0.1217 | 258 min
+There are modules in ControlNetModel that should be kept in float32: []. Casting directly with `to()` can lead to inconsistent results; set `torch_dtype` in `from_pretrained()` instead to keep these modules in float32.
+ControlNet finished: 8000 steps in 258.4 min -> /kaggle/working/archigen/models/controlnet_facade

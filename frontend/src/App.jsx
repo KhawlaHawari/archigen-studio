@@ -232,7 +232,7 @@ export default function App() {
     }
 
     try {
-      const response = await axios.post('/predict/floorplan', formData, {
+      const response = await axios.post('/predict/floorplan/layout', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (request !== analysisRequest.current) return;
@@ -363,7 +363,8 @@ export default function App() {
     if (!next.walls.some(wall => wall.id === frontWallId)) setFrontWallId(next.walls.find(wall => wall.is_exterior)?.id || null);
   };
 
-  const requestFacade = async (style) => {
+  // The studio generates facades with the Run 3 ControlNet only ('high').
+  const requestFacade = async (style, quality = 'high', superResolution = true) => {
     const target = layout?.walls.find(wall => wall.id === frontWallId && wall.is_exterior);
     if (!target) throw new Error('Choose an exterior wall.');
     if (isAnalyzing && layout.metadata.source !== 'sample_reference') throw new Error('Wait for floorplan analysis to finish.');
@@ -376,8 +377,10 @@ export default function App() {
       wall: { ...target, height_m: level.unitHeight, openings, facade_texture: undefined },
       wall_id: target.id,
       style,
+      quality,
+      super_resolution: superResolution,
       num_floors: target.level_id ? 1 : numFloors,
-    });
+    }, { timeout: quality === 'high' ? 15 * 60 * 1000 : 60 * 1000 });
     if (revision !== facadeRevision.current) return null;
     if (response.data?.wall_id !== target.id || !response.data.texture_base64) throw new Error('Facade generation failed.');
     return response.data;

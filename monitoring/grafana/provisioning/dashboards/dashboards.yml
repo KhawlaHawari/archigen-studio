@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: ArchiGen
+    folder: ArchiGen
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

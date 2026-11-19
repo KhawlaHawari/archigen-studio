@@ -1,0 +1,29 @@
+{
+  "sla_target_cpu_p95_ms": 2000.0,
+  "sla_target_gpu_p95_ms": 400.0,
+  "floorplan_unetpp": {
+    "iterations": 10,
+    "mean_ms": 3995.21,
+    "std_ms": 561.45,
+    "min_ms": 3436.66,
+    "max_ms": 5314.27,
+    "p50_ms": 3788.46,
+    "p90_ms": 4763.0,
+    "p95_ms": 5038.63,
+    "p99_ms": 5259.14,
+    "sla_met": false
+  },
+  "facade_pix2pix": {
+    "iterations": 10,
+    "mean_ms": 190.42,
+    "std_ms": 7.22,
+    "min_ms": 181.25,
+    "max_ms": 203.34,
+    "p50_ms": 190.21,
+    "p90_ms": 199.61,
+    "p95_ms": 201.48,
+    "p99_ms": 202.97,
+    "sla_met": true
+  },
+  "all_sla_met": false
+}
