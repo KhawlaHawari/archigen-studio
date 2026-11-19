@@ -2,7 +2,7 @@
   "task": "facade",
   "split": "test",
   "n_images": 106,
-  "checkpoint": "/kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt",
+  "checkpoint": "/kaggle/working/archigen/models/checkpoints/facade_pix2pix_run2.pt",
   "checkpoint_meta": {
     "data_source": "real:cmp_facades",
     "mode": "pix2pix",
@@ -60,16 +60,52 @@
     "max": 0.45319902896881104
   },
   "kid_x1000": {
-    "mean": 66.03051722049713,
-    "std": 7.796342018991709,
+    "mean": 67.59859621524811,
+    "std": 8.35494790226221,
     "subset_size": 50,
     "subsets": 100
+  },
+  "fcn_score": {
+    "pixel_acc": 0.6946758054337412,
+    "miou": 0.38628406175406116,
+    "per_class_iou": {
+      "background": 0.588454,
+      "facade": 0.596401,
+      "window": 0.597987,
+      "door": 0.28605,
+      "cornice": 0.390563,
+      "sill": 0.223493,
+      "balcony": 0.461928,
+      "blind": 0.322179,
+      "deco": 0.087679,
+      "molding": 0.53958,
+      "pillar": 0.13878,
+      "shop": 0.402317
+    }
+  },
+  "fcn_score_real_photos": {
+    "pixel_acc": 0.68261042181051,
+    "miou": 0.39186656219072313,
+    "per_class_iou": {
+      "background": 0.603425,
+      "facade": 0.576166,
+      "window": 0.571177,
+      "door": 0.281755,
+      "cornice": 0.403009,
+      "sill": 0.249852,
+      "balcony": 0.412754,
+      "blind": 0.385602,
+      "deco": 0.166736,
+      "molding": 0.515693,
+      "pillar": 0.218783,
+      "shop": 0.317446
+    }
   },
   "averaging": "per image",
   "env": {
     "device": "cuda",
     "torch": "2.11.0+cu130",
     "python": "3.13.16",
-    "date": "2026-11-15 20:10:03"
+    "date": "2026-11-16 21:12:33"
   }
 }

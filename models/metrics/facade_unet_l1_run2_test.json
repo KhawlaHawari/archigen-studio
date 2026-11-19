@@ -1,0 +1,111 @@
+{
+  "task": "facade",
+  "split": "test",
+  "n_images": 106,
+  "checkpoint": "/kaggle/working/archigen/models/checkpoints/facade_unet_l1_run2.pt",
+  "checkpoint_meta": {
+    "data_source": "real:cmp_facades",
+    "mode": "l1_baseline",
+    "epoch": 51,
+    "seed": 42,
+    "hparams": {
+      "mode": "l1_baseline",
+      "recipe": "v2",
+      "epochs": 100,
+      "batch_size": 2,
+      "lr_g": 0.0002,
+      "lr_d": null,
+      "seed": 42,
+      "lambda_l1": 1.0,
+      "lambda_fm": 0.0,
+      "lambda_perceptual": 0.0,
+      "perceptual_loss": null,
+      "ema_decay": null,
+      "lr_decay_start_epoch": 50,
+      "jitter": true,
+      "early_stopping_patience": 20,
+      "ngf": 64,
+      "ndf": 64,
+      "image_size": 256
+    }
+  },
+  "l1": {
+    "mean": 0.32348352670669556,
+    "std": 0.07937071472406387,
+    "min": 0.17787888646125793,
+    "max": 0.5174014568328857
+  },
+  "psnr_db": {
+    "mean": 13.905769348144531,
+    "std": 1.8820760250091553,
+    "min": 9.616589546203613,
+    "max": 18.8333683013916
+  },
+  "ssim": {
+    "mean": 0.3444623053073883,
+    "std": 0.09731882810592651,
+    "min": 0.12659387290477753,
+    "max": 0.6227177381515503
+  },
+  "lpips": {
+    "mean": 0.5874346494674683,
+    "std": 0.0797136053442955,
+    "min": 0.3930057883262634,
+    "max": 0.8105261921882629
+  },
+  "lpips_squeeze": {
+    "mean": 0.5092862248420715,
+    "std": 0.07493636012077332,
+    "min": 0.3309902250766754,
+    "max": 0.7533561587333679
+  },
+  "kid_x1000": {
+    "mean": 129.97780740261078,
+    "std": 8.745560422539711,
+    "subset_size": 50,
+    "subsets": 100
+  },
+  "fcn_score": {
+    "pixel_acc": 0.596193421561763,
+    "miou": 0.23811055947356322,
+    "per_class_iou": {
+      "background": 0.413478,
+      "facade": 0.512019,
+      "window": 0.520179,
+      "door": 0.099371,
+      "cornice": 0.164091,
+      "sill": 0.228186,
+      "balcony": 0.159924,
+      "blind": 0.306373,
+      "deco": 0.006815,
+      "molding": 0.444245,
+      "pillar": 0.001316,
+      "shop": 0.00133
+    }
+  },
+  "fcn_score_real_photos": {
+    "pixel_acc": 0.68261042181051,
+    "miou": 0.39186656219072313,
+    "per_class_iou": {
+      "background": 0.603425,
+      "facade": 0.576166,
+      "window": 0.571177,
+      "door": 0.281755,
+      "cornice": 0.403009,
+      "sill": 0.249852,
+      "balcony": 0.412754,
+      "blind": 0.385602,
+      "deco": 0.166736,
+      "molding": 0.515693,
+      "pillar": 0.218783,
+      "shop": 0.317446
+    }
+  },
+  "averaging": "per image",
+  "env": {
+    "device": "cuda",
+    "torch": "2.11.0+cu130",
+    "python": "3.13.16",
+    "date": "2026-11-16 21:12:56"
+  }
+}

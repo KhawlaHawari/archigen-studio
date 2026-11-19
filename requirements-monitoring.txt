@@ -1,0 +1,4 @@
+# Optional: Evidently AI drift reports (Python <= 3.12; the Docker image uses 3.11).
+# Usage: py -3.11 -m pip install -r requirements-monitoring.txt && py -3.11 src/mlops/evidently_report.py
+evidently>=0.6,<0.8
+pandas>=2.0,<3.0   # Evidently 0.7 imports a pandas 2.x internal

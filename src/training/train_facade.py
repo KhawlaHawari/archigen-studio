@@ -13,6 +13,9 @@ Two recipes:
                linear decay over the second half, checkpoint selected on validation LPIPS
                (AlexNet) of the EMA generator, no L1-based early stopping;
       both modes: pix2pix-style scale/crop jitter (286 -> random 256 crop) on the train split.
+  * v3 (Run 3): v2 plus a 2-scale PatchGAN discriminator (pix2pixHD) and, for pix2pix,
+    checkpoint selection on validation KID x1000 (the metric the model is compared on)
+    instead of LPIPS. The L1 baseline is unchanged from v2 (it has no discriminator).
 
 Data: data/raw/facades/{train,val} (400 / 100 pairs). The TEST split is never
 touched here - use `python -m src.evaluation.evaluate facade` after freezing the protocol.
@@ -20,6 +23,7 @@ touched here - use `python -m src.evaluation.evaluate facade` after freezing the
 Usage:
     python -m src.training.train_facade --mode l1_baseline
     python -m src.training.train_facade --mode pix2pix --recipe v2 --epochs 100
+    python -m src.training.train_facade --mode pix2pix --recipe v3 --epochs 100
     python -m src.training.train_facade --mode pix2pix --epochs 1 --max-batches 5   # smoke test
 """
 
@@ -38,11 +42,13 @@ from PIL import Image
 from src.config import BASE_DIR, FACADE_CFG, MODELS_DIR
 from src.data.facade_dataset import make_facade_loaders, to_uint8
 from src.evaluation.metrics import OptionalLPIPS, l1_per_image, psnr_per_image, ssim_per_image
-from src.models.pix2pix_cgan import FacadeCompositeLoss, FacadeGenerator, LPIPSLoss, PatchGANDiscriminator
+from src.models.pix2pix_cgan import (FacadeCompositeLoss, FacadeGenerator, LPIPSLoss, MultiScaleDiscriminator,
+                                      PatchGANDiscriminator)
 from src.training.trainer_base import BaseTrainer, TrainResult
 
 MODES = ("pix2pix", "l1_baseline")
-RECIPES = ("v1", "v2")
+RECIPES = ("v1", "v2", "v3")
+MODERN_RECIPES = ("v2", "v3")   # EMA, LR decay, jitter, no L1 early stopping
 SAMPLES_DIR = MODELS_DIR / "samples"
 METRICS_DIR = MODELS_DIR / "metrics"
 
@@ -97,7 +103,8 @@ class FacadeTrainer(BaseTrainer):
         self.lambda_l1 = lambda_l1
         self.lambda_fm = lambda_fm
         self.lambda_perceptual = lambda_perceptual
-        self.v2_gan = recipe == "v2" and mode == "pix2pix"
+        self.v2_gan = recipe in MODERN_RECIPES and mode == "pix2pix"
+        self.v3_gan = recipe == "v3" and mode == "pix2pix"
         # v2 pix2pix never stops on L1: the adversarial loss trades pixel L1 for realism.
         self.early_stopping_patience = (epochs + 1) if self.v2_gan else early_stopping_patience
         self.ema_decay = ema_decay
@@ -108,7 +115,7 @@ class FacadeTrainer(BaseTrainer):
             experiment_name="ArchiGen3D-Facade-Training",
             seed=seed,
         )
-        self.best_metric_name = "val_lpips" if self.v2_gan else "val_l1"
+        self.best_metric_name = "val_kid_x1000" if self.v3_gan else ("val_lpips" if self.v2_gan else "val_l1")
         self.best_metric = float("inf")
         self.criterion = FacadeCompositeLoss(lambda_l1, lambda_fm, lambda_perceptual).to(self.device)
         self.ema = None
@@ -124,6 +131,15 @@ class FacadeTrainer(BaseTrainer):
                     f"recipe v2 selects on validation LPIPS but LPIPS is unavailable: {self.val_lpips.reason}. "
                     "Install it with `pip install lpips`."
                 )
+        self.val_kid = None
+        if self.v3_gan:
+            try:
+                from torchmetrics.image.kid import KernelInceptionDistance  # needs torch-fidelity
+                self.val_kid = KernelInceptionDistance(subset_size=50, subsets=100, reset_real_features=False).to(self.device)
+            except Exception as exc:
+                raise RuntimeError(f"recipe v3 selects on validation KID but it is unavailable: {exc}. "
+                                   "Install it with `pip install torchmetrics torch-fidelity`.") from exc
+            self._kid_real_done = False
         self.l1 = torch.nn.L1Loss()
         self.checkpoint_meta = {
             "data_source": "real:cmp_facades", "mode": mode, "recipe": recipe,
@@ -138,8 +154,9 @@ class FacadeTrainer(BaseTrainer):
             "lambda_perceptual": lambda_perceptual if mode == "pix2pix" else 0.0,
             "perceptual_loss": ("lpips_squeeze" if self.v2_gan else "random_filters") if mode == "pix2pix" else None,
             "ema_decay": ema_decay if self.v2_gan else None,
-            "lr_decay_start_epoch": self.lr_decay_start if recipe == "v2" else None,
-            "jitter": recipe == "v2",
+            "lr_decay_start_epoch": self.lr_decay_start if recipe in MODERN_RECIPES else None,
+            "jitter": recipe in MODERN_RECIPES,
+            "discriminator": ("multiscale_2" if self.v3_gan else "patchgan_70") if mode == "pix2pix" else None,
             "early_stopping_patience": self.early_stopping_patience,
             "ngf": FACADE_CFG.ngf, "ndf": FACADE_CFG.ndf, "image_size": 256,
         }
@@ -155,14 +172,19 @@ class FacadeTrainer(BaseTrainer):
     def build_optimizers(self) -> Dict[str, torch.optim.Optimizer]:
         opts = {"optimizer_g": torch.optim.Adam(self.model.parameters(), lr=self.lr_g, betas=(0.5, 0.999))}
         if self.mode == "pix2pix":
-            self.discriminator = PatchGANDiscriminator(
-                in_channels=6, ndf=FACADE_CFG.ndf, use_spectral_norm=True
-            ).to(self.device)
+            if self.v3_gan:
+                self.discriminator = MultiScaleDiscriminator(
+                    in_channels=6, ndf=FACADE_CFG.ndf, num_scales=2, use_spectral_norm=True
+                ).to(self.device)
+            else:
+                self.discriminator = PatchGANDiscriminator(
+                    in_channels=6, ndf=FACADE_CFG.ndf, use_spectral_norm=True
+                ).to(self.device)
             opts["optimizer_d"] = torch.optim.Adam(self.discriminator.parameters(), lr=self.lr_d, betas=(0.5, 0.999))
         return opts
 
     def build_schedulers(self) -> Dict[str, Any]:
-        if self.recipe != "v2":
+        if self.recipe not in MODERN_RECIPES:
             return {}
         # Constant LR for the first half, then linear decay towards 0 (pix2pix schedule).
         factor = lambda_lr_factor(self.lr_decay_start, self.epochs)
@@ -244,6 +266,11 @@ class FacadeTrainer(BaseTrainer):
             ssims.append(ssim_per_image(fakes, reals))
             if self.val_lpips is not None:
                 lps.append(self.val_lpips(fakes, reals))
+            if self.val_kid is not None:
+                to_u8 = lambda t: ((t.clamp(-1, 1) + 1) * 127.5).round().to(torch.uint8)
+                if not self._kid_real_done:            # real features are computed once and kept
+                    self.val_kid.update(to_u8(reals), real=True)
+                self.val_kid.update(to_u8(fakes), real=False)
             if self._fixed_val_batch is None:
                 self._fixed_val_batch = (masks[:4].cpu(), reals[:4].cpu())
         l1, ps, ss = torch.cat(l1s), torch.cat(psnrs), torch.cat(ssims)
@@ -251,6 +278,11 @@ class FacadeTrainer(BaseTrainer):
                    "val_psnr": ps.mean().item(), "val_ssim": ss.mean().item(), "val_n_images": float(len(l1))}
         if lps:
             metrics["val_lpips"] = torch.cat(lps).mean().item()
+        if self.val_kid is not None:
+            torch.manual_seed(42)                      # same random subsets every epoch
+            metrics["val_kid_x1000"] = float(self.val_kid.compute()[0]) * 1000
+            self._kid_real_done = True
+            self.val_kid.reset()                       # drops fake features only (reset_real_features=False)
         if metrics[self.best_metric_name] < self.best_metric:
             self.best_val_metrics = dict(metrics)
             self.best_val_metrics["epoch"] = self.epochs_completed
@@ -305,7 +337,7 @@ def train_facade(
 ) -> TrainResult:
     """Train on REAL CMP Facades. Unspecified hyperparameters come from params.yaml."""
     p = load_facade_params()
-    default_epochs = p.get("epochs_v2", 100) if recipe == "v2" else p.get("epochs", 50)
+    default_epochs = p.get("epochs_v2", 100) if recipe in MODERN_RECIPES else p.get("epochs", 50)
     trainer = FacadeTrainer(
         mode=mode,
         epochs=epochs or default_epochs,
@@ -315,7 +347,7 @@ def train_facade(
         lambda_l1=p.get("lambda_l1", 30.0),
         lambda_fm=p.get("lambda_fm", 10.0),
         lambda_perceptual=p.get("lambda_perceptual", 10.0),
-        early_stopping_patience=20 if recipe == "v2" else 10,
+        early_stopping_patience=20 if recipe in MODERN_RECIPES else 10,
         seed=seed,
         tag=tag,
         recipe=recipe,
@@ -323,7 +355,7 @@ def train_facade(
     trainer.max_train_batches = max_batches
     trainer.time_budget_s = time_budget_min * 60 if time_budget_min else None
     train_loader, val_loader = make_facade_loaders(
-        batch_size=trainer.batch_size, num_workers=num_workers, seed=seed, jitter=(recipe == "v2")
+        batch_size=trainer.batch_size, num_workers=num_workers, seed=seed, jitter=(recipe in MODERN_RECIPES)
     )
     print(f"[Facade] mode={mode} recipe={recipe} train={len(train_loader.dataset)} val={len(val_loader.dataset)} "
           f"epochs={trainer.epochs} select={trainer.best_metric_name} device={trainer.device}", flush=True)
@@ -336,7 +368,8 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="Train facade generator on real CMP Facades")
     ap.add_argument("--mode", choices=MODES, default="pix2pix")
     ap.add_argument("--recipe", choices=RECIPES, default="v1",
-                    help="v1 = Run-1 behaviour; v2 = LPIPS loss + EMA + LR decay + jitter, selected on val LPIPS")
+                    help="v1 = Run-1 behaviour; v2 = LPIPS loss + EMA + LR decay + jitter, selected on val LPIPS; "
+                         "v3 = v2 + 2-scale discriminator, pix2pix selected on val KID")
     ap.add_argument("--epochs", type=int, default=None)
     ap.add_argument("--batch-size", type=int, default=None)
     ap.add_argument("--seed", type=int, default=42)

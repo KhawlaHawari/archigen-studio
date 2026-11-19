@@ -1,0 +1,4 @@
+# Optional: Run 3 diffusion facade generator (ControlNet on Stable Diffusion 1.5), used on Kaggle GPUs.
+diffusers>=0.30.0
+transformers>=4.40.0
+accelerate>=0.30.0

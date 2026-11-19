@@ -1,0 +1,70 @@
+# Alert thresholds ("seuils d'alerte"): technical, model / data drift and business alerts.
+# Drift thresholds match src/mlops/drift_detector.py (PSI 0.10 warning, 0.20 critical).
+groups:
+  - name: archigen-technical
+    rules:
+      - alert: ArchiGenAPIDown
+        expr: max(up{job="archigen-api"}) == 0    # API container or host process: alert only if none is up
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: "ArchiGen API is not reachable by Prometheus"
+
+      - alert: ArchiGenHighErrorRate
+        expr: |
+          sum(rate(archigen_http_requests_total{status=~"5.."}[5m]))
+            / clamp_min(sum(rate(archigen_http_requests_total[5m])), 1e-9) > 0.05
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "More than 5 % of API requests fail (HTTP 5xx)"
+
+      - alert: ArchiGenFloorplanLatencyP95High
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le) (rate(archigen_http_request_seconds_bucket{endpoint="/predict/floorplan/layout"}[5m]))) > 5
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "Plan -> 3D p95 latency above 5 s (CPU SLA)"
+
+  - name: archigen-model-and-data
+    rules:
+      - alert: ArchiGenDataDriftWarning
+        expr: archigen_drift_psi_max >= 0.10
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "Input drift (PSI >= 0.10) on {{ $labels.domain }}"
+
+      - alert: ArchiGenDataDriftCritical
+        expr: archigen_drift_psi_max >= 0.20 or archigen_drift_detected == 1
+        for: 5m
+        labels: {severity: critical}
+        annotations:
+          summary: "Critical drift on {{ $labels.domain }}: retraining recommended"
+          description: "POST /monitoring/drift/retrain triggers the continuous-training pipeline."
+
+  - name: archigen-business
+    rules:
+      - alert: ArchiGenUsablePlanRateDrop
+        expr: |
+          sum(increase(archigen_plans_usable_total[1h]))
+            / clamp_min(sum(increase(archigen_plans_analysed_total[1h])), 1) < 0.60
+          and sum(increase(archigen_plans_analysed_total[1h])) > 20
+        for: 15m
+        labels: {severity: warning}
+        annotations:
+          summary: "Fewer than 60 % of uploaded plans give a usable 3D house (>= 3 rooms, >= 25 m2)"
+
+      - alert: ArchiGenCanaryWorseThanChampion
+        expr: |
+          (sum by (variant) (increase(archigen_plans_usable_total[6h]))
+            / clamp_min(sum by (variant) (increase(archigen_plans_analysed_total[6h])), 1))
+          < scalar(
+            max(sum by (variant) (increase(archigen_plans_usable_total[6h]))
+              / clamp_min(sum by (variant) (increase(archigen_plans_analysed_total[6h])), 1)) - 0.10)
+        for: 30m
+        labels: {severity: info}
+        annotations:
+          summary: "Model variant {{ $labels.variant }} is 10+ points behind the best variant: check GET /ab/status"

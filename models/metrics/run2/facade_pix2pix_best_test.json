@@ -1,0 +1,75 @@
+{
+  "task": "facade",
+  "split": "test",
+  "n_images": 106,
+  "checkpoint": "/kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt",
+  "checkpoint_meta": {
+    "data_source": "real:cmp_facades",
+    "mode": "pix2pix",
+    "epoch": 80,
+    "seed": 42,
+    "hparams": {
+      "mode": "pix2pix",
+      "recipe": "v2",
+      "epochs": 100,
+      "batch_size": 2,
+      "lr_g": 0.0002,
+      "lr_d": 0.0002,
+      "seed": 42,
+      "lambda_l1": 30.0,
+      "lambda_fm": 10.0,
+      "lambda_perceptual": 10.0,
+      "perceptual_loss": "lpips_squeeze",
+      "ema_decay": 0.999,
+      "lr_decay_start_epoch": 50,
+      "jitter": true,
+      "early_stopping_patience": 101,
+      "ngf": 64,
+      "ndf": 64,
+      "image_size": 256
+    }
+  },
+  "l1": {
+    "mean": 0.36280810832977295,
+    "std": 0.07423125207424164,
+    "min": 0.20372113585472107,
+    "max": 0.5599758625030518
+  },
+  "psnr_db": {
+    "mean": 12.494239807128906,
+    "std": 1.6483577489852905,
+    "min": 8.688300132751465,
+    "max": 16.45307159423828
+  },
+  "ssim": {
+    "mean": 0.27108386158943176,
+    "std": 0.0830613523721695,
+    "min": 0.004240659065544605,
+    "max": 0.5114801526069641
+  },
+  "lpips": {
+    "mean": 0.4135623574256897,
+    "std": 0.0711246058344841,
+    "min": 0.2721378207206726,
+    "max": 0.6021156907081604
+  },
+  "lpips_squeeze": {
+    "mean": 0.31622615456581116,
+    "std": 0.0543845035135746,
+    "min": 0.20373134315013885,
+    "max": 0.45319902896881104
+  },
+  "kid_x1000": {
+    "mean": 66.03051722049713,
+    "std": 7.796342018991709,
+    "subset_size": 50,
+    "subsets": 100
+  },
+  "averaging": "per image",
+  "env": {
+    "device": "cuda",
+    "torch": "2.11.0+cu130",
+    "python": "3.13.16",
+    "date": "2026-11-15 20:10:03"
+  }
+}

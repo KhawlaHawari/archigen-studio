@@ -1,0 +1,43 @@
+{
+  "model_name": "facade_pix2pix",
+  "split": "val",
+  "selection_metric": "val_kid_x1000",
+  "best": {
+    "loss": 0.35534095764160156,
+    "val_l1": 0.35534095764160156,
+    "val_psnr": 12.737980842590332,
+    "val_ssim": 0.29671698808670044,
+    "val_n_images": 100.0,
+    "val_lpips": 0.4206349551677704,
+    "val_kid_x1000": 69.93764638900757,
+    "epoch": 96
+  },
+  "hparams": {
+    "mode": "pix2pix",
+    "recipe": "v3",
+    "epochs": 100,
+    "batch_size": 2,
+    "lr_g": 0.0002,
+    "lr_d": 0.0002,
+    "seed": 42,
+    "lambda_l1": 30.0,
+    "lambda_fm": 10.0,
+    "lambda_perceptual": 10.0,
+    "perceptual_loss": "lpips_squeeze",
+    "ema_decay": 0.999,
+    "lr_decay_start_epoch": 50,
+    "jitter": true,
+    "discriminator": "multiscale_2",
+    "early_stopping_patience": 101,
+    "ngf": 64,
+    "ndf": 64,
+    "image_size": 256
+  },
+  "epochs_completed": 100,
+  "max_train_batches": null,
+  "device": "cuda",
+  "stopped_by_time_budget": false,
+  "time_budget_min": 330.0,
+  "mlflow_run_id": null,
+  "checkpoint": "/kaggle/working/archigen/models/checkpoints/facade_pix2pix_best.pt"
+}

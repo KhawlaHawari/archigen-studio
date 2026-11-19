@@ -12,6 +12,7 @@ import io
 import torch
 import onnxruntime as ort
 import json
+import base64
 from typing import Optional
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,7 +30,11 @@ from src.api.schemas import (
     SystemInfoResponse,
     FloorplanPredictionResponse,
     Floorplan3DResponse,
-    FacadePredictionResponse
+    FacadePredictionResponse,
+    FacadeGenerateRequest,
+    RoomDesignRequest,
+    FurnitureChoicesRequest,
+    LayoutDesignRequest,
 )
 from src.api.service import ModelService
 from src.mlops.mlflow_tracker import get_measured_metrics
@@ -65,6 +70,34 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 # MLOps Level 3 Monitoring & DVC Remote Router
 app.include_router(monitoring_router)
+
+# Prometheus observability (technical, model and business metrics) + A/B / canary router
+from src.api import observability as obs          # noqa: E402
+from src.api.ab_testing import ROUTER as AB_ROUTER  # noqa: E402
+from fastapi import Header                         # noqa: E402
+
+app.middleware("http")(obs.prometheus_middleware)
+_DRIFT_REFRESH = {"t": 0.0}
+
+
+@app.get("/metrics", tags=["MLOps"])
+def prometheus_metrics():
+    """Prometheus scrape endpoint. Drift gauges are refreshed from the telemetry buffer at most once a minute."""
+    if time.time() - _DRIFT_REFRESH["t"] > 60:
+        _DRIFT_REFRESH["t"] = time.time()
+        try:
+            from src.mlops.drift_detector import DriftDetector
+            for domain in ("floorplan", "facade"):
+                obs.record_drift(DriftDetector().detect_drift_on_buffer(domain=domain), domain)
+        except Exception as exc:   # monitoring must never break the scrape
+            print(f"[metrics] drift refresh skipped: {exc}")
+    return obs.metrics_response()
+
+
+@app.get("/ab/status", tags=["MLOps"])
+def ab_status():
+    """A/B / canary comparison of the floor-plan model variants and the promotion decision."""
+    return AB_ROUTER.status()
 
 START_TIME = time.time()
 
@@ -173,16 +206,19 @@ async def floorplan_layout_endpoint(
     file: UploadFile = File(...),
     scale_override: Optional[float] = Form(default=None),
     reference_rooms: Optional[str] = Form(default=None),
+    x_model_variant: Optional[str] = Header(default=None),
 ):
     """
     Upload a 2D floor plan image. Returns the vector layout used by the web studio's 3D view:
     walls (axis, thickness, openings), rooms (type, polygon, area, confidence), doors, windows
     and the building envelope, all in meters.
     """
+    raw = await file.read()
     try:
-        pil_img = Image.open(io.BytesIO(await file.read()))
+        pil_img = Image.open(io.BytesIO(raw))
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid image file: {e}")
+    variant = AB_ROUTER.assign(raw, x_model_variant)
     try:
         regions = json.loads(reference_rooms) if reference_rooms else None
         if regions is not None and not isinstance(regions, list):
@@ -194,10 +230,173 @@ async def floorplan_layout_endpoint(
 
     service = ModelService.get_instance()
     try:
-        result = service.analyze_floorplan_layout(pil_img, scale_override=scale_override, reference_rooms=regions)
+        result = service.analyze_floorplan_layout(pil_img, scale_override=scale_override, reference_rooms=regions,
+                                                  variant=variant)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Floorplan vectorization failed: {e}")
-    return JSONResponse(content=result, headers={"X-Inference-Latency-Ms": str(result["processing_time_ms"])})
+    result["model_variant"] = variant
+    obs.record_plan(result, variant, result["processing_time_ms"] / 1000.0)
+    return JSONResponse(content=result, headers={"X-Inference-Latency-Ms": str(result["processing_time_ms"]),
+                                                 "X-Model-Variant": variant})
+
+
+@app.post("/facade/generate", tags=["Studio"])
+def facade_generate_endpoint(request: FacadeGenerateRequest):   # sync: runs in the thread pool (ControlNet can take minutes on CPU)
+    """
+    Facade texture for one exterior wall of the analysed plan: the wall's real doors and windows
+    are drawn as a CMP label map, then this project's Pix2Pix turns it into a photo-like texture
+    with UV coordinates for the 3D wall.
+    """
+    from src.geometry.dimensions import DOOR_HEIGHT_M, STOREY_HEIGHT_M, WINDOW_HEIGHT_M
+    service = ModelService.get_instance()
+    bridge = service.facade_bridge()
+    wall = request.wall
+    if wall is None and request.layout:
+        walls = request.layout.get("walls", [])
+        if request.wall_id:
+            wall = next((w for w in walls if w.get("id") == request.wall_id), None)
+            if wall is None:
+                raise HTTPException(status_code=404, detail="The selected exterior wall was not found.")
+        else:
+            wall = bridge.select_front_wall(walls)
+            if wall is None:
+                raise HTTPException(status_code=422, detail="The floorplan has no exterior wall to finish.")
+    if wall is not None:
+        if wall.get("is_exterior") is False:
+            raise HTTPException(status_code=422, detail="Choose an exterior wall for the facade.")
+        wall = {**wall, "geometry_fixed": True}
+    else:  # standalone preview
+        wall = {
+            "id": request.wall_id or "wall_front_default", "is_exterior": True, "is_front": True,
+            "height_m": STOREY_HEIGHT_M, "polygon_meters": [[0.0, 0.0], [8.5, 0.0], [8.5, 0.25], [0.0, 0.25]],
+            "openings": [
+                {"type": "door", "position_along_wall_m": 4.25, "width": 1.15, "height": DOOR_HEIGHT_M},
+                {"type": "window", "position_along_wall_m": 1.8, "width": 1.4, "height": WINDOW_HEIGHT_M},
+                {"type": "window", "position_along_wall_m": 6.7, "width": 1.4, "height": WINDOW_HEIGHT_M},
+            ],
+        }
+    num_floors = 1 if wall.get("level_id") else (request.num_floors or 1)
+    t0 = time.perf_counter()
+    try:
+        from src.bridge.facade_bridge import apply_facade_style
+        from src.geometry.facade_composer import generate_wall_texture
+        # Wall frame and exact opening positions (meters) from the bridge geometry ...
+        _, _, frame, openings = bridge._build_facade_sketch(wall, num_floors=num_floors, is_front=True)
+        floor_h = float(wall.get("height_m") or STOREY_HEIGHT_M)
+        length = float(frame["length_m"])
+        # ... then this repository's composer: CMP-like multi-storey tiles -> Pix2Pix -> crop the real wall.
+        high = (request.quality or "fast") == "high"
+        if high:
+            status = service.controlnet_status()
+            if not status["available"]:
+                raise HTTPException(status_code=503, detail=f"High-quality facades unavailable. {status['reason']}")
+        generate = service.controlnet_generate_batch if high else bridge.inference_engine.generate_batch
+        from src.models import superres
+        use_sr = bool(request.super_resolution) and superres.available()
+        out = generate_wall_texture(length, floor_h, num_floors, openings, generate,
+                                    upscaler=(lambda im: superres.upscale(im, device=service.device)) if use_sr else None)
+        texture = apply_facade_style(out["texture"], request.style) if request.style else out["texture"]
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Facade generation error: {e}")
+    height = floor_h * num_floors
+    for op in openings:   # UV rectangles relative to the new texture (which covers exactly the wall)
+        left, right = op["position_along_wall_m"] - op["width_m"] / 2, op["position_along_wall_m"] + op["width_m"] / 2
+        op["uv_rect"] = [left / length, op["sill_m"] / height, right / length, (op["sill_m"] + op["height_m"]) / height]
+
+    def to_b64(img):
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode("ascii")
+
+    obs.record_facade("controlnet" if high else "pix2pix", time.perf_counter() - t0)
+    return {
+        "status": "success", "wall_id": wall.get("id"), "style": request.style, "num_floors": num_floors,
+        "wall_length_m": length, "wall_height_m": height,
+        "uv_bounds": {"u_min": 0.0, "u_max": 1.0, "v_min": 0.0, "v_max": 1.0, "wall_length_m": length,
+                      "wall_height_m": height, "aspect_ratio": length / height},
+        "facade_frame": frame, "openings": openings,
+        "quality": "high" if high else "fast",
+        "super_resolution": "Real-ESRGAN x4 (realesr-general-x4v3), post-processing" if use_sr else None,
+        "model_info": {**({"model": "ArchiGen ControlNet (SD 1.5, fine-tuned on CMP)", "resolution": 512,
+                           "style_conditioned": False} if high else bridge.inference_engine.describe()),
+                       "composer": "multi-storey CMP context + tiling + crop",
+                       "tiles": out["n_tiles"], "context_storeys": out["context_floors"]},
+        "texture_base64": to_b64(texture), "sketch_base64": to_b64(out["sketch"]),
+        "context_sketch_base64": to_b64(out["context_sketch"]), "context_photo_base64": to_b64(out["context_photo"]),
+        "device": bridge.device_name,
+        "processing_time_ms": round((time.perf_counter() - t0) * 1000, 2),
+    }
+
+
+# --- Rule-based furniture placement (src/design, ported from the original ArchiGen) ---
+@app.get("/facade/capabilities", tags=["Studio"])
+async def facade_capabilities_endpoint():
+    """Which facade generators are available: fast Pix2Pix always; high-quality ControlNet after Run 3."""
+    from src.models import superres
+    return {"fast": {"available": True, "model": "Pix2Pix 256 px"},
+            "high": ModelService.get_instance().controlnet_status(),
+            "super_resolution": {"available": superres.available(),
+                                 "reason": None if superres.available() else "python -m src.models.superres --download"}}
+
+
+@app.post("/design", tags=["Studio"])
+async def design_room_endpoint(request: RoomDesignRequest):
+    """Deterministic furnishing of one room: no collisions, door clearances, wall anchoring, BFS access."""
+    from src.design.engine import RoomDesignEngine
+    try:
+        result = RoomDesignEngine().design_room(
+            room_polygon_meters=request.polygon_meters, room_type=request.room_type,
+            room_id=request.room_id or "room_0", wall_segments=request.wall_segments,
+            doors=request.doors, windows=request.windows, preset=request.preset,
+            seed=request.seed if request.seed is not None else 42,
+            scale_m_per_px=request.scale_m_per_px, force_furnish=bool(request.force_furnish),
+        )
+        return result.to_dict()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Room design failed: {e}")
+
+
+@app.post("/design/furniture-choices", tags=["Studio"])
+async def furniture_choices_endpoint(request: FurnitureChoicesRequest):
+    """Alternative catalog models that fit a placed item's location."""
+    from src.design.engine import RoomDesignEngine
+    try:
+        choices = RoomDesignEngine().furniture_choices(
+            room_polygon_meters=request.polygon_meters, room_type=request.room_type,
+            items=[item.model_dump() for item in request.items], item_id=request.item_id,
+            wall_segments=request.wall_segments, doors=request.doors, windows=request.windows,
+            scale_m_per_px=request.scale_m_per_px, force_furnish=bool(request.force_furnish),
+            custom_catalog={},
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"choices": choices}
+
+
+@app.post("/design/layout", tags=["Studio"])
+async def design_layout_endpoint(request: LayoutDesignRequest):
+    """Furnishes every eligible room of a full layout."""
+    from src.design.engine import RoomDesignEngine
+    try:
+        return RoomDesignEngine().design_layout(layout=request.layout, preset=request.preset,
+                                                seed=request.seed if request.seed is not None else 42)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Layout design failed: {e}")
+
+
+@app.get("/furniture/custom-library", tags=["Studio"])
+async def custom_furniture_library_endpoint():
+    """Image-to-3D furniture (TripoSR) needs a CUDA worker; this deployment has no custom library."""
+    return {}
+
+
+@app.post("/furniture/generate-3d", tags=["Studio"])
+@app.post("/furniture/save-to-library", tags=["Studio"])
+async def furniture_image_to_3d_unavailable():
+    raise HTTPException(status_code=501, detail="Image-to-3D furniture (TripoSR) needs an NVIDIA GPU worker, "
+                                                "which this deployment does not run. Use the furniture catalog instead.")
 
 
 @app.post("/vectorize/floorplan", response_model=Floorplan3DResponse, tags=["3D Extrusion"])

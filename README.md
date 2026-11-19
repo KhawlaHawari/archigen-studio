@@ -43,9 +43,70 @@ flowchart LR
 > the API serves them (`GET /metrics/summary`) and the UI displays them.
 > The tables below contain measured values only.
 
-**Status:** Run 2 (recipe v2, ~8 h on Kaggle) is the current reference. Run 1 is kept below for comparison.
+**Status:** Run 3 (recipe v3 + diffusion, Kaggle T4 ×2) is the current reference. Deployed: floor plans = **Run 3
+UNet++**, facades = **Run 2 Pix2Pix** (fast mode) and **Run 3 ControlNet** (high-quality mode). Runs 2 and 1 are kept
+below for comparison; Run 2 metric files are in `models/metrics/run2/`.
 
-### Run 2: Kaggle, GPU T4 ×2, recipe v2 (current results)
+### Run 3: Kaggle, GPU T4 ×2, recipe v3 + ControlNet (current results)
+
+Notebook: [`kaggle/archigen_kaggle_run3.ipynb`](kaggle/archigen_kaggle_run3.ipynb). All facade models below were
+scored **in the same run with the same protocol** (CMP test split, 106 images, 256 px, KID 100 subsets of 50).
+
+#### Facades: realism (KID, LPIPS) and layout fidelity (FCN-score)
+
+| Model | KID ×10³ ↓ | LPIPS-Squeeze ↓ | SSIM ↑ | FCN mIoU ↑ | FCN pixel acc ↑ |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| U-Net L1 baseline (Run 2) | 129.98 ± 8.75 | 0.509 | **0.345** | 0.238 | 0.596 |
+| Pix2Pix Run 2 (deployed, fast mode) | 67.60 ± 8.35 | 0.316 | 0.271 | **0.386** | **0.695** |
+| Pix2Pix Run 3 (2-scale D, selected on val KID) | 70.86 ± 8.77 | **0.311** | 0.290 | 0.382 | 0.689 |
+| ControlNet, **not fine-tuned** (public seg ControlNet + SD 1.5) | 116.03 ± 10.38 | 0.415 | 0.098 | 0.153 | 0.454 |
+| **ControlNet fine-tuned on CMP (Run 3, deployed, high-quality mode)** | **19.79 ± 5.50** | 0.381 | 0.172 | 0.336 | 0.644 |
+| *Real test photos (FCN upper bound)* | – | – | – | *0.392* | *0.683* |
+| *Original ArchiGen best (EMA Pix2Pix), its own report* | *63.55 ± 5.83* | *0.310* | *0.289* | – | – |
+
+- **Realism:** the fine-tuned ControlNet reaches **KID 19.8, 3.4× lower than Pix2Pix (67.6) and 3.2× lower than the
+  original project's best model (63.55)**. Fine-tuning is what makes it work: the same network before fine-tuning
+  scores KID 116 and FCN 0.15.
+- **Layout fidelity:** Pix2Pix follows the label map slightly better (FCN 0.386 vs 0.336). Diffusion trades a little
+  layout precision for far more realism. The parser itself only reaches 0.392 mIoU on real photos, so FCN
+  differences under ~0.02 are not meaningful.
+- **Pix2Pix Run 3** (2-scale discriminator) is **not** better than Run 2 (KID 70.9 vs 67.6, within one std): Run 2
+  stays deployed. The L1 baseline has the best SSIM because SSIM rewards blur; it is the least realistic model.
+- ControlNet training: SD 1.5 + `lllyasviel/control_v11p_sd15_seg`, 8 000 steps (batch 2 × 2), 512 px, lr 1e-5,
+  4.3 h on one T4, train split only. Inference: 25 UniPC steps, guidance 5. FCN parser: DeepLabV3-ResNet50 trained on
+  the 400 training photos (val mIoU 0.397).
+
+#### Floor plans: Run 3 (style augmentation + Lovász + rare-room oversampling, fine-tuned from Run 2)
+
+| Test set | Model | Wall IoU | Door IoU | Window IoU | Room mIoU (11) | Room acc |
+| :--- | :--- | ---: | ---: | ---: | ---: | ---: |
+| CubiCasa test (400) | Run 2 | 73.35 | 66.76 | 77.18 | 64.0 | 93.99 |
+| CubiCasa test (400) | **Run 3** | 72.91 | 66.20 | 76.60 | **64.8** | **94.16** |
+| CubiCasa test, 4-fold TTA | **Run 3** | 73.98 | 67.49 | 77.40 | 66.5 | 94.54 |
+| **Restyled test** (same 400 plans redrawn: ink CAD, blueprint, dark mode, scans…) | Run 2 | 55.42 | 42.77 | 48.52 | 31.8 | 81.33 |
+| **Restyled test** | **Run 3** | **83.22** | **64.76** | **76.95** | **52.4** | **91.06** |
+| *Original ArchiGen (its own report)* | | *74.32* | *62.38* | *73.28* | *54.72\** | *85.85* |
+
+Run 3 keeps CubiCasa accuracy (±0.6 pt) while becoming far more robust to other drawing styles (+27.8 pt wall IoU,
++20.6 pt room mIoU on the restyled test). \* different room class set: indicative only.
+
+| 3D layout & robustness (Run 3) | Run 3 | Run 2 | Original ArchiGen |
+| :--- | ---: | ---: | ---: |
+| Watertight 3D shell (400 test plans) | **99.75 %** | 99.25 % | 96.25 % |
+| Footprint IoU | 0.952 | 0.952 | 0.822 |
+| Door F1 @ 24 px | 0.893 | 0.898 | 0.905 |
+| Room type correct in the 3D layout | 87.1 % | 87.6 % | – |
+| External: 10 synthetic style tests, usable | **90 %** | 50 % | – |
+| External: 12 real blind plans, usable / closed shell | **100 % / 100 %** | 83 % / 100 % | 3 empty / 75 % |
+| External: 8 modern plans, usable | 100 % | 100 % | – |
+| External: 20 real dev plans, usable / closed shell | 60 % / 75 % | 65 % / 90 % | 55 % (85 % experimental branch) |
+
+The one regression is the 20-plan dev set (old scanned blueprints): −5 pt usable, −15 pt closed shells.
+Dining rooms remain the weakest type (12 rooms in the test set). ONNX re-export of the Run 3 floor-plan model:
+max |Δ| 1.8×10⁻⁵ (just above the strict 10⁻⁵ threshold), argmax agreement 99.99995 % (structure) / 100 % (rooms)
+on real test plans.
+
+### Run 2: Kaggle, GPU T4 ×2, recipe v2
 
 Notebook: [`kaggle/archigen_kaggle_run2.ipynb`](kaggle/archigen_kaggle_run2.ipynb). Neither job hit its time budget
 (`stopped_by_time_budget: false`).
@@ -94,6 +155,46 @@ pixels) is still the weakest class.
 
 Sources: `models/metrics/facade_pix2pix_best_test.json`, `facade_unet_l1_best_test.json`,
 `floorplan_unetpp_best_test.json`, `floorplan_unetpp_best_test_tta.json` and the matching `*_val.json`.
+
+#### Beyond pixel IoU: objects, 3D layout and real-world plans (Run 2 model, single pass)
+
+**Door / window detection and 3D layout** on the 400 test plans (`python -m src.evaluation.evaluate_layout`).
+Each connected component is one object; a prediction is correct when its centroid is within R px of an
+unmatched ground-truth centroid. The layout metrics run the predictions through the same vectorizer as the studio.
+
+| Metric | Run 2 | Original ArchiGen |
+| :--- | ---: | ---: |
+| Door F1 @ 24 px (precision / recall) | 0.898 (0.855 / 0.945) | 0.905 (0.912 / 0.897) |
+| Door F1 @ 12 px | 0.886 | 0.894 |
+| Door centroid error, median | **0.69 px** | 1.12 px |
+| Window F1 @ 24 px (precision / recall) | 0.863 (0.850 / 0.877) | – |
+| Watertight 3D shell | **99.25 %** (ground-truth masks: 98.75 %) | 96.25 % |
+| Footprint IoU (vectorized envelope vs ground truth), mean | **0.952** | 0.822 |
+| Room count error per plan (vs layout from ground-truth masks) | 0.87 | – |
+| **Room type correct in the 3D layout** (3 032 rooms; balanced over types) | **87.6 %** (78.7 %) | – |
+
+Room type accuracy per type: bathroom 94 %, bedroom 94 %, entry/hall 93 %, balcony 87 %, closet 83 %,
+living room 82 %, storage 79 %, kitchen 79 %, office 78 % (9 rooms), utility 73 %, dining 25 % (12 rooms).
+
+Door detection is level with the original (−0.7 pt F1): higher recall, more false positives.
+
+**Out-of-distribution plans** (no labels; `python -m src.evaluation.evaluate_external`), with the original
+study's rule *usable = ≥ 3 rooms and ≥ 25 m²*:
+
+| Set | Run 2 usable | Run 2 empty | Run 2 closed shell | Original production model |
+| :--- | ---: | ---: | ---: | :--- |
+| 20 real plans (dev) | **65 %** | 0 % | 90 % | 55 % usable, 30 % empty |
+| 12 real plans (blind set) | 83 % | **0 %** | **100 %** | 3 empty plans, 75 % closed shells |
+| 8 modern plans | 100 % | 0 % | 88 % | – |
+| 10 synthetic style tests | 50 % | 10 % | 80 % | – |
+
+The synthetic styles (black-ink CAD, sketches, dark mode…) remain the weak point: 96 % of the training
+plans draw walls in green. Run 3 targets this with drawing-style augmentation.
+
+**ONNX export** (`src.mlops.onnx_verifier`): max |PyTorch − ONNX| = 6.7×10⁻⁶ (floor plan), 1.6×10⁻⁶ (facade).
+CPU latency (`src.mlops.benchmark_latency`, laptop, all cores): floor plan p50 2.6 s / p95 3.0 s at 512 px
+(above the 2 s target), facade p95 0.20 s. Floor-plan sources: `floorplan_unetpp_best_test_layout.json`,
+`floorplan_unetpp_best_external.json`, `models/onnx/parity_report.json`, `latency_benchmark.json`.
 
 ### Run 1: Kaggle, GPU T4 ×2 (reduced budget, both datasets in one run)
 
@@ -221,6 +322,21 @@ npm run dev        # http://localhost:5173  (the Vite proxy forwards /predict, /
 | **Home** | Cinematic landing page with video, presenting *Plan → 3D* and the *Facade generator* |
 | **Floorplan workspace** | Plan upload, 2D / 3D / split views, detected rooms, furnishing |
 | **Generative studio** | *Furniture* (image → 3D) and *Facades* tabs |
+
+**Studio API (plan → 3D house → facade → furniture)**
+
+| Endpoint | What it does | Origin |
+| :--- | :--- | :--- |
+| `POST /predict/floorplan/layout` | UNet++ (this repo) → vector layout: walls with thickness and openings, rooms, doors, windows, envelope (meters) | model + `src/geometry/layout.py`: this repo · vectorizer `src/geometry/layout_vectorizer.py`: ported |
+| `POST /facade/generate` | Turns the chosen exterior wall into a CMP-like building (real storeys + context storeys, mouldings, cornice; long walls covered by overlapping blended tiles), runs **this repo's Pix2Pix**, then cuts out exactly the real wall (UV 0→1, openings at their real positions) | generator + `src/geometry/facade_composer.py`: this repo · wall geometry from `src/bridge/`: ported |
+| *Option* `quality: "high"` · `super_resolution` | High quality = the ControlNet fine-tuned in Run 3 (512 px, enabled once `models/controlnet_facade/` exists). Super-resolution = optional Real-ESRGAN ×4 post-processing (`realesr-general-x4v3`, BSD-3; weights: `python -m src.models.superres --download`). Post-processing only: all reported metrics are computed **without** it | network re-implemented in `src/models/superres.py`; weights: Real-ESRGAN (Wang et al., 2021) |
+| `POST /design`, `/design/layout`, `/design/furniture-choices` | Rule-based furniture placement (no collisions, door clearance, wall anchoring, BFS accessibility); 33 CC0 Kenney models | `src/design/`: ported |
+| `POST /furniture/generate-3d` | Image → 3D furniture (TripoSR) | **not available**: needs an NVIDIA GPU worker (returns 501) |
+
+> **Credits.** The layout vectorizer, the facade bridge, the furniture placement engine and the web
+> studio (React + Three.js, PBR materials, HDRI lighting) come from the original ArchiGen team project
+> (K. Ayeb, M. A. Benfadhel, K. Hawari). This repository adapted them to its own models (class
+> orders, wall-class mapping, generator injection, front-wall selection) and added the API wiring and tests.
 
 Containerised deployment: `docker compose up --build -d`.
 

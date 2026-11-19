@@ -1,0 +1,42 @@
+{
+  "model": "deeplabv3_resnet50 (ImageNet backbone)",
+  "split": "val",
+  "best": {
+    "pixel_acc": 0.6772622680664062,
+    "miou": 0.39698063460840866,
+    "per_class_iou": {
+      "background": 0.567455,
+      "facade": 0.580803,
+      "window": 0.568465,
+      "door": 0.391547,
+      "cornice": 0.431748,
+      "sill": 0.272623,
+      "balcony": 0.441762,
+      "blind": 0.342485,
+      "deco": 0.183259,
+      "molding": 0.502355,
+      "pillar": 0.18524,
+      "shop": 0.296025
+    },
+    "gt_pixels": {
+      "background": 1287416,
+      "facade": 2298948,
+      "window": 857871,
+      "door": 95640,
+      "cornice": 248725,
+      "sill": 244436,
+      "balcony": 321111,
+      "blind": 81073,
+      "deco": 125716,
+      "molding": 605342,
+      "pillar": 102106,
+      "shop": 285216
+    },
+    "epoch": 27
+  },
+  "epochs": 40,
+  "batch_size": 8,
+  "lr": 0.0002,
+  "seed": 42,
+  "checkpoint": "/kaggle/working/archigen/models/checkpoints/facade_parser_best.pt"
+}

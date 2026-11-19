@@ -167,6 +167,41 @@ class PatchGANDiscriminator(nn.Module):
         return out, features
 
 
+class MultiScaleDiscriminator(nn.Module):
+    """
+    pix2pixHD-style multi-scale discriminator (recipe v3): `num_scales` PatchGANs, each seeing the
+    (condition, image) pair at half the resolution of the previous one. The coarse scale judges the
+    global layout (floor rhythm, window grid), the fine scale the local texture.
+
+    Returns (list of patch predictions, list of all intermediate features) so the composite loss
+    averages the adversarial term over scales and the feature-matching term over every layer.
+    """
+    def __init__(self, in_channels: int = 6, ndf: int = 64, num_scales: int = 2, use_spectral_norm: bool = True):
+        super().__init__()
+        self.scales = nn.ModuleList(
+            PatchGANDiscriminator(in_channels, ndf, use_spectral_norm) for _ in range(num_scales)
+        )
+        self.down = nn.AvgPool2d(kernel_size=3, stride=2, padding=1, count_include_pad=False)
+
+    def forward(self, condition: torch.Tensor, target: torch.Tensor) -> Tuple[List[torch.Tensor], List[torch.Tensor]]:
+        preds: List[torch.Tensor] = []
+        features: List[torch.Tensor] = []
+        for i, disc in enumerate(self.scales):
+            if i:
+                condition, target = self.down(condition), self.down(target)
+            pred, feats = disc(condition, target)
+            preds.append(pred)
+            features.extend(feats)
+        return preds, features
+
+
+def _lsgan(mse: nn.Module, preds, target_value: float) -> torch.Tensor:
+    """LSGAN loss for one prediction map or the mean over a list of scales."""
+    if isinstance(preds, (list, tuple)):
+        return sum(_lsgan(mse, p, target_value) for p in preds) / len(preds)
+    return mse(preds, torch.full_like(preds, target_value))
+
+
 class PerceptualLoss(nn.Module):
     """
     Lightweight perceptual feature loss extracting multi-scale textures.
@@ -247,7 +282,7 @@ class FacadeCompositeLoss(nn.Module):
         real_images: torch.Tensor
     ) -> Dict[str, torch.Tensor]:
         # Adversarial LSGAN loss: want D(x, G(x)) to be 1
-        loss_adv = self.mse_loss(d_fake_pred, torch.ones_like(d_fake_pred))
+        loss_adv = _lsgan(self.mse_loss, d_fake_pred, 1.0)
 
         # L1 pixel fidelity
         loss_l1 = self.l1_loss(fake_images, real_images)
@@ -283,8 +318,8 @@ class FacadeCompositeLoss(nn.Module):
         d_fake_pred: torch.Tensor
     ) -> Dict[str, torch.Tensor]:
         # LSGAN real target is 1, fake target is 0
-        loss_real = self.mse_loss(d_real_pred, torch.ones_like(d_real_pred))
-        loss_fake = self.mse_loss(d_fake_pred, torch.zeros_like(d_fake_pred))
+        loss_real = _lsgan(self.mse_loss, d_real_pred, 1.0)
+        loss_fake = _lsgan(self.mse_loss, d_fake_pred, 0.0)
         total_d_loss = 0.5 * (loss_real + loss_fake)
         return {
             "d_total": total_d_loss,

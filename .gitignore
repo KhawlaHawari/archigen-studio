@@ -79,3 +79,10 @@ htmlcov/
 # Build output & Kaggle bundle
 dist/
 .claude/
+# Generated Evidently drift reports (regenerate with: py -3.11 src/mlops/evidently_report.py)
+data/monitoring/evidently_*.html
+
+# Large model weights: distribute via GitHub Releases / DVC, never Git
+models/controlnet_facade*/
+*.safetensors
+models/superres/

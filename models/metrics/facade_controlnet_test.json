@@ -1,0 +1,95 @@
+{
+  "task": "facade",
+  "split": "test",
+  "n_images": 106,
+  "generator": "Stable Diffusion 1.5 + ControlNet",
+  "controlnet": "/kaggle/working/archigen/models/controlnet_facade",
+  "inference": {
+    "steps": 25,
+    "scheduler": "UniPC",
+    "guidance_scale": 5.0,
+    "resolution": 512,
+    "scored_at": "256 px (bicubic downscale)",
+    "prompt": "a photo of a building facade, frontal view, realistic, high quality architectural photograph",
+    "negative_prompt": "text, letters, watermark, signature, blurry, lowres, distorted, cartoon, painting"
+  },
+  "l1": {
+    "mean": 0.46799707412719727,
+    "std": 0.07868196815252304,
+    "min": 0.2692038118839264,
+    "max": 0.6702897548675537
+  },
+  "psnr_db": {
+    "mean": 10.662680625915527,
+    "std": 1.3501237630844116,
+    "min": 7.72263765335083,
+    "max": 14.713349342346191
+  },
+  "ssim": {
+    "mean": 0.17244641482830048,
+    "std": 0.06674652546644211,
+    "min": 0.044597599655389786,
+    "max": 0.44251132011413574
+  },
+  "lpips": {
+    "mean": 0.4750165343284607,
+    "std": 0.07780081778764725,
+    "min": 0.30334949493408203,
+    "max": 0.651962399482727
+  },
+  "lpips_squeeze": {
+    "mean": 0.38079938292503357,
+    "std": 0.07118416577577591,
+    "min": 0.23951148986816406,
+    "max": 0.5683021545410156
+  },
+  "kid_x1000": {
+    "mean": 19.792424514889717,
+    "std": 5.501207895576954,
+    "subset_size": 50,
+    "subsets": 100
+  },
+  "fcn_score": {
+    "pixel_acc": 0.6437264208523732,
+    "miou": 0.3358575920601148,
+    "per_class_iou": {
+      "background": 0.543652,
+      "facade": 0.52899,
+      "window": 0.554187,
+      "door": 0.213964,
+      "cornice": 0.323303,
+      "sill": 0.196656,
+      "balcony": 0.367808,
+      "blind": 0.278975,
+      "deco": 0.114012,
+      "molding": 0.485636,
+      "pillar": 0.158095,
+      "shop": 0.265013
+    }
+  },
+  "fcn_score_real_photos": {
+    "pixel_acc": 0.68261042181051,
+    "miou": 0.39186656219072313,
+    "per_class_iou": {
+      "background": 0.603425,
+      "facade": 0.576166,
+      "window": 0.571177,
+      "door": 0.281755,
+      "cornice": 0.403009,
+      "sill": 0.249852,
+      "balcony": 0.412754,
+      "blind": 0.385602,
+      "deco": 0.166736,
+      "molding": 0.515693,
+      "pillar": 0.218783,
+      "shop": 0.317446
+    }
+  },
+  "averaging": "per image",
+  "env": {
+    "device": "cuda",
+    "torch": "2.11.0+cu130",
+    "python": "3.13.16",
+    "date": "2026-11-16 21:33:54"
+  }
+}

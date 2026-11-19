@@ -1,0 +1,81 @@
+{
+  "model_name": "floorplan_unetpp",
+  "split": "val",
+  "selection_metric": "val_room_miou",
+  "best": {
+    "loss": 0.7244170624017715,
+    "val_struct_miou": 0.7782443547066352,
+    "val_room_miou": 0.6996647556287456,
+    "val_room_pixel_acc": 0.9501945306599103,
+    "val_merged_wall_iou": 0.733072,
+    "val_door_iou": 0.662398,
+    "val_window_iou": 0.781737,
+    "epoch": 24,
+    "structure_per_class_iou": {
+      "background": 0.980942,
+      "exterior_wall": 0.78244,
+      "interior_wall": 0.683704,
+      "door": 0.662398,
+      "window": 0.781737
+    },
+    "room_per_class_iou": {
+      "background": 0.964661,
+      "living_room": 0.842049,
+      "bedroom": 0.886592,
+      "kitchen": 0.820176,
+      "bathroom": 0.838605,
+      "hallway": 0.788397,
+      "closet": 0.630003,
+      "balcony": 0.772506,
+      "dining": 0.463465,
+      "office": 0.08382,
+      "storage": 0.725275,
+      "technical": 0.580426
+    }
+  },
+  "hparams": {
+    "epochs": 25,
+    "batch_size": 4,
+    "lr": 0.0003,
+    "weight_decay": 0.0001,
+    "gradient_accumulation_steps": 2,
+    "seed": 42,
+    "structure_weights": [
+      0.5,
+      4.0,
+      4.0,
+      25.0,
+      10.0
+    ],
+    "input_size": 512,
+    "amp": true,
+    "recipe": "v2",
+    "pretrained_encoder": "imagenet_resnet34",
+    "pretrained_tensors": 210,
+    "room_weights": [
+      0.1237,
+      0.3229,
+      0.3511,
+      0.4387,
+      0.6594,
+      0.5135,
+      1.2135,
+      0.4673,
+      1.2449,
+      3.7809,
+      1.0654,
+      1.8188
+    ],
+    "scheduler": "cosine",
+    "early_stopping_patience": 8
+  },
+  "epochs_completed": 25,
+  "max_train_batches": null,
+  "n_train": 4200,
+  "stopped_by_time_budget": false,
+  "time_budget_min": 600.0,
+  "n_val": 400,
+  "device": "cuda",
+  "mlflow_run_id": null,
+  "checkpoint": "/kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt"
+}

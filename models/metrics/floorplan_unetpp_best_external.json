@@ -1,0 +1,493 @@
+{
+  "checkpoint": "/kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt",
+  "checkpoint_epoch": 9,
+  "criteria": {
+    "usable": "rooms >= 3 and area >= 25.0 m2",
+    "scale": "estimated from door widths (no override)"
+  },
+  "sets": {
+    "dev20": {
+      "n_plans": 20,
+      "usable_rate": 0.6,
+      "empty_rate": 0.0,
+      "shell_valid_rate": 0.75,
+      "per_plan": [
+        {
+          "plan": "dev_01_First_floor_plan__residence_fo",
+          "rooms": 7,
+          "area_m2": 119.43,
+          "doors": 2,
+          "windows": 1,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "dev_02_Second_floor_plan__residence_f",
+          "rooms": 3,
+          "area_m2": 34.45,
+          "doors": 3,
+          "windows": 3,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "dev_03_Blaupause2.jpg",
+          "rooms": 8,
+          "area_m2": 85.59,
+          "doors": 7,
+          "windows": 5,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "dev_04_Chestnut_Hills_-_blueprint.jpg",
+          "rooms": 39,
+          "area_m2": 378.88,
+          "doors": 35,
+          "windows": 56,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "dev_05_Moreland_Courts__blueprints__-",
+          "rooms": 2,
+          "area_m2": 4.32,
+          "doors": 0,
+          "windows": 0,
+          "shell_valid": false,
+          "usable": false
+        },
+        {
+          "plan": "dev_06_Moreland_Courts__blueprints__-",
+          "rooms": 1,
+          "area_m2": 30.76,
+          "doors": 0,
+          "windows": 0,
+          "shell_valid": true,
+          "usable": false
+        },
+        {
+          "plan": "dev_07_Moreland_Courts__blueprints__-",
+          "rooms": 1,
+          "area_m2": 3.56,
+          "doors": 0,
+          "windows": 0,
+          "shell_valid": true,
+          "usable": false
+        },
+        {
+          "plan": "dev_08_Moreland_Courts__blueprints__-",
+          "rooms": 1,
+          "area_m2": 19.23,
+          "doors": 0,
+          "windows": 0,
+          "shell_valid": false,
+          "usable": false
+        },
+        {
+          "plan": "dev_09_Moreland_Courts__blueprints__-",
+          "rooms": 1,
+          "area_m2": 40.81,
+          "doors": 0,
+          "windows": 0,
+          "shell_valid": false,
+          "usable": false
+        },
+        {
+          "plan": "dev_10_Moreland_Courts__blueprints__-",
+          "rooms": 1,
+          "area_m2": 30.43,
+          "doors": 0,
+          "windows": 0,
+          "shell_valid": false,
+          "usable": false
+        },
+        {
+          "plan": "dev_11_Foundation_plan__residence_for",
+          "rooms": 19,
+          "area_m2": 230.65,
+          "doors": 3,
+          "windows": 3,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "dev_12_BB8FloorPlan.png",
+          "rooms": 16,
+          "area_m2": 451.98,
+          "doors": 16,
+          "windows": 4,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "dev_13_Site_Plan__Basement_Plan__Main",
+          "rooms": 15,
+          "area_m2": 232.47,
+          "doors": 6,
+          "windows": 10,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "dev_14_First_and_Second_Floor_Plan_-_",
+          "rooms": 24,
+          "area_m2": 559.68,
+          "doors": 20,
+          "windows": 14,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "dev_15_Sebastian_Bach_Strasse_3_Grund",
+          "rooms": 16,
+          "area_m2": 174.89,
+          "doors": 14,
+          "windows": 19,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "dev_16_\u00dari_Stra\u00dfe_24__Durchgang__Plan",
+          "rooms": 12,
+          "area_m2": 166.76,
+          "doors": 8,
+          "windows": 6,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "dev_17_Moreland_Courts__blueprints__-",
+          "rooms": 1,
+          "area_m2": 45.84,
+          "doors": 0,
+          "windows": 0,
+          "shell_valid": true,
+          "usable": false
+        },
+        {
+          "plan": "dev_18_Moreland_Courts__blueprints__-",
+          "rooms": 2,
+          "area_m2": 6.75,
+          "doors": 0,
+          "windows": 0,
+          "shell_valid": false,
+          "usable": false
+        },
+        {
+          "plan": "dev_19_HABS_Measured-drawing-of-Tudor",
+          "rooms": 37,
+          "area_m2": 346.22,
+          "doors": 26,
+          "windows": 20,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "dev_20_Drawing_of_the_First_Floor_Pla",
+          "rooms": 8,
+          "area_m2": 296.09,
+          "doors": 10,
+          "windows": 11,
+          "shell_valid": true,
+          "usable": true
+        }
+      ]
+    },
+    "fresh12": {
+      "n_plans": 12,
+      "usable_rate": 1.0,
+      "empty_rate": 0.0,
+      "shell_valid_rate": 1.0,
+      "per_plan": [
+        {
+          "plan": "fresh_01_AI-generated_image_of_a_modern_apar",
+          "rooms": 8,
+          "area_m2": 42.96,
+          "doors": 5,
+          "windows": 5,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "fresh_02_Residential_Tower_Park_Plazajpg",
+          "rooms": 4,
+          "area_m2": 109.46,
+          "doors": 3,
+          "windows": 0,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "fresh_03_Drawing_of_the_Restored_Floor_Plan_",
+          "rooms": 12,
+          "area_m2": 109.68,
+          "doors": 4,
+          "windows": 8,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "fresh_04_N_Ladowski_Experimenteller_Entwurf_",
+          "rooms": 3,
+          "area_m2": 187.41,
+          "doors": 9,
+          "windows": 23,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "fresh_05_Plan_of_the_First_Floor_of_the_Feli",
+          "rooms": 15,
+          "area_m2": 198.12,
+          "doors": 17,
+          "windows": 19,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "fresh_06_Plan_of_the_Second_Floor_of_the_Fel",
+          "rooms": 11,
+          "area_m2": 121.39,
+          "doors": 8,
+          "windows": 9,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "fresh_07_StateLibQld_1_120300_Architectural_",
+          "rooms": 19,
+          "area_m2": 171.89,
+          "doors": 21,
+          "windows": 13,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "fresh_08_Umbria_Plantation_-_Architectural_p",
+          "rooms": 26,
+          "area_m2": 460.4,
+          "doors": 41,
+          "windows": 26,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "fresh_09_Drawing_Plan_of_the_Ground_Floor_of",
+          "rooms": 10,
+          "area_m2": 196.15,
+          "doors": 8,
+          "windows": 29,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "fresh_10_Spade_House_drawings_2JPG",
+          "rooms": 3,
+          "area_m2": 242.82,
+          "doors": 1,
+          "windows": 5,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "fresh_11_Spade_House_drawings_2cJPG",
+          "rooms": 12,
+          "area_m2": 29.5,
+          "doors": 15,
+          "windows": 7,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "fresh_12_CAD_of_House_Plan_from_Design_to_Bu",
+          "rooms": 8,
+          "area_m2": 33.98,
+          "doors": 3,
+          "windows": 4,
+          "shell_valid": true,
+          "usable": true
+        }
+      ]
+    },
+    "modern8": {
+      "n_plans": 8,
+      "usable_rate": 1.0,
+      "empty_rate": 0.0,
+      "shell_valid_rate": 0.875,
+      "per_plan": [
+        {
+          "plan": "modern_01_2bhk_bungalow",
+          "rooms": 9,
+          "area_m2": 93.47,
+          "doors": 7,
+          "windows": 7,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "modern_02_cad_house_plan",
+          "rooms": 8,
+          "area_m2": 33.98,
+          "doors": 3,
+          "windows": 4,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "modern_03_floor_plan_1395sqft",
+          "rooms": 26,
+          "area_m2": 160.34,
+          "doors": 22,
+          "windows": 7,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "modern_04_30by35_residential",
+          "rooms": 10,
+          "area_m2": 77.12,
+          "doors": 0,
+          "windows": 0,
+          "shell_valid": false,
+          "usable": true
+        },
+        {
+          "plan": "modern_05_savar_dohs_residence",
+          "rooms": 22,
+          "area_m2": 102.4,
+          "doors": 14,
+          "windows": 7,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "modern_06_caroline_court_apartment",
+          "rooms": 35,
+          "area_m2": 391.78,
+          "doors": 48,
+          "windows": 45,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "modern_07_swedish_open_plan_apartment",
+          "rooms": 4,
+          "area_m2": 43.76,
+          "doors": 3,
+          "windows": 3,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "modern_08_simon_house_plan",
+          "rooms": 19,
+          "area_m2": 413.64,
+          "doors": 21,
+          "windows": 18,
+          "shell_valid": true,
+          "usable": true
+        }
+      ]
+    },
+    "synthetic10": {
+      "n_plans": 10,
+      "usable_rate": 0.9,
+      "empty_rate": 0.0,
+      "shell_valid_rate": 1.0,
+      "per_plan": [
+        {
+          "plan": "01_clean_bw_cad",
+          "rooms": 4,
+          "area_m2": 49.9,
+          "doors": 2,
+          "windows": 2,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "02_marketing_brochure",
+          "rooms": 3,
+          "area_m2": 39.8,
+          "doors": 2,
+          "windows": 0,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "03_hand_drawn_sketch",
+          "rooms": 3,
+          "area_m2": 50.81,
+          "doors": 1,
+          "windows": 0,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "04_furniture_cluttered",
+          "rooms": 6,
+          "area_m2": 54.15,
+          "doors": 2,
+          "windows": 2,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "05_dimension_text_annotated",
+          "rooms": 4,
+          "area_m2": 49.79,
+          "doors": 2,
+          "windows": 2,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "06_low_res_screenshot",
+          "rooms": 4,
+          "area_m2": 39.9,
+          "doors": 2,
+          "windows": 2,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "07_open_concept_loft",
+          "rooms": 3,
+          "area_m2": 58.57,
+          "doors": 1,
+          "windows": 0,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "08_narrow_railroad_layout",
+          "rooms": 5,
+          "area_m2": 35.66,
+          "doors": 2,
+          "windows": 0,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "09_dark_mode_cad",
+          "rooms": 5,
+          "area_m2": 38.4,
+          "doors": 2,
+          "windows": 2,
+          "shell_valid": true,
+          "usable": true
+        },
+        {
+          "plan": "10_diagonal_angled_walls",
+          "rooms": 2,
+          "area_m2": 115.62,
+          "doors": 0,
+          "windows": 0,
+          "shell_valid": true,
+          "usable": false
+        }
+      ]
+    }
+  },
+  "elapsed_s": 36.6
+}

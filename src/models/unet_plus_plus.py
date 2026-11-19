@@ -238,14 +238,55 @@ class SoftDiceLoss(nn.Module):
         return 1.0 - torch.mean(dice_score)
 
 
+def _lovasz_grad(gt_sorted: torch.Tensor) -> torch.Tensor:
+    """Gradient of the Lovász extension of the Jaccard loss w.r.t. sorted errors (Berman et al., 2018)."""
+    gts = gt_sorted.sum()
+    intersection = gts - gt_sorted.cumsum(0)
+    union = gts + (1 - gt_sorted).cumsum(0)
+    jaccard = 1.0 - intersection / union
+    if len(gt_sorted) > 1:
+        jaccard[1:] = jaccard[1:] - jaccard[:-1]
+    return jaccard
+
+
+def lovasz_softmax(logits: torch.Tensor, targets: torch.Tensor, ignore_index: int = 255,
+                   max_pixels: int = 262144) -> torch.Tensor:
+    """Lovász-softmax loss: a convex surrogate that directly optimises per-class IoU (mIoU).
+
+    Averaged over the classes present in the batch. Pixels are randomly subsampled to `max_pixels`
+    to bound the sort cost on 512x512 batches.
+    """
+    probs = logits.float().softmax(1)
+    c = probs.shape[1]
+    probs = probs.permute(0, 2, 3, 1).reshape(-1, c)
+    targets = targets.reshape(-1)
+    valid = targets != ignore_index
+    probs, targets = probs[valid], targets[valid]
+    if targets.numel() == 0:
+        return logits.sum() * 0.0
+    if targets.numel() > max_pixels:
+        keep = torch.randperm(targets.numel(), device=targets.device)[:max_pixels]
+        probs, targets = probs[keep], targets[keep]
+    losses = []
+    for cls in targets.unique():
+        fg = (targets == cls).float()
+        errors = (fg - probs[:, cls]).abs()
+        errors_sorted, perm = torch.sort(errors, descending=True)
+        losses.append(torch.dot(errors_sorted, _lovasz_grad(fg[perm])))
+    return torch.stack(losses).mean()
+
+
 class FloorplanMultiTaskLoss(nn.Module):
     """
     Composite Multi-Task Loss as defined in Cahier des Charges:
     L_floorplan = L_Struct(WCE + Dice) + 0.5 * L_Room(CE + Dice)
     With structure weights: Bg=0.5, ExtWall=4.0, IntWall=4.0, Door=25.0, Window=10.0
     """
-    def __init__(self, struct_weights: Optional[List[float]] = None, room_weights: Optional[List[float]] = None):
+    def __init__(self, struct_weights: Optional[List[float]] = None, room_weights: Optional[List[float]] = None,
+                 room_lovasz_weight: float = 0.0):
         super().__init__()
+        # recipe v3: + room_lovasz_weight * Lovász-softmax on the room head (optimises room mIoU directly).
+        self.room_lovasz_weight = room_lovasz_weight
         if struct_weights is None:
             struct_weights = [0.5, 4.0, 4.0, 25.0, 10.0]
 
@@ -274,6 +315,10 @@ class FloorplanMultiTaskLoss(nn.Module):
         loss_room_ce = self.room_ce(room_logits, room_targets)
         loss_room_dice = self.dice(room_logits, room_targets)
         loss_room = loss_room_ce + loss_room_dice
+        loss_room_lovasz = torch.zeros((), device=room_logits.device)
+        if self.room_lovasz_weight > 0:
+            loss_room_lovasz = lovasz_softmax(room_logits, room_targets)
+            loss_room = loss_room + self.room_lovasz_weight * loss_room_lovasz
 
         total_loss = loss_struct + 0.5 * loss_room
 
@@ -285,4 +330,5 @@ class FloorplanMultiTaskLoss(nn.Module):
             "loss_struct_dice": loss_struct_dice,
             "loss_room_ce": loss_room_ce,
             "loss_room_dice": loss_room_dice,
+            "loss_room_lovasz": loss_room_lovasz,
         }

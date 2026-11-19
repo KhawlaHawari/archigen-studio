@@ -1,0 +1,3728 @@
+{
+  "task": "floorplan_layout",
+  "split": "test",
+  "n_plans": 400,
+  "checkpoint": "/kaggle/working/archigen/models/checkpoints/floorplan_unetpp_best.pt",
+  "checkpoint_epoch": 9,
+  "detection": {
+    "door": {
+      "radius_12px": {
+        "precision": 0.8386,
+        "recall": 0.9351,
+        "f1": 0.8842,
+        "tp": 3788,
+        "fp": 729,
+        "fn": 263
+      },
+      "radius_24px": {
+        "precision": 0.8472,
+        "recall": 0.9447,
+        "f1": 0.8933,
+        "tp": 3827,
+        "fp": 690,
+        "fn": 224
+      },
+      "centroid_error_px": {
+        "median": 0.69,
+        "mean": 1.26
+      }
+    },
+    "window": {
+      "radius_12px": {
+        "precision": 0.8033,
+        "recall": 0.8453,
+        "f1": 0.8238,
+        "tp": 2786,
+        "fp": 682,
+        "fn": 510
+      },
+      "radius_24px": {
+        "precision": 0.8359,
+        "recall": 0.8796,
+        "f1": 0.8572,
+        "tp": 2899,
+        "fp": 569,
+        "fn": 397
+      },
+      "centroid_error_px": {
+        "median": 0.75,
+        "mean": 1.88
+      }
+    }
+  },
+  "layout": {
+    "watertight_shell_rate": 0.9975,
+    "watertight_shell_rate_from_gt_masks": 0.9875,
+    "footprint_iou_mean": 0.9518,
+    "footprint_iou_median": 0.9775,
+    "room_count_mae": 0.94,
+    "room_count_bias": 0.69,
+    "door_count_mae": 1.35,
+    "door_count_bias": -0.12
+  },
+  "room_types": {
+    "n_rooms": 3075,
+    "accuracy": 0.8712,
+    "balanced_accuracy": 0.7787,
+    "per_type": {
+      "Living Room": {
+        "n": 328,
+        "accuracy": 0.8354
+      },
+      "Bedroom": {
+        "n": 613,
+        "accuracy": 0.9347
+      },
+      "Kitchen": {
+        "n": 156,
+        "accuracy": 0.7564
+      },
+      "Bathroom": {
+        "n": 590,
+        "accuracy": 0.9305
+      },
+      "Entry / Hall": {
+        "n": 271,
+        "accuracy": 0.8856
+      },
+      "Closet": {
+        "n": 215,
+        "accuracy": 0.8047
+      },
+      "Balcony / Terrace": {
+        "n": 586,
+        "accuracy": 0.872
+      },
+      "Dining": {
+        "n": 11,
+        "accuracy": 0.0909
+      },
+      "Office": {
+        "n": 9,
+        "accuracy": 0.8889
+      },
+      "Storage": {
+        "n": 177,
+        "accuracy": 0.7853
+      },
+      "Utility": {
+        "n": 119,
+        "accuracy": 0.7815
+      }
+    }
+  },
+  "protocol": {
+    "matching": "greedy nearest centroid, one-to-one",
+    "radii_px": [
+      12,
+      24
+    ],
+    "min_object_px": 10,
+    "room_reference": "layout vectorized from the ground-truth masks (same vectorizer)",
+    "tta": null,
+    "scale": "estimated by the vectorizer from door widths (no override)"
+  },
+  "per_plan": [
+    {
+      "file": "colorful_11260",
+      "shell_valid": true,
+      "footprint_iou": 0.9711,
+      "rooms_pred": 11,
+      "rooms_gt": 11,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "colorful_11395",
+      "shell_valid": true,
+      "footprint_iou": 0.8534,
+      "rooms_pred": 14,
+      "rooms_gt": 12,
+      "doors_pred": 11,
+      "doors_gt": 12
+    },
+    {
+      "file": "colorful_11397",
+      "shell_valid": true,
+      "footprint_iou": 0.9842,
+      "rooms_pred": 14,
+      "rooms_gt": 14,
+      "doors_pred": 11,
+      "doors_gt": 13
+    },
+    {
+      "file": "colorful_11398",
+      "shell_valid": true,
+      "footprint_iou": 0.9649,
+      "rooms_pred": 16,
+      "rooms_gt": 14,
+      "doors_pred": 12,
+      "doors_gt": 14
+    },
+    {
+      "file": "colorful_11399",
+      "shell_valid": true,
+      "footprint_iou": 0.9804,
+      "rooms_pred": 14,
+      "rooms_gt": 14,
+      "doors_pred": 12,
+      "doors_gt": 13
+    },
+    {
+      "file": "colorful_11400",
+      "shell_valid": true,
+      "footprint_iou": 0.9793,
+      "rooms_pred": 15,
+      "rooms_gt": 15,
+      "doors_pred": 11,
+      "doors_gt": 13
+    },
+    {
+      "file": "colorful_11402",
+      "shell_valid": true,
+      "footprint_iou": 0.9806,
+      "rooms_pred": 14,
+      "rooms_gt": 14,
+      "doors_pred": 11,
+      "doors_gt": 12
+    },
+    {
+      "file": "colorful_11485",
+      "shell_valid": true,
+      "footprint_iou": 0.9901,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 5,
+      "doors_gt": 4
+    },
+    {
+      "file": "colorful_11527",
+      "shell_valid": true,
+      "footprint_iou": 0.84,
+      "rooms_pred": 7,
+      "rooms_gt": 6,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "colorful_11565",
+      "shell_valid": true,
+      "footprint_iou": 0.9959,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "colorful_11573",
+      "shell_valid": true,
+      "footprint_iou": 0.9921,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 9,
+      "doors_gt": 10
+    },
+    {
+      "file": "colorful_11578",
+      "shell_valid": true,
+      "footprint_iou": 0.9709,
+      "rooms_pred": 4,
+      "rooms_gt": 2,
+      "doors_pred": 4,
+      "doors_gt": 3
+    },
+    {
+      "file": "colorful_11664",
+      "shell_valid": true,
+      "footprint_iou": 0.9067,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 8,
+      "doors_gt": 6
+    },
+    {
+      "file": "colorful_11750",
+      "shell_valid": true,
+      "footprint_iou": 0.9041,
+      "rooms_pred": 6,
+      "rooms_gt": 5,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "colorful_11752",
+      "shell_valid": true,
+      "footprint_iou": 0.9844,
+      "rooms_pred": 10,
+      "rooms_gt": 9,
+      "doors_pred": 10,
+      "doors_gt": 9
+    },
+    {
+      "file": "colorful_11773",
+      "shell_valid": true,
+      "footprint_iou": 0.9902,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 5,
+      "doors_gt": 6
+    },
+    {
+      "file": "colorful_11774",
+      "shell_valid": true,
+      "footprint_iou": 0.9915,
+      "rooms_pred": 6,
+      "rooms_gt": 5,
+      "doors_pred": 6,
+      "doors_gt": 5
+    },
+    {
+      "file": "colorful_11859",
+      "shell_valid": true,
+      "footprint_iou": 0.9518,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "colorful_11867",
+      "shell_valid": true,
+      "footprint_iou": 0.9853,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 9,
+      "doors_gt": 8
+    },
+    {
+      "file": "colorful_11960",
+      "shell_valid": true,
+      "footprint_iou": 0.995,
+      "rooms_pred": 7,
+      "rooms_gt": 5,
+      "doors_pred": 7,
+      "doors_gt": 5
+    },
+    {
+      "file": "colorful_11962",
+      "shell_valid": true,
+      "footprint_iou": 0.6648,
+      "rooms_pred": 14,
+      "rooms_gt": 14,
+      "doors_pred": 14,
+      "doors_gt": 12
+    },
+    {
+      "file": "colorful_12002",
+      "shell_valid": true,
+      "footprint_iou": 0.9879,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "colorful_12030",
+      "shell_valid": true,
+      "footprint_iou": 0.9727,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 4,
+      "doors_gt": 3
+    },
+    {
+      "file": "colorful_12094",
+      "shell_valid": true,
+      "footprint_iou": 0.9947,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "colorful_12139",
+      "shell_valid": true,
+      "footprint_iou": 0.9853,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 10,
+      "doors_gt": 9
+    },
+    {
+      "file": "colorful_12200",
+      "shell_valid": true,
+      "footprint_iou": 0.9958,
+      "rooms_pred": 2,
+      "rooms_gt": 2,
+      "doors_pred": 3,
+      "doors_gt": 3
+    },
+    {
+      "file": "colorful_12202",
+      "shell_valid": true,
+      "footprint_iou": 0.99,
+      "rooms_pred": 2,
+      "rooms_gt": 2,
+      "doors_pred": 3,
+      "doors_gt": 3
+    },
+    {
+      "file": "colorful_12214",
+      "shell_valid": true,
+      "footprint_iou": 0.9828,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 4,
+      "doors_gt": 4
+    },
+    {
+      "file": "colorful_12217",
+      "shell_valid": true,
+      "footprint_iou": 0.9826,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 3,
+      "doors_gt": 3
+    },
+    {
+      "file": "colorful_12229",
+      "shell_valid": true,
+      "footprint_iou": 0.9837,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "colorful_12560",
+      "shell_valid": true,
+      "footprint_iou": 0.9964,
+      "rooms_pred": 8,
+      "rooms_gt": 6,
+      "doors_pred": 8,
+      "doors_gt": 6
+    },
+    {
+      "file": "colorful_12625",
+      "shell_valid": true,
+      "footprint_iou": 0.9826,
+      "rooms_pred": 18,
+      "rooms_gt": 19,
+      "doors_pred": 17,
+      "doors_gt": 18
+    },
+    {
+      "file": "colorful_12627",
+      "shell_valid": true,
+      "footprint_iou": 0.9946,
+      "rooms_pred": 8,
+      "rooms_gt": 5,
+      "doors_pred": 8,
+      "doors_gt": 5
+    },
+    {
+      "file": "colorful_12729",
+      "shell_valid": true,
+      "footprint_iou": 0.987,
+      "rooms_pred": 11,
+      "rooms_gt": 11,
+      "doors_pred": 11,
+      "doors_gt": 11
+    },
+    {
+      "file": "colorful_12769",
+      "shell_valid": true,
+      "footprint_iou": 0.9773,
+      "rooms_pred": 8,
+      "rooms_gt": 7,
+      "doors_pred": 9,
+      "doors_gt": 7
+    },
+    {
+      "file": "colorful_12787",
+      "shell_valid": true,
+      "footprint_iou": 0.9765,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "colorful_12830",
+      "shell_valid": true,
+      "footprint_iou": 0.9873,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 7,
+      "doors_gt": 6
+    },
+    {
+      "file": "colorful_12866",
+      "shell_valid": true,
+      "footprint_iou": 0.9922,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "colorful_12871",
+      "shell_valid": true,
+      "footprint_iou": 0.9288,
+      "rooms_pred": 21,
+      "rooms_gt": 20,
+      "doors_pred": 18,
+      "doors_gt": 17
+    },
+    {
+      "file": "colorful_12872",
+      "shell_valid": true,
+      "footprint_iou": 0.9725,
+      "rooms_pred": 22,
+      "rooms_gt": 20,
+      "doors_pred": 24,
+      "doors_gt": 21
+    },
+    {
+      "file": "colorful_12946",
+      "shell_valid": true,
+      "footprint_iou": 0.9832,
+      "rooms_pred": 9,
+      "rooms_gt": 8,
+      "doors_pred": 7,
+      "doors_gt": 8
+    },
+    {
+      "file": "colorful_12981",
+      "shell_valid": true,
+      "footprint_iou": 0.9902,
+      "rooms_pred": 11,
+      "rooms_gt": 12,
+      "doors_pred": 11,
+      "doors_gt": 11
+    },
+    {
+      "file": "colorful_13019",
+      "shell_valid": true,
+      "footprint_iou": 0.9946,
+      "rooms_pred": 4,
+      "rooms_gt": 3,
+      "doors_pred": 5,
+      "doors_gt": 3
+    },
+    {
+      "file": "colorful_13022",
+      "shell_valid": true,
+      "footprint_iou": 0.9878,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 3,
+      "doors_gt": 3
+    },
+    {
+      "file": "colorful_13023",
+      "shell_valid": true,
+      "footprint_iou": 0.9847,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 3,
+      "doors_gt": 3
+    },
+    {
+      "file": "colorful_13031",
+      "shell_valid": true,
+      "footprint_iou": 0.8946,
+      "rooms_pred": 7,
+      "rooms_gt": 6,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "colorful_13138",
+      "shell_valid": true,
+      "footprint_iou": 0.993,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "colorful_13181",
+      "shell_valid": true,
+      "footprint_iou": 0.9925,
+      "rooms_pred": 3,
+      "rooms_gt": 2,
+      "doors_pred": 1,
+      "doors_gt": 4
+    },
+    {
+      "file": "colorful_13195",
+      "shell_valid": true,
+      "footprint_iou": 0.9961,
+      "rooms_pred": 4,
+      "rooms_gt": 3,
+      "doors_pred": 5,
+      "doors_gt": 3
+    },
+    {
+      "file": "colorful_13213",
+      "shell_valid": true,
+      "footprint_iou": 0.9906,
+      "rooms_pred": 18,
+      "rooms_gt": 18,
+      "doors_pred": 19,
+      "doors_gt": 19
+    },
+    {
+      "file": "colorful_13226",
+      "shell_valid": true,
+      "footprint_iou": 0.8603,
+      "rooms_pred": 6,
+      "rooms_gt": 5,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "colorful_13254",
+      "shell_valid": true,
+      "footprint_iou": 0.9931,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 3,
+      "doors_gt": 3
+    },
+    {
+      "file": "colorful_13258",
+      "shell_valid": true,
+      "footprint_iou": 0.9915,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "colorful_13264",
+      "shell_valid": true,
+      "footprint_iou": 0.9805,
+      "rooms_pred": 18,
+      "rooms_gt": 17,
+      "doors_pred": 17,
+      "doors_gt": 17
+    },
+    {
+      "file": "colorful_13278",
+      "shell_valid": true,
+      "footprint_iou": 0.9934,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 3,
+      "doors_gt": 3
+    },
+    {
+      "file": "colorful_13281",
+      "shell_valid": true,
+      "footprint_iou": 0.9642,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 4,
+      "doors_gt": 4
+    },
+    {
+      "file": "colorful_13352",
+      "shell_valid": true,
+      "footprint_iou": 0.9124,
+      "rooms_pred": 16,
+      "rooms_gt": 14,
+      "doors_pred": 14,
+      "doors_gt": 13
+    },
+    {
+      "file": "colorful_13438",
+      "shell_valid": true,
+      "footprint_iou": 0.9936,
+      "rooms_pred": 11,
+      "rooms_gt": 11,
+      "doors_pred": 9,
+      "doors_gt": 8
+    },
+    {
+      "file": "colorful_13500",
+      "shell_valid": true,
+      "footprint_iou": 0.9843,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 5,
+      "doors_gt": 6
+    },
+    {
+      "file": "colorful_13502",
+      "shell_valid": true,
+      "footprint_iou": 0.9794,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "colorful_13577",
+      "shell_valid": true,
+      "footprint_iou": 0.8894,
+      "rooms_pred": 6,
+      "rooms_gt": 7,
+      "doors_pred": 6,
+      "doors_gt": 7
+    },
+    {
+      "file": "colorful_13589",
+      "shell_valid": true,
+      "footprint_iou": 0.9776,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "colorful_13685",
+      "shell_valid": true,
+      "footprint_iou": 0.9876,
+      "rooms_pred": 15,
+      "rooms_gt": 14,
+      "doors_pred": 14,
+      "doors_gt": 13
+    },
+    {
+      "file": "colorful_2586",
+      "shell_valid": true,
+      "footprint_iou": 0.9144,
+      "rooms_pred": 18,
+      "rooms_gt": 17,
+      "doors_pred": 18,
+      "doors_gt": 20
+    },
+    {
+      "file": "colorful_3598",
+      "shell_valid": true,
+      "footprint_iou": 0.9961,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "colorful_8389",
+      "shell_valid": true,
+      "footprint_iou": 0.9943,
+      "rooms_pred": 9,
+      "rooms_gt": 8,
+      "doors_pred": 11,
+      "doors_gt": 10
+    },
+    {
+      "file": "colorful_9448",
+      "shell_valid": true,
+      "footprint_iou": 0.9537,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 10,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_1025",
+      "shell_valid": true,
+      "footprint_iou": 0.9642,
+      "rooms_pred": 14,
+      "rooms_gt": 13,
+      "doors_pred": 13,
+      "doors_gt": 13
+    },
+    {
+      "file": "high_quality_1140",
+      "shell_valid": true,
+      "footprint_iou": 0.9855,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 7,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_1282",
+      "shell_valid": true,
+      "footprint_iou": 0.8723,
+      "rooms_pred": 8,
+      "rooms_gt": 9,
+      "doors_pred": 8,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_1403",
+      "shell_valid": true,
+      "footprint_iou": 0.9939,
+      "rooms_pred": 11,
+      "rooms_gt": 11,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_1506",
+      "shell_valid": true,
+      "footprint_iou": 0.9891,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 4,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_1510",
+      "shell_valid": true,
+      "footprint_iou": 0.9861,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_1569",
+      "shell_valid": true,
+      "footprint_iou": 0.9867,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_1692",
+      "shell_valid": true,
+      "footprint_iou": 0.9342,
+      "rooms_pred": 28,
+      "rooms_gt": 26,
+      "doors_pred": 32,
+      "doors_gt": 30
+    },
+    {
+      "file": "high_quality_1877",
+      "shell_valid": true,
+      "footprint_iou": 0.9943,
+      "rooms_pred": 5,
+      "rooms_gt": 4,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_19",
+      "shell_valid": true,
+      "footprint_iou": 0.9805,
+      "rooms_pred": 15,
+      "rooms_gt": 13,
+      "doors_pred": 13,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_20168",
+      "shell_valid": true,
+      "footprint_iou": 0.9881,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_20174",
+      "shell_valid": true,
+      "footprint_iou": 0.9683,
+      "rooms_pred": 10,
+      "rooms_gt": 9,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_20183",
+      "shell_valid": true,
+      "footprint_iou": 0.9913,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_20188",
+      "shell_valid": true,
+      "footprint_iou": 0.9925,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_20197",
+      "shell_valid": true,
+      "footprint_iou": 0.9769,
+      "rooms_pred": 10,
+      "rooms_gt": 9,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_20198",
+      "shell_valid": true,
+      "footprint_iou": 0.992,
+      "rooms_pred": 7,
+      "rooms_gt": 6,
+      "doors_pred": 9,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_3074",
+      "shell_valid": true,
+      "footprint_iou": 0.9437,
+      "rooms_pred": 12,
+      "rooms_gt": 12,
+      "doors_pred": 14,
+      "doors_gt": 13
+    },
+    {
+      "file": "high_quality_3078",
+      "shell_valid": true,
+      "footprint_iou": 0.9679,
+      "rooms_pred": 7,
+      "rooms_gt": 6,
+      "doors_pred": 8,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_3106",
+      "shell_valid": true,
+      "footprint_iou": 0.9628,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 8,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_3141",
+      "shell_valid": true,
+      "footprint_iou": 0.9866,
+      "rooms_pred": 10,
+      "rooms_gt": 9,
+      "doors_pred": 10,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_3162",
+      "shell_valid": true,
+      "footprint_iou": 0.9818,
+      "rooms_pred": 9,
+      "rooms_gt": 8,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_3247",
+      "shell_valid": true,
+      "footprint_iou": 0.959,
+      "rooms_pred": 8,
+      "rooms_gt": 7,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_337",
+      "shell_valid": true,
+      "footprint_iou": 0.9801,
+      "rooms_pred": 12,
+      "rooms_gt": 11,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_3512",
+      "shell_valid": true,
+      "footprint_iou": 0.9836,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_3529",
+      "shell_valid": true,
+      "footprint_iou": 0.9896,
+      "rooms_pred": 13,
+      "rooms_gt": 13,
+      "doors_pred": 13,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_3638",
+      "shell_valid": true,
+      "footprint_iou": 0.9963,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 7,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_3676",
+      "shell_valid": true,
+      "footprint_iou": 0.9223,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 4,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_3801",
+      "shell_valid": true,
+      "footprint_iou": 0.9915,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_3930",
+      "shell_valid": true,
+      "footprint_iou": 0.9212,
+      "rooms_pred": 22,
+      "rooms_gt": 21,
+      "doors_pred": 20,
+      "doors_gt": 18
+    },
+    {
+      "file": "high_quality_3954",
+      "shell_valid": true,
+      "footprint_iou": 0.9866,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_4617",
+      "shell_valid": true,
+      "footprint_iou": 0.9895,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_4712",
+      "shell_valid": true,
+      "footprint_iou": 0.801,
+      "rooms_pred": 8,
+      "rooms_gt": 6,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_4767",
+      "shell_valid": true,
+      "footprint_iou": 0.984,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 2,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_477",
+      "shell_valid": true,
+      "footprint_iou": 0.9892,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_4815",
+      "shell_valid": true,
+      "footprint_iou": 0.9828,
+      "rooms_pred": 13,
+      "rooms_gt": 14,
+      "doors_pred": 11,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_4851",
+      "shell_valid": true,
+      "footprint_iou": 0.9968,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 8,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_488",
+      "shell_valid": true,
+      "footprint_iou": 0.9928,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_5588",
+      "shell_valid": true,
+      "footprint_iou": 0.991,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_5632",
+      "shell_valid": true,
+      "footprint_iou": 0.8432,
+      "rooms_pred": 9,
+      "rooms_gt": 7,
+      "doors_pred": 11,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_5703",
+      "shell_valid": true,
+      "footprint_iou": 0.9522,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 3,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_5774",
+      "shell_valid": true,
+      "footprint_iou": 0.9893,
+      "rooms_pred": 18,
+      "rooms_gt": 17,
+      "doors_pred": 25,
+      "doors_gt": 24
+    },
+    {
+      "file": "high_quality_5807",
+      "shell_valid": true,
+      "footprint_iou": 0.9918,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 7,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_5836",
+      "shell_valid": true,
+      "footprint_iou": 0.9874,
+      "rooms_pred": 7,
+      "rooms_gt": 6,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_5845",
+      "shell_valid": true,
+      "footprint_iou": 0.9954,
+      "rooms_pred": 7,
+      "rooms_gt": 6,
+      "doors_pred": 7,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_5858",
+      "shell_valid": true,
+      "footprint_iou": 0.9758,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 7,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_5985",
+      "shell_valid": true,
+      "footprint_iou": 0.9729,
+      "rooms_pred": 4,
+      "rooms_gt": 3,
+      "doors_pred": 6,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_6058",
+      "shell_valid": true,
+      "footprint_iou": 0.9947,
+      "rooms_pred": 15,
+      "rooms_gt": 16,
+      "doors_pred": 14,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_6521",
+      "shell_valid": true,
+      "footprint_iou": 0.7821,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_6624",
+      "shell_valid": true,
+      "footprint_iou": 0.9946,
+      "rooms_pred": 9,
+      "rooms_gt": 8,
+      "doors_pred": 9,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_750",
+      "shell_valid": true,
+      "footprint_iou": 0.9883,
+      "rooms_pred": 8,
+      "rooms_gt": 0,
+      "doors_pred": 4,
+      "doors_gt": 1
+    },
+    {
+      "file": "high_quality_7625",
+      "shell_valid": true,
+      "footprint_iou": 0.9939,
+      "rooms_pred": 4,
+      "rooms_gt": 3,
+      "doors_pred": 4,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_7790",
+      "shell_valid": true,
+      "footprint_iou": 0.9788,
+      "rooms_pred": 5,
+      "rooms_gt": 3,
+      "doors_pred": 4,
+      "doors_gt": 2
+    },
+    {
+      "file": "high_quality_8230",
+      "shell_valid": true,
+      "footprint_iou": 0.9919,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 4,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_837",
+      "shell_valid": true,
+      "footprint_iou": 0.9845,
+      "rooms_pred": 14,
+      "rooms_gt": 13,
+      "doors_pred": 8,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_8380",
+      "shell_valid": true,
+      "footprint_iou": 0.9929,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 7,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_8731",
+      "shell_valid": true,
+      "footprint_iou": 0.9904,
+      "rooms_pred": 8,
+      "rooms_gt": 7,
+      "doors_pred": 9,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_8816",
+      "shell_valid": true,
+      "footprint_iou": 0.987,
+      "rooms_pred": 14,
+      "rooms_gt": 14,
+      "doors_pred": 14,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_90",
+      "shell_valid": true,
+      "footprint_iou": 0.9877,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_9334",
+      "shell_valid": true,
+      "footprint_iou": 0.9857,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_9480",
+      "shell_valid": true,
+      "footprint_iou": 0.994,
+      "rooms_pred": 12,
+      "rooms_gt": 12,
+      "doors_pred": 13,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_9671",
+      "shell_valid": true,
+      "footprint_iou": 0.9587,
+      "rooms_pred": 12,
+      "rooms_gt": 13,
+      "doors_pred": 12,
+      "doors_gt": 13
+    },
+    {
+      "file": "high_quality_9803",
+      "shell_valid": true,
+      "footprint_iou": 0.9932,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 4,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_9864",
+      "shell_valid": true,
+      "footprint_iou": 0.9199,
+      "rooms_pred": 8,
+      "rooms_gt": 6,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_1041",
+      "shell_valid": true,
+      "footprint_iou": 0.9818,
+      "rooms_pred": 6,
+      "rooms_gt": 5,
+      "doors_pred": 5,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_architectural_1116",
+      "shell_valid": true,
+      "footprint_iou": 0.749,
+      "rooms_pred": 22,
+      "rooms_gt": 20,
+      "doors_pred": 21,
+      "doors_gt": 18
+    },
+    {
+      "file": "high_quality_architectural_1141",
+      "shell_valid": true,
+      "footprint_iou": 0.848,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_1165",
+      "shell_valid": true,
+      "footprint_iou": 0.955,
+      "rooms_pred": 4,
+      "rooms_gt": 3,
+      "doors_pred": 3,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_1191",
+      "shell_valid": true,
+      "footprint_iou": 0.963,
+      "rooms_pred": 16,
+      "rooms_gt": 15,
+      "doors_pred": 15,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_1217",
+      "shell_valid": true,
+      "footprint_iou": 0.9568,
+      "rooms_pred": 13,
+      "rooms_gt": 11,
+      "doors_pred": 18,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_1228",
+      "shell_valid": true,
+      "footprint_iou": 0.9065,
+      "rooms_pred": 10,
+      "rooms_gt": 7,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_123",
+      "shell_valid": true,
+      "footprint_iou": 0.9793,
+      "rooms_pred": 17,
+      "rooms_gt": 17,
+      "doors_pred": 20,
+      "doors_gt": 19
+    },
+    {
+      "file": "high_quality_architectural_1235",
+      "shell_valid": true,
+      "footprint_iou": 0.9826,
+      "rooms_pred": 11,
+      "rooms_gt": 10,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_1242",
+      "shell_valid": true,
+      "footprint_iou": 0.9806,
+      "rooms_pred": 12,
+      "rooms_gt": 12,
+      "doors_pred": 14,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_1264",
+      "shell_valid": true,
+      "footprint_iou": 0.98,
+      "rooms_pred": 16,
+      "rooms_gt": 16,
+      "doors_pred": 15,
+      "doors_gt": 18
+    },
+    {
+      "file": "high_quality_architectural_1279",
+      "shell_valid": true,
+      "footprint_iou": 0.9889,
+      "rooms_pred": 14,
+      "rooms_gt": 12,
+      "doors_pred": 16,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_1284",
+      "shell_valid": true,
+      "footprint_iou": 0.9476,
+      "rooms_pred": 11,
+      "rooms_gt": 9,
+      "doors_pred": 11,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_1285",
+      "shell_valid": true,
+      "footprint_iou": 0.9694,
+      "rooms_pred": 15,
+      "rooms_gt": 14,
+      "doors_pred": 11,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_1293",
+      "shell_valid": true,
+      "footprint_iou": 0.9854,
+      "rooms_pred": 4,
+      "rooms_gt": 5,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_1319",
+      "shell_valid": true,
+      "footprint_iou": 0.6268,
+      "rooms_pred": 16,
+      "rooms_gt": 10,
+      "doors_pred": 16,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_1339",
+      "shell_valid": true,
+      "footprint_iou": 0.9755,
+      "rooms_pred": 6,
+      "rooms_gt": 5,
+      "doors_pred": 7,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_141",
+      "shell_valid": true,
+      "footprint_iou": 0.9766,
+      "rooms_pred": 13,
+      "rooms_gt": 12,
+      "doors_pred": 12,
+      "doors_gt": 11
+    },
+    {
+      "file": "high_quality_architectural_1432",
+      "shell_valid": true,
+      "footprint_iou": 0.979,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_1444",
+      "shell_valid": true,
+      "footprint_iou": 0.9858,
+      "rooms_pred": 7,
+      "rooms_gt": 5,
+      "doors_pred": 7,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_145",
+      "shell_valid": true,
+      "footprint_iou": 0.9881,
+      "rooms_pred": 4,
+      "rooms_gt": 6,
+      "doors_pred": 8,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_1511",
+      "shell_valid": true,
+      "footprint_iou": 0.9866,
+      "rooms_pred": 8,
+      "rooms_gt": 9,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_1551",
+      "shell_valid": true,
+      "footprint_iou": 0.9773,
+      "rooms_pred": 16,
+      "rooms_gt": 16,
+      "doors_pred": 15,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_1590",
+      "shell_valid": true,
+      "footprint_iou": 0.9867,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 9,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_1599",
+      "shell_valid": true,
+      "footprint_iou": 0.831,
+      "rooms_pred": 14,
+      "rooms_gt": 13,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_1601",
+      "shell_valid": true,
+      "footprint_iou": 0.9813,
+      "rooms_pred": 7,
+      "rooms_gt": 6,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_1622",
+      "shell_valid": true,
+      "footprint_iou": 0.9771,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_1636",
+      "shell_valid": true,
+      "footprint_iou": 0.9834,
+      "rooms_pred": 5,
+      "rooms_gt": 6,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_165",
+      "shell_valid": true,
+      "footprint_iou": 0.9918,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 6,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_1652",
+      "shell_valid": true,
+      "footprint_iou": 0.9612,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 6,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_architectural_1669",
+      "shell_valid": true,
+      "footprint_iou": 0.9709,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_1683",
+      "shell_valid": true,
+      "footprint_iou": 0.969,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 3,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_1701",
+      "shell_valid": true,
+      "footprint_iou": 0.9884,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_1718",
+      "shell_valid": true,
+      "footprint_iou": 0.9357,
+      "rooms_pred": 15,
+      "rooms_gt": 14,
+      "doors_pred": 13,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_172",
+      "shell_valid": true,
+      "footprint_iou": 0.9869,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 8,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_1754",
+      "shell_valid": true,
+      "footprint_iou": 0.9894,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 4,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_architectural_1767",
+      "shell_valid": true,
+      "footprint_iou": 0.9886,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 4,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_architectural_1772",
+      "shell_valid": true,
+      "footprint_iou": 0.7264,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 10,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_1778",
+      "shell_valid": true,
+      "footprint_iou": 0.9746,
+      "rooms_pred": 12,
+      "rooms_gt": 12,
+      "doors_pred": 11,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_1781",
+      "shell_valid": true,
+      "footprint_iou": 0.9851,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 10,
+      "doors_gt": 11
+    },
+    {
+      "file": "high_quality_architectural_1788",
+      "shell_valid": true,
+      "footprint_iou": 0.8116,
+      "rooms_pred": 16,
+      "rooms_gt": 14,
+      "doors_pred": 16,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_18",
+      "shell_valid": true,
+      "footprint_iou": 0.984,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_1801",
+      "shell_valid": true,
+      "footprint_iou": 0.8583,
+      "rooms_pred": 16,
+      "rooms_gt": 16,
+      "doors_pred": 17,
+      "doors_gt": 19
+    },
+    {
+      "file": "high_quality_architectural_1814",
+      "shell_valid": true,
+      "footprint_iou": 0.9841,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 8,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_1837",
+      "shell_valid": true,
+      "footprint_iou": 0.9909,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_1838",
+      "shell_valid": true,
+      "footprint_iou": 0.9896,
+      "rooms_pred": 2,
+      "rooms_gt": 2,
+      "doors_pred": 3,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_1839",
+      "shell_valid": true,
+      "footprint_iou": 0.9875,
+      "rooms_pred": 6,
+      "rooms_gt": 3,
+      "doors_pred": 7,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_1841",
+      "shell_valid": true,
+      "footprint_iou": 0.9923,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_1842",
+      "shell_valid": true,
+      "footprint_iou": 0.9809,
+      "rooms_pred": 4,
+      "rooms_gt": 2,
+      "doors_pred": 4,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_1845",
+      "shell_valid": true,
+      "footprint_iou": 0.9859,
+      "rooms_pred": 2,
+      "rooms_gt": 2,
+      "doors_pred": 3,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_1849",
+      "shell_valid": true,
+      "footprint_iou": 0.9946,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_1856",
+      "shell_valid": true,
+      "footprint_iou": 0.9965,
+      "rooms_pred": 6,
+      "rooms_gt": 3,
+      "doors_pred": 7,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_1869",
+      "shell_valid": true,
+      "footprint_iou": 0.9679,
+      "rooms_pred": 17,
+      "rooms_gt": 15,
+      "doors_pred": 18,
+      "doors_gt": 16
+    },
+    {
+      "file": "high_quality_architectural_1910",
+      "shell_valid": true,
+      "footprint_iou": 0.9647,
+      "rooms_pred": 16,
+      "rooms_gt": 17,
+      "doors_pred": 16,
+      "doors_gt": 17
+    },
+    {
+      "file": "high_quality_architectural_1914",
+      "shell_valid": true,
+      "footprint_iou": 0.834,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 4,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_1921",
+      "shell_valid": true,
+      "footprint_iou": 0.9871,
+      "rooms_pred": 6,
+      "rooms_gt": 7,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_1944",
+      "shell_valid": true,
+      "footprint_iou": 0.9136,
+      "rooms_pred": 12,
+      "rooms_gt": 10,
+      "doors_pred": 10,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_1945",
+      "shell_valid": true,
+      "footprint_iou": 0.9841,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_1966",
+      "shell_valid": true,
+      "footprint_iou": 0.9077,
+      "rooms_pred": 19,
+      "rooms_gt": 17,
+      "doors_pred": 14,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_1982",
+      "shell_valid": true,
+      "footprint_iou": 0.9197,
+      "rooms_pred": 32,
+      "rooms_gt": 25,
+      "doors_pred": 27,
+      "doors_gt": 28
+    },
+    {
+      "file": "high_quality_architectural_199",
+      "shell_valid": true,
+      "footprint_iou": 0.9912,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_20000",
+      "shell_valid": false,
+      "footprint_iou": 0.9772,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 0,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_20002",
+      "shell_valid": true,
+      "footprint_iou": 0.9348,
+      "rooms_pred": 14,
+      "rooms_gt": 10,
+      "doors_pred": 16,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_20003",
+      "shell_valid": true,
+      "footprint_iou": 0.994,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 9,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_20017",
+      "shell_valid": true,
+      "footprint_iou": 0.9902,
+      "rooms_pred": 11,
+      "rooms_gt": 11,
+      "doors_pred": 14,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_20019",
+      "shell_valid": true,
+      "footprint_iou": 0.7737,
+      "rooms_pred": 9,
+      "rooms_gt": 6,
+      "doors_pred": 11,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_20021",
+      "shell_valid": true,
+      "footprint_iou": 0.9907,
+      "rooms_pred": 2,
+      "rooms_gt": 2,
+      "doors_pred": 2,
+      "doors_gt": 2
+    },
+    {
+      "file": "high_quality_architectural_20022",
+      "shell_valid": true,
+      "footprint_iou": 0.9486,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_20023",
+      "shell_valid": true,
+      "footprint_iou": 0.9288,
+      "rooms_pred": 9,
+      "rooms_gt": 7,
+      "doors_pred": 7,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_20028",
+      "shell_valid": true,
+      "footprint_iou": 0.7082,
+      "rooms_pred": 3,
+      "rooms_gt": 5,
+      "doors_pred": 3,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_2011",
+      "shell_valid": true,
+      "footprint_iou": 0.9724,
+      "rooms_pred": 14,
+      "rooms_gt": 14,
+      "doors_pred": 12,
+      "doors_gt": 13
+    },
+    {
+      "file": "high_quality_architectural_2014",
+      "shell_valid": true,
+      "footprint_iou": 0.9471,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_2029",
+      "shell_valid": true,
+      "footprint_iou": 0.978,
+      "rooms_pred": 22,
+      "rooms_gt": 20,
+      "doors_pred": 19,
+      "doors_gt": 19
+    },
+    {
+      "file": "high_quality_architectural_2031",
+      "shell_valid": true,
+      "footprint_iou": 0.9802,
+      "rooms_pred": 5,
+      "rooms_gt": 4,
+      "doors_pred": 5,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_architectural_2035",
+      "shell_valid": true,
+      "footprint_iou": 0.9804,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_2036",
+      "shell_valid": true,
+      "footprint_iou": 0.9842,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_2037",
+      "shell_valid": true,
+      "footprint_iou": 0.9835,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_2053",
+      "shell_valid": true,
+      "footprint_iou": 0.9659,
+      "rooms_pred": 11,
+      "rooms_gt": 11,
+      "doors_pred": 10,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_207",
+      "shell_valid": true,
+      "footprint_iou": 0.9946,
+      "rooms_pred": 15,
+      "rooms_gt": 15,
+      "doors_pred": 6,
+      "doors_gt": 17
+    },
+    {
+      "file": "high_quality_architectural_2085",
+      "shell_valid": true,
+      "footprint_iou": 0.9887,
+      "rooms_pred": 16,
+      "rooms_gt": 16,
+      "doors_pred": 16,
+      "doors_gt": 16
+    },
+    {
+      "file": "high_quality_architectural_2090",
+      "shell_valid": true,
+      "footprint_iou": 0.9918,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_211",
+      "shell_valid": true,
+      "footprint_iou": 0.9761,
+      "rooms_pred": 11,
+      "rooms_gt": 11,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_2149",
+      "shell_valid": true,
+      "footprint_iou": 0.9667,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 4,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_architectural_2179",
+      "shell_valid": true,
+      "footprint_iou": 0.9083,
+      "rooms_pred": 21,
+      "rooms_gt": 16,
+      "doors_pred": 12,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_22",
+      "shell_valid": true,
+      "footprint_iou": 0.9759,
+      "rooms_pred": 15,
+      "rooms_gt": 12,
+      "doors_pred": 17,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_2204",
+      "shell_valid": true,
+      "footprint_iou": 0.9739,
+      "rooms_pred": 18,
+      "rooms_gt": 20,
+      "doors_pred": 11,
+      "doors_gt": 26
+    },
+    {
+      "file": "high_quality_architectural_2207",
+      "shell_valid": true,
+      "footprint_iou": 0.968,
+      "rooms_pred": 15,
+      "rooms_gt": 15,
+      "doors_pred": 13,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_225",
+      "shell_valid": true,
+      "footprint_iou": 0.9588,
+      "rooms_pred": 14,
+      "rooms_gt": 13,
+      "doors_pred": 15,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_239",
+      "shell_valid": true,
+      "footprint_iou": 0.9629,
+      "rooms_pred": 4,
+      "rooms_gt": 3,
+      "doors_pred": 4,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_2504",
+      "shell_valid": true,
+      "footprint_iou": 0.9129,
+      "rooms_pred": 7,
+      "rooms_gt": 6,
+      "doors_pred": 6,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_2510",
+      "shell_valid": true,
+      "footprint_iou": 0.6971,
+      "rooms_pred": 11,
+      "rooms_gt": 14,
+      "doors_pred": 10,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_2530",
+      "shell_valid": true,
+      "footprint_iou": 0.9848,
+      "rooms_pred": 17,
+      "rooms_gt": 16,
+      "doors_pred": 16,
+      "doors_gt": 16
+    },
+    {
+      "file": "high_quality_architectural_2536",
+      "shell_valid": true,
+      "footprint_iou": 0.9829,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 8,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_2539",
+      "shell_valid": true,
+      "footprint_iou": 0.9938,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 9,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_2582",
+      "shell_valid": true,
+      "footprint_iou": 0.9355,
+      "rooms_pred": 12,
+      "rooms_gt": 12,
+      "doors_pred": 12,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_287",
+      "shell_valid": true,
+      "footprint_iou": 0.8585,
+      "rooms_pred": 16,
+      "rooms_gt": 15,
+      "doors_pred": 16,
+      "doors_gt": 18
+    },
+    {
+      "file": "high_quality_architectural_3024",
+      "shell_valid": true,
+      "footprint_iou": 0.9905,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 11,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_3038",
+      "shell_valid": true,
+      "footprint_iou": 0.9853,
+      "rooms_pred": 16,
+      "rooms_gt": 16,
+      "doors_pred": 5,
+      "doors_gt": 16
+    },
+    {
+      "file": "high_quality_architectural_3060",
+      "shell_valid": true,
+      "footprint_iou": 0.9858,
+      "rooms_pred": 14,
+      "rooms_gt": 14,
+      "doors_pred": 17,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_32",
+      "shell_valid": true,
+      "footprint_iou": 0.9513,
+      "rooms_pred": 17,
+      "rooms_gt": 17,
+      "doors_pred": 18,
+      "doors_gt": 19
+    },
+    {
+      "file": "high_quality_architectural_3516",
+      "shell_valid": true,
+      "footprint_iou": 0.8972,
+      "rooms_pred": 6,
+      "rooms_gt": 3,
+      "doors_pred": 5,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_3517",
+      "shell_valid": true,
+      "footprint_iou": 0.9563,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 2,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_3527",
+      "shell_valid": true,
+      "footprint_iou": 0.6083,
+      "rooms_pred": 21,
+      "rooms_gt": 20,
+      "doors_pred": 18,
+      "doors_gt": 24
+    },
+    {
+      "file": "high_quality_architectural_3580",
+      "shell_valid": true,
+      "footprint_iou": 0.9341,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_3608",
+      "shell_valid": true,
+      "footprint_iou": 0.9549,
+      "rooms_pred": 20,
+      "rooms_gt": 20,
+      "doors_pred": 18,
+      "doors_gt": 19
+    },
+    {
+      "file": "high_quality_architectural_366",
+      "shell_valid": true,
+      "footprint_iou": 0.9733,
+      "rooms_pred": 15,
+      "rooms_gt": 14,
+      "doors_pred": 13,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_3660",
+      "shell_valid": true,
+      "footprint_iou": 0.9829,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 4,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_3781",
+      "shell_valid": true,
+      "footprint_iou": 0.9748,
+      "rooms_pred": 4,
+      "rooms_gt": 3,
+      "doors_pred": 5,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_architectural_3802",
+      "shell_valid": true,
+      "footprint_iou": 0.9577,
+      "rooms_pred": 14,
+      "rooms_gt": 13,
+      "doors_pred": 15,
+      "doors_gt": 13
+    },
+    {
+      "file": "high_quality_architectural_3860",
+      "shell_valid": true,
+      "footprint_iou": 0.9473,
+      "rooms_pred": 9,
+      "rooms_gt": 8,
+      "doors_pred": 9,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_3868",
+      "shell_valid": true,
+      "footprint_iou": 0.9854,
+      "rooms_pred": 7,
+      "rooms_gt": 6,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_3890",
+      "shell_valid": true,
+      "footprint_iou": 0.977,
+      "rooms_pred": 6,
+      "rooms_gt": 7,
+      "doors_pred": 6,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_392",
+      "shell_valid": true,
+      "footprint_iou": 0.9043,
+      "rooms_pred": 7,
+      "rooms_gt": 5,
+      "doors_pred": 6,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_3984",
+      "shell_valid": true,
+      "footprint_iou": 0.9712,
+      "rooms_pred": 22,
+      "rooms_gt": 20,
+      "doors_pred": 23,
+      "doors_gt": 20
+    },
+    {
+      "file": "high_quality_architectural_4014",
+      "shell_valid": true,
+      "footprint_iou": 0.9739,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_4068",
+      "shell_valid": true,
+      "footprint_iou": 0.967,
+      "rooms_pred": 14,
+      "rooms_gt": 13,
+      "doors_pred": 15,
+      "doors_gt": 13
+    },
+    {
+      "file": "high_quality_architectural_416",
+      "shell_valid": true,
+      "footprint_iou": 0.9305,
+      "rooms_pred": 12,
+      "rooms_gt": 12,
+      "doors_pred": 11,
+      "doors_gt": 11
+    },
+    {
+      "file": "high_quality_architectural_435",
+      "shell_valid": true,
+      "footprint_iou": 0.6367,
+      "rooms_pred": 9,
+      "rooms_gt": 6,
+      "doors_pred": 8,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_4535",
+      "shell_valid": true,
+      "footprint_iou": 0.9825,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_4553",
+      "shell_valid": true,
+      "footprint_iou": 0.9543,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_4555",
+      "shell_valid": true,
+      "footprint_iou": 0.8605,
+      "rooms_pred": 10,
+      "rooms_gt": 9,
+      "doors_pred": 11,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_4589",
+      "shell_valid": true,
+      "footprint_iou": 0.9762,
+      "rooms_pred": 19,
+      "rooms_gt": 19,
+      "doors_pred": 13,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_4594",
+      "shell_valid": true,
+      "footprint_iou": 0.9856,
+      "rooms_pred": 11,
+      "rooms_gt": 10,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_4707",
+      "shell_valid": true,
+      "footprint_iou": 0.9046,
+      "rooms_pred": 21,
+      "rooms_gt": 21,
+      "doors_pred": 18,
+      "doors_gt": 17
+    },
+    {
+      "file": "high_quality_architectural_4775",
+      "shell_valid": true,
+      "footprint_iou": 0.9866,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_479",
+      "shell_valid": true,
+      "footprint_iou": 0.991,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 7,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_481",
+      "shell_valid": true,
+      "footprint_iou": 0.9501,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_4812",
+      "shell_valid": true,
+      "footprint_iou": 0.9792,
+      "rooms_pred": 12,
+      "rooms_gt": 12,
+      "doors_pred": 9,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_4813",
+      "shell_valid": true,
+      "footprint_iou": 0.9302,
+      "rooms_pred": 28,
+      "rooms_gt": 21,
+      "doors_pred": 27,
+      "doors_gt": 22
+    },
+    {
+      "file": "high_quality_architectural_4828",
+      "shell_valid": true,
+      "footprint_iou": 0.8704,
+      "rooms_pred": 19,
+      "rooms_gt": 14,
+      "doors_pred": 16,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_4845",
+      "shell_valid": true,
+      "footprint_iou": 0.9992,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 7,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_4847",
+      "shell_valid": true,
+      "footprint_iou": 0.9865,
+      "rooms_pred": 6,
+      "rooms_gt": 7,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_4898",
+      "shell_valid": true,
+      "footprint_iou": 0.9828,
+      "rooms_pred": 16,
+      "rooms_gt": 15,
+      "doors_pred": 18,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_4911",
+      "shell_valid": true,
+      "footprint_iou": 0.9847,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_4928",
+      "shell_valid": true,
+      "footprint_iou": 0.9533,
+      "rooms_pred": 12,
+      "rooms_gt": 11,
+      "doors_pred": 12,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_5018",
+      "shell_valid": true,
+      "footprint_iou": 0.8909,
+      "rooms_pred": 21,
+      "rooms_gt": 22,
+      "doors_pred": 17,
+      "doors_gt": 17
+    },
+    {
+      "file": "high_quality_architectural_5023",
+      "shell_valid": true,
+      "footprint_iou": 0.953,
+      "rooms_pred": 23,
+      "rooms_gt": 21,
+      "doors_pred": 20,
+      "doors_gt": 29
+    },
+    {
+      "file": "high_quality_architectural_5039",
+      "shell_valid": true,
+      "footprint_iou": 0.9796,
+      "rooms_pred": 7,
+      "rooms_gt": 6,
+      "doors_pred": 8,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_5046",
+      "shell_valid": true,
+      "footprint_iou": 0.9639,
+      "rooms_pred": 26,
+      "rooms_gt": 25,
+      "doors_pred": 20,
+      "doors_gt": 23
+    },
+    {
+      "file": "high_quality_architectural_5064",
+      "shell_valid": true,
+      "footprint_iou": 0.8403,
+      "rooms_pred": 21,
+      "rooms_gt": 19,
+      "doors_pred": 23,
+      "doors_gt": 30
+    },
+    {
+      "file": "high_quality_architectural_5089",
+      "shell_valid": true,
+      "footprint_iou": 0.9574,
+      "rooms_pred": 8,
+      "rooms_gt": 7,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_5100",
+      "shell_valid": true,
+      "footprint_iou": 0.86,
+      "rooms_pred": 20,
+      "rooms_gt": 16,
+      "doors_pred": 18,
+      "doors_gt": 17
+    },
+    {
+      "file": "high_quality_architectural_5121",
+      "shell_valid": true,
+      "footprint_iou": 0.9857,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 6,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_5135",
+      "shell_valid": true,
+      "footprint_iou": 0.8845,
+      "rooms_pred": 31,
+      "rooms_gt": 28,
+      "doors_pred": 20,
+      "doors_gt": 31
+    },
+    {
+      "file": "high_quality_architectural_5156",
+      "shell_valid": true,
+      "footprint_iou": 0.8196,
+      "rooms_pred": 15,
+      "rooms_gt": 10,
+      "doors_pred": 11,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_52",
+      "shell_valid": true,
+      "footprint_iou": 0.75,
+      "rooms_pred": 9,
+      "rooms_gt": 8,
+      "doors_pred": 6,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_521",
+      "shell_valid": true,
+      "footprint_iou": 0.9835,
+      "rooms_pred": 13,
+      "rooms_gt": 12,
+      "doors_pred": 12,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_541",
+      "shell_valid": true,
+      "footprint_iou": 0.9764,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 10,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_546",
+      "shell_valid": true,
+      "footprint_iou": 0.9863,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 9,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_552",
+      "shell_valid": true,
+      "footprint_iou": 0.9084,
+      "rooms_pred": 7,
+      "rooms_gt": 5,
+      "doors_pred": 7,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_5570",
+      "shell_valid": true,
+      "footprint_iou": 0.8334,
+      "rooms_pred": 10,
+      "rooms_gt": 9,
+      "doors_pred": 8,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_5571",
+      "shell_valid": true,
+      "footprint_iou": 0.9939,
+      "rooms_pred": 16,
+      "rooms_gt": 17,
+      "doors_pred": 21,
+      "doors_gt": 17
+    },
+    {
+      "file": "high_quality_architectural_5617",
+      "shell_valid": true,
+      "footprint_iou": 0.9285,
+      "rooms_pred": 6,
+      "rooms_gt": 3,
+      "doors_pred": 4,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_architectural_5642",
+      "shell_valid": true,
+      "footprint_iou": 0.9322,
+      "rooms_pred": 16,
+      "rooms_gt": 15,
+      "doors_pred": 15,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_5760",
+      "shell_valid": true,
+      "footprint_iou": 0.9912,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_5765",
+      "shell_valid": true,
+      "footprint_iou": 0.9107,
+      "rooms_pred": 22,
+      "rooms_gt": 20,
+      "doors_pred": 17,
+      "doors_gt": 19
+    },
+    {
+      "file": "high_quality_architectural_5872",
+      "shell_valid": true,
+      "footprint_iou": 0.9911,
+      "rooms_pred": 10,
+      "rooms_gt": 9,
+      "doors_pred": 11,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_5886",
+      "shell_valid": true,
+      "footprint_iou": 0.9531,
+      "rooms_pred": 18,
+      "rooms_gt": 17,
+      "doors_pred": 15,
+      "doors_gt": 16
+    },
+    {
+      "file": "high_quality_architectural_591",
+      "shell_valid": true,
+      "footprint_iou": 0.9944,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_5956",
+      "shell_valid": true,
+      "footprint_iou": 0.9875,
+      "rooms_pred": 20,
+      "rooms_gt": 17,
+      "doors_pred": 10,
+      "doors_gt": 17
+    },
+    {
+      "file": "high_quality_architectural_5974",
+      "shell_valid": true,
+      "footprint_iou": 0.9155,
+      "rooms_pred": 14,
+      "rooms_gt": 12,
+      "doors_pred": 13,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_6007",
+      "shell_valid": true,
+      "footprint_iou": 0.9582,
+      "rooms_pred": 21,
+      "rooms_gt": 16,
+      "doors_pred": 23,
+      "doors_gt": 16
+    },
+    {
+      "file": "high_quality_architectural_6017",
+      "shell_valid": true,
+      "footprint_iou": 0.9886,
+      "rooms_pred": 7,
+      "rooms_gt": 5,
+      "doors_pred": 6,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_6023",
+      "shell_valid": true,
+      "footprint_iou": 0.9915,
+      "rooms_pred": 16,
+      "rooms_gt": 16,
+      "doors_pred": 17,
+      "doors_gt": 18
+    },
+    {
+      "file": "high_quality_architectural_6042",
+      "shell_valid": true,
+      "footprint_iou": 0.9731,
+      "rooms_pred": 9,
+      "rooms_gt": 11,
+      "doors_pred": 11,
+      "doors_gt": 11
+    },
+    {
+      "file": "high_quality_architectural_6053",
+      "shell_valid": true,
+      "footprint_iou": 0.9881,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_6059",
+      "shell_valid": true,
+      "footprint_iou": 0.9962,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_6064",
+      "shell_valid": true,
+      "footprint_iou": 0.9412,
+      "rooms_pred": 8,
+      "rooms_gt": 6,
+      "doors_pred": 7,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_6066",
+      "shell_valid": true,
+      "footprint_iou": 0.9917,
+      "rooms_pred": 14,
+      "rooms_gt": 16,
+      "doors_pred": 19,
+      "doors_gt": 21
+    },
+    {
+      "file": "high_quality_architectural_6081",
+      "shell_valid": true,
+      "footprint_iou": 0.9673,
+      "rooms_pred": 21,
+      "rooms_gt": 23,
+      "doors_pred": 20,
+      "doors_gt": 24
+    },
+    {
+      "file": "high_quality_architectural_6094",
+      "shell_valid": true,
+      "footprint_iou": 0.949,
+      "rooms_pred": 7,
+      "rooms_gt": 6,
+      "doors_pred": 7,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_6123",
+      "shell_valid": true,
+      "footprint_iou": 0.986,
+      "rooms_pred": 16,
+      "rooms_gt": 16,
+      "doors_pred": 14,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_6144",
+      "shell_valid": true,
+      "footprint_iou": 0.981,
+      "rooms_pred": 11,
+      "rooms_gt": 11,
+      "doors_pred": 11,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_6152",
+      "shell_valid": true,
+      "footprint_iou": 0.9658,
+      "rooms_pred": 12,
+      "rooms_gt": 12,
+      "doors_pred": 11,
+      "doors_gt": 11
+    },
+    {
+      "file": "high_quality_architectural_6166",
+      "shell_valid": true,
+      "footprint_iou": 0.9634,
+      "rooms_pred": 13,
+      "rooms_gt": 13,
+      "doors_pred": 11,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_6187",
+      "shell_valid": true,
+      "footprint_iou": 0.9564,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 2,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_6259",
+      "shell_valid": true,
+      "footprint_iou": 0.9732,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 7,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_6269",
+      "shell_valid": true,
+      "footprint_iou": 0.7967,
+      "rooms_pred": 9,
+      "rooms_gt": 6,
+      "doors_pred": 10,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_6276",
+      "shell_valid": true,
+      "footprint_iou": 0.9318,
+      "rooms_pred": 23,
+      "rooms_gt": 23,
+      "doors_pred": 20,
+      "doors_gt": 28
+    },
+    {
+      "file": "high_quality_architectural_6303",
+      "shell_valid": true,
+      "footprint_iou": 0.9526,
+      "rooms_pred": 4,
+      "rooms_gt": 5,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_6316",
+      "shell_valid": true,
+      "footprint_iou": 0.9889,
+      "rooms_pred": 20,
+      "rooms_gt": 17,
+      "doors_pred": 19,
+      "doors_gt": 16
+    },
+    {
+      "file": "high_quality_architectural_6355",
+      "shell_valid": true,
+      "footprint_iou": 0.8458,
+      "rooms_pred": 23,
+      "rooms_gt": 22,
+      "doors_pred": 28,
+      "doors_gt": 24
+    },
+    {
+      "file": "high_quality_architectural_6378",
+      "shell_valid": true,
+      "footprint_iou": 0.9864,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_6402",
+      "shell_valid": true,
+      "footprint_iou": 0.854,
+      "rooms_pred": 14,
+      "rooms_gt": 13,
+      "doors_pred": 14,
+      "doors_gt": 11
+    },
+    {
+      "file": "high_quality_architectural_6408",
+      "shell_valid": true,
+      "footprint_iou": 0.9828,
+      "rooms_pred": 11,
+      "rooms_gt": 10,
+      "doors_pred": 11,
+      "doors_gt": 11
+    },
+    {
+      "file": "high_quality_architectural_6428",
+      "shell_valid": true,
+      "footprint_iou": 0.9707,
+      "rooms_pred": 19,
+      "rooms_gt": 21,
+      "doors_pred": 20,
+      "doors_gt": 18
+    },
+    {
+      "file": "high_quality_architectural_6452",
+      "shell_valid": true,
+      "footprint_iou": 0.8603,
+      "rooms_pred": 5,
+      "rooms_gt": 3,
+      "doors_pred": 4,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_architectural_6457",
+      "shell_valid": true,
+      "footprint_iou": 0.9798,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_6467",
+      "shell_valid": true,
+      "footprint_iou": 0.9902,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 6,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_6483",
+      "shell_valid": true,
+      "footprint_iou": 0.9846,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 7,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_654",
+      "shell_valid": true,
+      "footprint_iou": 0.9262,
+      "rooms_pred": 21,
+      "rooms_gt": 20,
+      "doors_pred": 17,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_6549",
+      "shell_valid": true,
+      "footprint_iou": 0.9118,
+      "rooms_pred": 14,
+      "rooms_gt": 14,
+      "doors_pred": 13,
+      "doors_gt": 13
+    },
+    {
+      "file": "high_quality_architectural_6596",
+      "shell_valid": true,
+      "footprint_iou": 0.8976,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_6606",
+      "shell_valid": true,
+      "footprint_iou": 0.9891,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_6631",
+      "shell_valid": true,
+      "footprint_iou": 0.8001,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 3,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_6652",
+      "shell_valid": true,
+      "footprint_iou": 0.7778,
+      "rooms_pred": 20,
+      "rooms_gt": 16,
+      "doors_pred": 14,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_6697",
+      "shell_valid": true,
+      "footprint_iou": 0.9575,
+      "rooms_pred": 15,
+      "rooms_gt": 14,
+      "doors_pred": 14,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_6704",
+      "shell_valid": true,
+      "footprint_iou": 0.8826,
+      "rooms_pred": 18,
+      "rooms_gt": 16,
+      "doors_pred": 16,
+      "doors_gt": 16
+    },
+    {
+      "file": "high_quality_architectural_6716",
+      "shell_valid": true,
+      "footprint_iou": 0.8886,
+      "rooms_pred": 9,
+      "rooms_gt": 10,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_6726",
+      "shell_valid": true,
+      "footprint_iou": 0.9834,
+      "rooms_pred": 11,
+      "rooms_gt": 11,
+      "doors_pred": 11,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_7037",
+      "shell_valid": true,
+      "footprint_iou": 0.9834,
+      "rooms_pred": 13,
+      "rooms_gt": 13,
+      "doors_pred": 12,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_7061",
+      "shell_valid": true,
+      "footprint_iou": 0.9692,
+      "rooms_pred": 9,
+      "rooms_gt": 10,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_7071",
+      "shell_valid": true,
+      "footprint_iou": 0.9797,
+      "rooms_pred": 19,
+      "rooms_gt": 19,
+      "doors_pred": 18,
+      "doors_gt": 21
+    },
+    {
+      "file": "high_quality_architectural_7119",
+      "shell_valid": true,
+      "footprint_iou": 0.8725,
+      "rooms_pred": 20,
+      "rooms_gt": 19,
+      "doors_pred": 20,
+      "doors_gt": 18
+    },
+    {
+      "file": "high_quality_architectural_7516",
+      "shell_valid": true,
+      "footprint_iou": 0.9649,
+      "rooms_pred": 5,
+      "rooms_gt": 4,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_7606",
+      "shell_valid": true,
+      "footprint_iou": 0.985,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 8,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_7639",
+      "shell_valid": true,
+      "footprint_iou": 0.9688,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 3,
+      "doors_gt": 2
+    },
+    {
+      "file": "high_quality_architectural_7647",
+      "shell_valid": true,
+      "footprint_iou": 0.9902,
+      "rooms_pred": 16,
+      "rooms_gt": 16,
+      "doors_pred": 17,
+      "doors_gt": 17
+    },
+    {
+      "file": "high_quality_architectural_7691",
+      "shell_valid": true,
+      "footprint_iou": 0.9514,
+      "rooms_pred": 13,
+      "rooms_gt": 12,
+      "doors_pred": 12,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_7696",
+      "shell_valid": true,
+      "footprint_iou": 0.9935,
+      "rooms_pred": 3,
+      "rooms_gt": 3,
+      "doors_pred": 2,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_7705",
+      "shell_valid": true,
+      "footprint_iou": 0.6969,
+      "rooms_pred": 9,
+      "rooms_gt": 2,
+      "doors_pred": 8,
+      "doors_gt": 0
+    },
+    {
+      "file": "high_quality_architectural_7715",
+      "shell_valid": true,
+      "footprint_iou": 0.9001,
+      "rooms_pred": 5,
+      "rooms_gt": 9,
+      "doors_pred": 5,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_772",
+      "shell_valid": true,
+      "footprint_iou": 0.9873,
+      "rooms_pred": 7,
+      "rooms_gt": 4,
+      "doors_pred": 7,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_architectural_774",
+      "shell_valid": true,
+      "footprint_iou": 0.9666,
+      "rooms_pred": 12,
+      "rooms_gt": 11,
+      "doors_pred": 14,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_7760",
+      "shell_valid": true,
+      "footprint_iou": 0.9765,
+      "rooms_pred": 17,
+      "rooms_gt": 18,
+      "doors_pred": 14,
+      "doors_gt": 18
+    },
+    {
+      "file": "high_quality_architectural_7780",
+      "shell_valid": true,
+      "footprint_iou": 0.9938,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 10,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_7809",
+      "shell_valid": true,
+      "footprint_iou": 0.9612,
+      "rooms_pred": 9,
+      "rooms_gt": 8,
+      "doors_pred": 8,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_7858",
+      "shell_valid": true,
+      "footprint_iou": 0.9783,
+      "rooms_pred": 12,
+      "rooms_gt": 12,
+      "doors_pred": 11,
+      "doors_gt": 11
+    },
+    {
+      "file": "high_quality_architectural_789",
+      "shell_valid": true,
+      "footprint_iou": 0.9886,
+      "rooms_pred": 4,
+      "rooms_gt": 3,
+      "doors_pred": 4,
+      "doors_gt": 3
+    },
+    {
+      "file": "high_quality_architectural_7894",
+      "shell_valid": true,
+      "footprint_iou": 0.9745,
+      "rooms_pred": 23,
+      "rooms_gt": 21,
+      "doors_pred": 19,
+      "doors_gt": 21
+    },
+    {
+      "file": "high_quality_architectural_7901",
+      "shell_valid": true,
+      "footprint_iou": 0.9802,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 9,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_7974",
+      "shell_valid": true,
+      "footprint_iou": 0.9656,
+      "rooms_pred": 16,
+      "rooms_gt": 14,
+      "doors_pred": 15,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_7980",
+      "shell_valid": true,
+      "footprint_iou": 0.9692,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 9,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_8046",
+      "shell_valid": true,
+      "footprint_iou": 0.9369,
+      "rooms_pred": 9,
+      "rooms_gt": 8,
+      "doors_pred": 7,
+      "doors_gt": 6
+    },
+    {
+      "file": "high_quality_architectural_812",
+      "shell_valid": true,
+      "footprint_iou": 0.9815,
+      "rooms_pred": 7,
+      "rooms_gt": 8,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_8138",
+      "shell_valid": true,
+      "footprint_iou": 0.9803,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 7,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_8189",
+      "shell_valid": true,
+      "footprint_iou": 0.9122,
+      "rooms_pred": 9,
+      "rooms_gt": 8,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_8208",
+      "shell_valid": true,
+      "footprint_iou": 0.9684,
+      "rooms_pred": 22,
+      "rooms_gt": 18,
+      "doors_pred": 18,
+      "doors_gt": 18
+    },
+    {
+      "file": "high_quality_architectural_8269",
+      "shell_valid": true,
+      "footprint_iou": 0.7535,
+      "rooms_pred": 4,
+      "rooms_gt": 3,
+      "doors_pred": 2,
+      "doors_gt": 2
+    },
+    {
+      "file": "high_quality_architectural_8281",
+      "shell_valid": true,
+      "footprint_iou": 0.9628,
+      "rooms_pred": 14,
+      "rooms_gt": 16,
+      "doors_pred": 0,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_8285",
+      "shell_valid": true,
+      "footprint_iou": 0.9725,
+      "rooms_pred": 24,
+      "rooms_gt": 23,
+      "doors_pred": 23,
+      "doors_gt": 23
+    },
+    {
+      "file": "high_quality_architectural_8304",
+      "shell_valid": true,
+      "footprint_iou": 0.8922,
+      "rooms_pred": 18,
+      "rooms_gt": 20,
+      "doors_pred": 16,
+      "doors_gt": 18
+    },
+    {
+      "file": "high_quality_architectural_8372",
+      "shell_valid": true,
+      "footprint_iou": 0.9806,
+      "rooms_pred": 15,
+      "rooms_gt": 19,
+      "doors_pred": 15,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_84",
+      "shell_valid": true,
+      "footprint_iou": 0.9668,
+      "rooms_pred": 7,
+      "rooms_gt": 7,
+      "doors_pred": 8,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_8502",
+      "shell_valid": true,
+      "footprint_iou": 0.9671,
+      "rooms_pred": 8,
+      "rooms_gt": 7,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_8571",
+      "shell_valid": true,
+      "footprint_iou": 0.9873,
+      "rooms_pred": 21,
+      "rooms_gt": 18,
+      "doors_pred": 13,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_8573",
+      "shell_valid": true,
+      "footprint_iou": 0.9793,
+      "rooms_pred": 8,
+      "rooms_gt": 8,
+      "doors_pred": 9,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_8576",
+      "shell_valid": true,
+      "footprint_iou": 0.8853,
+      "rooms_pred": 10,
+      "rooms_gt": 8,
+      "doors_pred": 11,
+      "doors_gt": 11
+    },
+    {
+      "file": "high_quality_architectural_8726",
+      "shell_valid": true,
+      "footprint_iou": 0.9822,
+      "rooms_pred": 9,
+      "rooms_gt": 8,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_875",
+      "shell_valid": true,
+      "footprint_iou": 0.9919,
+      "rooms_pred": 9,
+      "rooms_gt": 9,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_900",
+      "shell_valid": true,
+      "footprint_iou": 0.9628,
+      "rooms_pred": 9,
+      "rooms_gt": 10,
+      "doors_pred": 12,
+      "doors_gt": 17
+    },
+    {
+      "file": "high_quality_architectural_9093",
+      "shell_valid": true,
+      "footprint_iou": 0.9879,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 5,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_9185",
+      "shell_valid": true,
+      "footprint_iou": 0.9621,
+      "rooms_pred": 6,
+      "rooms_gt": 6,
+      "doors_pred": 8,
+      "doors_gt": 8
+    },
+    {
+      "file": "high_quality_architectural_9198",
+      "shell_valid": true,
+      "footprint_iou": 0.8698,
+      "rooms_pred": 22,
+      "rooms_gt": 19,
+      "doors_pred": 19,
+      "doors_gt": 22
+    },
+    {
+      "file": "high_quality_architectural_9223",
+      "shell_valid": true,
+      "footprint_iou": 0.9254,
+      "rooms_pred": 27,
+      "rooms_gt": 27,
+      "doors_pred": 19,
+      "doors_gt": 23
+    },
+    {
+      "file": "high_quality_architectural_9224",
+      "shell_valid": true,
+      "footprint_iou": 0.9811,
+      "rooms_pred": 10,
+      "rooms_gt": 11,
+      "doors_pred": 11,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_9228",
+      "shell_valid": true,
+      "footprint_iou": 0.9584,
+      "rooms_pred": 6,
+      "rooms_gt": 4,
+      "doors_pred": 4,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_9270",
+      "shell_valid": true,
+      "footprint_iou": 0.9138,
+      "rooms_pred": 13,
+      "rooms_gt": 11,
+      "doors_pred": 11,
+      "doors_gt": 10
+    },
+    {
+      "file": "high_quality_architectural_9274",
+      "shell_valid": true,
+      "footprint_iou": 0.9436,
+      "rooms_pred": 12,
+      "rooms_gt": 11,
+      "doors_pred": 15,
+      "doors_gt": 16
+    },
+    {
+      "file": "high_quality_architectural_9384",
+      "shell_valid": true,
+      "footprint_iou": 0.9136,
+      "rooms_pred": 13,
+      "rooms_gt": 12,
+      "doors_pred": 10,
+      "doors_gt": 12
+    },
+    {
+      "file": "high_quality_architectural_9422",
+      "shell_valid": true,
+      "footprint_iou": 0.9736,
+      "rooms_pred": 2,
+      "rooms_gt": 2,
+      "doors_pred": 4,
+      "doors_gt": 2
+    },
+    {
+      "file": "high_quality_architectural_9433",
+      "shell_valid": true,
+      "footprint_iou": 0.9613,
+      "rooms_pred": 18,
+      "rooms_gt": 17,
+      "doors_pred": 18,
+      "doors_gt": 17
+    },
+    {
+      "file": "high_quality_architectural_9443",
+      "shell_valid": true,
+      "footprint_iou": 0.9789,
+      "rooms_pred": 18,
+      "rooms_gt": 15,
+      "doors_pred": 5,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_9452",
+      "shell_valid": true,
+      "footprint_iou": 0.862,
+      "rooms_pred": 19,
+      "rooms_gt": 15,
+      "doors_pred": 21,
+      "doors_gt": 17
+    },
+    {
+      "file": "high_quality_architectural_9453",
+      "shell_valid": true,
+      "footprint_iou": 0.8522,
+      "rooms_pred": 10,
+      "rooms_gt": 8,
+      "doors_pred": 6,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_9488",
+      "shell_valid": true,
+      "footprint_iou": 0.8997,
+      "rooms_pred": 22,
+      "rooms_gt": 21,
+      "doors_pred": 19,
+      "doors_gt": 20
+    },
+    {
+      "file": "high_quality_architectural_9489",
+      "shell_valid": true,
+      "footprint_iou": 0.9789,
+      "rooms_pred": 5,
+      "rooms_gt": 4,
+      "doors_pred": 5,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_architectural_9531",
+      "shell_valid": true,
+      "footprint_iou": 0.9802,
+      "rooms_pred": 18,
+      "rooms_gt": 17,
+      "doors_pred": 13,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_9540",
+      "shell_valid": true,
+      "footprint_iou": 0.978,
+      "rooms_pred": 4,
+      "rooms_gt": 4,
+      "doors_pred": 4,
+      "doors_gt": 4
+    },
+    {
+      "file": "high_quality_architectural_9543",
+      "shell_valid": true,
+      "footprint_iou": 0.8061,
+      "rooms_pred": 24,
+      "rooms_gt": 18,
+      "doors_pred": 7,
+      "doors_gt": 18
+    },
+    {
+      "file": "high_quality_architectural_9572",
+      "shell_valid": true,
+      "footprint_iou": 0.9845,
+      "rooms_pred": 10,
+      "rooms_gt": 10,
+      "doors_pred": 9,
+      "doors_gt": 9
+    },
+    {
+      "file": "high_quality_architectural_9577",
+      "shell_valid": true,
+      "footprint_iou": 0.942,
+      "rooms_pred": 17,
+      "rooms_gt": 17,
+      "doors_pred": 2,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_9598",
+      "shell_valid": true,
+      "footprint_iou": 0.9258,
+      "rooms_pred": 16,
+      "rooms_gt": 15,
+      "doors_pred": 13,
+      "doors_gt": 13
+    },
+    {
+      "file": "high_quality_architectural_9692",
+      "shell_valid": true,
+      "footprint_iou": 0.88,
+      "rooms_pred": 18,
+      "rooms_gt": 15,
+      "doors_pred": 19,
+      "doors_gt": 16
+    },
+    {
+      "file": "high_quality_architectural_9727",
+      "shell_valid": true,
+      "footprint_iou": 0.9294,
+      "rooms_pred": 15,
+      "rooms_gt": 14,
+      "doors_pred": 16,
+      "doors_gt": 14
+    },
+    {
+      "file": "high_quality_architectural_9785",
+      "shell_valid": true,
+      "footprint_iou": 0.9882,
+      "rooms_pred": 5,
+      "rooms_gt": 5,
+      "doors_pred": 2,
+      "doors_gt": 5
+    },
+    {
+      "file": "high_quality_architectural_9796",
+      "shell_valid": true,
+      "footprint_iou": 0.9755,
+      "rooms_pred": 19,
+      "rooms_gt": 18,
+      "doors_pred": 15,
+      "doors_gt": 15
+    },
+    {
+      "file": "high_quality_architectural_9880",
+      "shell_valid": true,
+      "footprint_iou": 0.9634,
+      "rooms_pred": 22,
+      "rooms_gt": 17,
+      "doors_pred": 20,
+      "doors_gt": 17
+    },
+    {
+      "file": "high_quality_architectural_9886",
+      "shell_valid": true,
+      "footprint_iou": 0.9554,
+      "rooms_pred": 6,
+      "rooms_gt": 4,
+      "doors_pred": 7,
+      "doors_gt": 7
+    },
+    {
+      "file": "high_quality_architectural_9976",
+      "shell_valid": true,
+      "footprint_iou": 0.9662,
+      "rooms_pred": 25,
+      "rooms_gt": 23,
+      "doors_pred": 25,
+      "doors_gt": 25
+    }
+  ],
+  "elapsed_s": 292.2
+}

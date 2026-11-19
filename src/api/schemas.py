@@ -82,3 +82,53 @@ class FacadePredictionResponse(BaseModel):
     input_mask_base64: str
     generated_facade_base64: str
     processing_time_ms: float
+
+
+# --- Studio: facade on a wall + rule-based furniture (request formats of the original ArchiGen API) ---
+from pydantic import FiniteFloat  # noqa: E402
+
+
+class FacadeGenerateRequest(BaseModel):
+    wall_id: Optional[str] = None
+    style: Optional[str] = "Modern Minimalist"
+    num_floors: Optional[int] = 1
+    wall: Optional[Dict[str, Any]] = None
+    layout: Optional[Dict[str, Any]] = None
+    quality: Optional[str] = "fast"   # "fast" = Pix2Pix 256 px, "high" = fine-tuned ControlNet 512 px
+    super_resolution: Optional[bool] = True   # 4x Real-ESRGAN post-processing of the texture (if weights exist)
+
+
+class RoomDesignRequest(BaseModel):
+    room_id: Optional[str] = Field(default="room_0")
+    room_type: str = Field(...)
+    polygon_meters: List[List[float]] = Field(...)
+    doors: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
+    windows: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
+    wall_segments: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
+    preset: str = Field(default="contemporary_minimal")
+    seed: Optional[int] = Field(default=42)
+    room_edges: Optional[List[Dict[str, Any]]] = Field(default=None)
+    force_furnish: Optional[bool] = Field(default=False)
+    scale_m_per_px: float = Field(default=0.03, gt=0)
+
+
+class PlacedFurnitureSnapshot(BaseModel):
+    item_id: str
+    catalog_id: str
+    category: Optional[str] = None
+    position_m: Tuple[FiniteFloat, FiniteFloat]
+    rotation_deg: FiniteFloat
+    dimensions_m: Tuple[FiniteFloat, FiniteFloat, FiniteFloat]
+    scale: Tuple[FiniteFloat, FiniteFloat, FiniteFloat]
+    footprint_polygon: List[Tuple[FiniteFloat, FiniteFloat]] = Field(min_length=4, max_length=4)
+
+
+class FurnitureChoicesRequest(RoomDesignRequest):
+    item_id: str
+    items: List[PlacedFurnitureSnapshot] = Field(min_length=1, max_length=64)
+
+
+class LayoutDesignRequest(BaseModel):
+    layout: Dict[str, Any] = Field(...)
+    preset: str = Field(default="contemporary_minimal")
+    seed: Optional[int] = Field(default=42)

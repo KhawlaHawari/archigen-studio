@@ -1,0 +1,89 @@
+{
+  "domain": "floorplan",
+  "generated_at": "2026-11-18 13:26:02",
+  "reference_samples": 40,
+  "current_samples": 200,
+  "features": [
+    "mean_brightness",
+    "std_brightness",
+    "background_ratio",
+    "edge_density",
+    "aspect_ratio",
+    "total_area_m2",
+    "num_rooms",
+    "struct_wall_ratio",
+    "struct_door_ratio",
+    "struct_window_ratio",
+    "room_living_ratio",
+    "room_bedroom_ratio"
+  ],
+  "html_report": "C:\\Users\\DELL\\Desktop\\archigen-3d\\data\\monitoring\\evidently_floorplan.html",
+  "evidently_result": {
+    "per_feature": {
+      "mean_brightness": {
+        "method": "K-S p_value",
+        "score": 5.0677021785287325e-21,
+        "drifted": true
+      },
+      "std_brightness": {
+        "method": "K-S p_value",
+        "score": 1.99606143999885e-08,
+        "drifted": true
+      },
+      "background_ratio": {
+        "method": "K-S p_value",
+        "score": 2.848574132374543e-34,
+        "drifted": true
+      },
+      "edge_density": {
+        "method": "K-S p_value",
+        "score": 7.013067545934322e-15,
+        "drifted": true
+      },
+      "aspect_ratio": {
+        "method": "Z-test p_value",
+        "score": 1.0,
+        "drifted": false
+      },
+      "total_area_m2": {
+        "method": "K-S p_value",
+        "score": 2.982684353955932e-13,
+        "drifted": true
+      },
+      "num_rooms": {
+        "method": "K-S p_value",
+        "score": 2.4077064749104135e-22,
+        "drifted": true
+      },
+      "struct_wall_ratio": {
+        "method": "K-S p_value",
+        "score": 1.805204561929436e-07,
+        "drifted": true
+      },
+      "struct_door_ratio": {
+        "method": "K-S p_value",
+        "score": 3.86589323230027e-40,
+        "drifted": true
+      },
+      "struct_window_ratio": {
+        "method": "K-S p_value",
+        "score": 5.872450930529329e-31,
+        "drifted": true
+      },
+      "room_living_ratio": {
+        "method": "K-S p_value",
+        "score": 3.9484241376146046e-28,
+        "drifted": true
+      },
+      "room_bedroom_ratio": {
+        "method": "K-S p_value",
+        "score": 5.6958697324628425e-30,
+        "drifted": true
+      }
+    },
+    "drifted_features": 11,
+    "drifted_share": 0.9167,
+    "dataset_drift": true,
+    "dataset_drift_rule": "share of drifted features >= 0.5"
+  }
+}

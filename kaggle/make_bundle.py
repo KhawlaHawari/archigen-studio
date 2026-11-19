@@ -2,7 +2,7 @@
 Build zip(s) to upload as Kaggle Datasets.
 
     python kaggle/make_bundle.py                  # everything (~730 MB)
-    python kaggle/make_bundle.py --part facades   # code + CMP Facades (~31 MB)  -> train the facade models
+    python kaggle/make_bundle.py --part facades   # code + CMP Facades + external plans (~65 MB)
     python kaggle/make_bundle.py --part cubicasa  # rasterized CubiCasa5K only (~700 MB) -> floorplan model
 
 Outputs dist/archigen_<part>.zip. Each part can be uploaded as its own Kaggle Dataset;
@@ -10,6 +10,7 @@ the notebook (kaggle/archigen_kaggle.ipynb) finds whatever parts are attached.
 Layout inside the zip:
     archigen/src/, archigen/params.yaml
     archigen/data/raw/facades/
+    archigen/data/raw/{dev_external_plans,real_external_plans,external_test_plans}/
     archigen/data/processed/cubicasa_cache/
 """
 
@@ -24,8 +25,12 @@ CODE = [
     ("params.yaml", None),
 ]
 FACADES = [("data/raw/facades", lambda p: p.suffix.lower() == ".jpg")]
+# Out-of-distribution floor plans (no labels, ~32 MB) for src.evaluation.evaluate_external.
+_IMG = lambda p: p.suffix.lower() in (".jpg", ".jpeg", ".png", ".json")
+EXTERNAL = [("data/raw/dev_external_plans", _IMG), ("data/raw/real_external_plans", _IMG),
+            ("data/raw/external_test_plans", _IMG)]
 CUBICASA = [("data/processed/cubicasa_cache", lambda p: p.suffix in (".npz", ".json"))]
-PARTS = {"all": CODE + FACADES + CUBICASA, "facades": CODE + FACADES, "cubicasa": CUBICASA}
+PARTS = {"all": CODE + FACADES + EXTERNAL + CUBICASA, "facades": CODE + FACADES + EXTERNAL, "cubicasa": CUBICASA}
 
 
 def main() -> None:

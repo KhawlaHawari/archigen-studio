@@ -2,6 +2,8 @@
 torch>=2.1.0
 torchvision>=0.16.0
 lpips>=0.1.4            # LPIPS perceptual metric (facade evaluation)
+torchmetrics>=1.0.0     # KID metric (facade evaluation, recipe v3 selection)
+torch-fidelity>=0.3.0   # Inception features for KID
 numpy>=1.24.0,<3.0.0
 scipy>=1.10.0
 pillow>=10.0.0
@@ -14,6 +16,7 @@ onnxscript>=0.7.0
 # Geometry & Topological Vectorization (OS 4)
 shapely>=2.0.0
 opencv-python-headless>=4.8.0
+prometheus-client>=0.20.0   # /metrics endpoint scraped by Prometheus (monitoring/)
 
 # Production API & Web Backend (OS 5)
 fastapi>=0.100.0

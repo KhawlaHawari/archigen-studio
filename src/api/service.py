@@ -30,7 +30,8 @@ from src.data.svg_preprocessor import (
     generate_synthetic_facade_sample
 )
 from src.geometry.vectorizer_3d import vectorize_floorplan_pipeline
-from src.geometry.layout_vectorizer import FloorplanVectorizer, ROOM_NAMES, score_room_polygon
+from src.geometry.layout import layout_from_probabilities
+from src.geometry.layout_vectorizer import ROOM_NAMES, score_room_polygon
 from src.models.unet_plus_plus import UNetPlusPlusMultiTask
 from src.models.pix2pix_cgan import FacadeGenerator
 from src.mlops.drift_detector import (
@@ -193,10 +194,29 @@ class ModelService:
             "processing_time_ms": proc_time,
         }
 
-    def _floorplan_probabilities(self, boxed_img: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        """Softmax probabilities (C, H, W) for the structure and room heads on a 512x512 letterboxed RGB image."""
+    def _variant_model(self, variant: str):
+        """PyTorch model of an A/B challenger checkpoint (models/checkpoints/floorplan_unetpp_<variant>.pt), loaded once."""
+        cache = self.__dict__.setdefault("_variant_models", {})
+        if variant not in cache:
+            from src.api.ab_testing import ABRouter
+            model = UNetPlusPlusMultiTask(in_channels=FLOORPLAN_CFG.in_channels,
+                                          num_structure_classes=FLOORPLAN_CFG.num_structure_classes,
+                                          num_room_classes=FLOORPLAN_CFG.num_room_classes)
+            load_weights(model, ABRouter.checkpoint(variant), require_real_data=True)
+            cache[variant] = model.eval()
+        return cache[variant]
+
+    def _floorplan_probabilities(self, boxed_img: np.ndarray, variant: Optional[str] = None) -> Tuple[np.ndarray, np.ndarray]:
+        """Softmax probabilities (C, H, W) for the structure and room heads on a 512x512 letterboxed RGB image.
+
+        variant=None (or the champion) uses the production session (ONNX if exported); another name runs
+        that challenger checkpoint (A/B testing)."""
+        from src.api.ab_testing import ROUTER
         norm_tensor = (boxed_img.astype(np.float32) / 255.0).transpose(2, 0, 1)[np.newaxis, ...]
-        if self.ort_floorplan is not None:
+        if variant not in (None, ROUTER.champion):
+            with torch.no_grad():
+                struct_logits, room_logits = self._variant_model(variant)(torch.from_numpy(norm_tensor))
+        elif self.ort_floorplan is not None:
             struct_logits, room_logits = self.ort_floorplan.run(None, {"image": norm_tensor})[:2]
             struct_logits, room_logits = torch.from_numpy(struct_logits), torch.from_numpy(room_logits)
         else:
@@ -211,47 +231,17 @@ class ModelService:
         input_image: Image.Image,
         scale_override: Optional[float] = None,
         reference_rooms: Optional[list] = None,
+        variant: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Segments a floor plan and vectorizes it into the wall / room / opening layout
-        that the web studio extrudes into a 3D house.
+        that the web studio extrudes into a 3D house. variant selects the A/B model (None = champion).
         """
         t0 = time.perf_counter()
         raw_rgb = np.array(input_image.convert("RGB"))
         boxed_img, _ = isotropic_letterbox(raw_rgb, target_size=(512, 512), is_mask=False, fill_value=255)
-        prob_s, prob_r = self._floorplan_probabilities(boxed_img)
-        struct_mask = np.argmax(prob_s, axis=0).astype(np.uint8)
-        room_mask = np.argmax(prob_r, axis=0).astype(np.uint8)
-
-        # The layout vectorizer expects: 1 = any wall, 2 = door, 3 = window ...
-        opening_mask = np.zeros_like(struct_mask)
-        opening_mask[(struct_mask == 1) | (struct_mask == 2)] = 1
-        opening_mask[struct_mask == 3] = 2
-        opening_mask[struct_mask == 4] = 3
-        # ... and a structure mask with 1 = interior wall, 2 = exterior wall (ArchiGen uses the reverse).
-        legacy_struct = struct_mask.copy()
-        legacy_struct[struct_mask == 1] = 2
-        legacy_struct[struct_mask == 2] = 1
-
-        if not hasattr(self, "layout_vectorizer"):
-            self.layout_vectorizer = FloorplanVectorizer()
-        layout = self.layout_vectorizer.vectorize(
-            mask=opening_mask,
-            struct_mask=legacy_struct,
-            room_mask=room_mask,
-            scale_override_m_per_px=scale_override,
-            room_probabilities=prob_r,
-            source_gray=np.asarray(Image.fromarray(boxed_img).convert("L")),
-        )
-
-        # Default front facade: the longest exterior wall (the user can pick another one in the studio).
-        def wall_length(wall: Dict[str, Any]) -> float:
-            axis = wall.get("axis_meters")
-            return float(np.hypot(axis[1][0] - axis[0][0], axis[1][1] - axis[0][1])) if axis else 0.0
-        exterior = [w for w in layout.get("walls", []) if w.get("is_exterior")]
-        front = max(exterior, key=wall_length) if exterior else None
-        for wall in layout.get("walls", []):
-            wall["is_front"] = wall is front
+        prob_s, prob_r = self._floorplan_probabilities(boxed_img, variant)
+        layout = layout_from_probabilities(prob_s, prob_r, boxed_img, scale_override=scale_override)
 
         reference_confidences = None
         if reference_rooms is not None:
@@ -277,6 +267,54 @@ class ModelService:
             "reference_room_confidences": reference_confidences,
             "processing_time_ms": round((time.perf_counter() - t0) * 1000.0, 2),
         }
+
+    def _run_facade_generator(self, batch: np.ndarray) -> np.ndarray:
+        """(N, 3, 256, 256) label maps in [-1, 1] -> generated facades in [-1, 1]."""
+        batch = batch.astype(np.float32)
+        if self.ort_facade is not None:
+            return np.concatenate([self.ort_facade.run(None, {"semantic_mask": b[None]})[0] for b in batch])
+        with torch.no_grad():
+            return self.pt_facade(torch.from_numpy(batch)).numpy()
+
+    # ---- High-quality facades: ControlNet fine-tuned in Run 3 (models/controlnet_facade) ----
+    CONTROLNET_DIR = Path(__file__).resolve().parents[2] / "models" / "controlnet_facade"
+    CONTROLNET_STEPS_CPU, CONTROLNET_STEPS_GPU = 20, 25
+
+    def controlnet_status(self) -> Dict[str, Any]:
+        if not (self.CONTROLNET_DIR / "config.json").exists():
+            return {"available": False, "reason": "No fine-tuned ControlNet yet: unzip the Run 3 results so that "
+                                                  "models/controlnet_facade/ exists, then restart the API."}
+        try:
+            import diffusers  # noqa: F401
+        except ImportError:
+            return {"available": False, "reason": "pip install -r requirements-diffusion.txt"}
+        steps = self.CONTROLNET_STEPS_GPU if torch.cuda.is_available() else self.CONTROLNET_STEPS_CPU
+        return {"available": True, "device": self.device, "steps": steps, "resolution": 512,
+                "expected_seconds_per_tile": 4 if torch.cuda.is_available() else 380,   # measured: 383 s on the dev laptop CPU
+                "note": "The first use downloads Stable Diffusion 1.5 (~4 GB) once."}
+
+    def controlnet_generate_batch(self, tiles: list) -> list:
+        """CMP label-map tiles (256 px PIL) -> 512 px facades with the fine-tuned ControlNet."""
+        from src.evaluation.evaluate_controlnet import load_pipeline
+        from src.training.train_controlnet import NEGATIVE, PROMPT
+        if getattr(self, "_controlnet_pipe", None) is None:
+            self._controlnet_pipe = load_pipeline(str(self.CONTROLNET_DIR), device=self.device)
+        pipe = self._controlnet_pipe
+        steps = self.CONTROLNET_STEPS_GPU if self.device == "cuda" else self.CONTROLNET_STEPS_CPU
+        conds = [t.convert("RGB").resize((512, 512), Image.Resampling.NEAREST) for t in tiles]
+        gens = [torch.Generator(device=self.device).manual_seed(42 + i) for i in range(len(conds))]
+        with torch.no_grad():
+            return pipe([PROMPT] * len(conds), image=conds, negative_prompt=[NEGATIVE] * len(conds),
+                        num_inference_steps=steps, guidance_scale=5.0, generator=gens).images
+
+    def facade_bridge(self):
+        """Wall -> CMP label map -> THIS repository's Pix2Pix (bridge ported from the original ArchiGen)."""
+        if getattr(self, "_facade_bridge", None) is None:
+            from src.bridge.facade_bridge import ArchiGenFacadeInference, FacadeBridge
+            runtime = "ONNX Runtime" if self.ort_facade is not None else "PyTorch"
+            engine = ArchiGenFacadeInference(self._run_facade_generator, name=f"ArchiGen Pix2Pix ({runtime})")
+            self._facade_bridge = FacadeBridge(inference_engine=engine, device_name=f"{runtime} ({self.device})")
+        return self._facade_bridge
 
     def predict_facade(self, mask_image: Image.Image) -> Dict[str, Any]:
         """
