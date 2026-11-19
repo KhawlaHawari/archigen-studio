@@ -1,0 +1,13 @@
+{
+  "params": {
+    "min_wall_area": 44,
+    "polygon_epsilon_ratio": 0.02920592922093062,
+    "snap_angle_deg_tolerance": 13.215635146052106,
+    "min_area_habitable_m2": 0.8424884484747062,
+    "min_area_service_m2": 1.1113666121266281,
+    "default_door_width_m": 0.865193372751974
+  },
+  "source": "vectorizer_hpo.json",
+  "test_objective": 0.944068482521953,
+  "default_test_objective": 0.9402779448271614
+}

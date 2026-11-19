@@ -373,6 +373,60 @@ DVC remote: MinIO (`docker compose up minio minio-init -d`), S3 or a local folde
 - **Continuous training** (`src/mlops/continuous_retraining.py`), triggered by a drift threshold.
 - **MLflow model registry** with Staging → Production promotion (`src/mlops/model_registry.py`).
 
+### MLOps lifecycle: where each item lives
+
+| Stage (course) | Item | Implementation |
+| :--- | :--- | :--- |
+| **1. Data collection** | Multiple sources | CubiCasa5K, CMP Facades, 50 external plans, user corrections (feedback loop) |
+| | Quality & validation | **Validation gate** `src/data/validate_data.py`: 15 expectations (split sizes, shapes, label values, no split leakage, no blank plans, class coverage). It **fails** DVC and CI on broken data; `audit_data` reports statistics |
+| | Metadata | SHA-256 manifests (external plans, `models/manifest.json`), `data_audit_summary.json`, `data_validation.json` |
+| **2. Experimentation** | Exploration, feature engineering, algorithm selection | Data audit; style augmentation, rare-room weighting; L1 U-Net vs Pix2Pix vs ControlNet, recipes v1/v2/v3 compared on the same protocol (Results) |
+| **3. Training** | Automated pipelines | DVC (18 stages, `dvc repro`) + reproducible Kaggle notebooks |
+| | Cross-validation | Official fixed splits + **95 % bootstrap confidence intervals** over test plans (`src/evaluation/bootstrap.py`); k-fold retraining is impractical for multi-hour GPU models |
+| | Hyperparameter optimisation | **Optuna** (TPE) on the plan → 3D post-processing, every trial in MLflow, adopted only if better on held-out test (`src/mlops/hpo_vectorizer.py`) |
+| **4. Deployment** | REST API | FastAPI (`src/api/main.py`), ONNX Runtime |
+| | Containers | Dockerfile, Docker Compose (API, MLflow, MinIO, Prometheus, Grafana), image built and pushed to GHCR by CI |
+| | Orchestration | **Kubernetes** `k8s/`: Deployment (rolling updates, probes), Service, **HPA autoscaling 2 → 6 pods**, PDB; validated by kubeconform in CI |
+| **5. Monitoring** | Model performance | Prometheus `/metrics`: latency histograms per endpoint and model variant, error rate |
+| | Data drift | In-house PSI / KS / Wasserstein (`src/mlops/drift_detector.py`) **and Evidently AI** report (`src/mlops/evidently_report.py`) |
+| | Business metrics | Usable-plan rate, rooms and area per plan, closed 3D shells, facades generated, user corrections |
+| **Solution MLOps** | Continuous monitoring (Evidently, Prometheus, Grafana) | `monitoring/`: Prometheus + 7 alert rules, Grafana dashboard (15 panels), Evidently |
+| | Alert thresholds | `monitoring/prometheus/alerts.yml`: API down, 5xx rate, p95 latency, drift warning / critical, usable-plan drop, canary behind |
+| | Retraining (scheduled or triggered) | `src/mlops/retraining_policy.py`: drift **or** ≥ 25 new corrections **or** model older than 30 days (`params.yaml`); weekly GitHub Actions check opens an issue (`scheduled-retraining.yml`) |
+| | Feedback loop | Studio "Send my corrections" → `POST /feedback/layout` → `src/data/feedback_dataset.py` → `train_floorplan --include-feedback` |
+| **Level 2** | CI/CD, automated tests (data, code, model) | 7 CI jobs + weekly retraining check; data validation gate; 72 test functions; **real-model job** (released weights, SHA-256 checked, ONNX parity, API tests) |
+| | A/B testing & canary | `src/api/ab_testing.py`: Run 3 champion 90 % / Run 2 challenger 10 %, sticky per plan; `GET /ab/status` → promote / keep / rollback (two-proportion z-test) |
+| **Level 3** | Automatic drift detection, data-triggered retraining | Drift gauges + alerts; retraining policy |
+| | Hyperparameter auto-optimisation | Optuna HPO |
+| | Infrastructure autoscaling | Kubernetes HPA |
+| | Bias & fairness | `src/evaluation/fairness.py`: metrics by drawing style, plan size and complexity, with CIs, gaps and disparity ratios |
+
+Weights are distributed outside Git with pinned checksums: `python scripts/models.py pull --profile runtime`
+(profiles: `runtime`, `studio`, `ab`, `eval`, `all`), then `python -m src.mlops.export_onnx`.
+
+#### Confidence intervals and fairness (Run 3 floor-plan model, 400 test plans)
+
+| Metric | Value | 95 % bootstrap CI | Original ArchiGen |
+| :--- | ---: | :---: | ---: |
+| Wall IoU | 72.9 % | [71.7, 74.1] | 74.32 % (just above our CI) |
+| Door IoU | 66.2 % | [64.7, 67.7] | 62.38 % |
+| Window IoU | 76.6 % | [75.1, 78.1] | 73.28 % |
+| Room mIoU (11) | 64.8 % | [62.4, 67.4] | 54.72 %* |
+| Room pixel accuracy | 94.2 % | [93.5, 94.8] | 85.85 % |
+| Watertight 3D shell | 99.75 % | [99.25, 100] | 96.25 % |
+| Footprint IoU | 95.2 % | [94.5, 95.8] | 82.2 % |
+
+**Fairness finding:** room mIoU is **16.9 points lower on "high_quality_architectural" plans** (62.8 %, 68 % of
+the test set) than on "high_quality" plans (79.7 %), with non-overlapping CIs: flagged. Walls (−9.7), doors (−7.3)
+and windows (−5.3) are also weaker on that style but under the 10-point flag. Plan size and complexity: no flag
+(gaps ≤ 7 points). Mitigation for the next run: oversample that drawing style, as rare rooms are already
+oversampled. Sources: `floorplan_unetpp_best_test_bootstrap.json`, `floorplan_unetpp_best_test_fairness.json`.
+
+**Optuna HPO of the plan → 3D post-processing** (25 TPE trials on 30 validation plans, 9.3 min, MLflow experiment
+`ArchiGen3D-Vectorizer-HPO`): on 60 held-out test plans the tuned setting raises room-type accuracy in the 3D layout
+from 88.2 % to 89.5 % (objective 0.9403 → 0.9441; footprint IoU and shell rate unchanged), so it was adopted
+(`models/vectorizer_params.json`). A small gain on 60 plans: treat it as indicative. Source: `models/metrics/vectorizer_hpo.json`.
+
 ---
 
 ## 📁 Project structure

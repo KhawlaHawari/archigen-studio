@@ -9,7 +9,7 @@ venv/
 .venv/
 build/
 develop-eggs/
-dist/
+/dist/
 downloads/
 eggs/
 .eggs/
@@ -77,7 +77,7 @@ Thumbs.db
 htmlcov/
 .pytest_cache/
 # Build output & Kaggle bundle
-dist/
+/dist/
 .claude/
 # Generated Evidently drift reports (regenerate with: py -3.11 src/mlops/evidently_report.py)
 data/monitoring/evidently_*.html
@@ -86,3 +86,28 @@ data/monitoring/evidently_*.html
 models/controlnet_facade*/
 *.safetensors
 models/superres/
+
+# User corrections from the studio (feedback loop): personal data, versioned with DVC, never Git
+data/feedback/
+
+# Small per-plan result files (inputs of the bootstrap / fairness stages) are results, not data
+!models/metrics/*.npz
+
+# ==== Model weights: NEVER in Git (kept local; checksums in models/manifest.json) ====
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+*.onnx.data
+*.bin
+*.h5
+*.keras
+*.joblib
+models/checkpoints/
+models/controlnet_facade*/
+models/superres/
+/dist/
+# Unzipped Kaggle result copies (duplicates of models/metrics; may contain weights)
+results_run*/
+archigen_results_run*/

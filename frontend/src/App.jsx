@@ -96,6 +96,9 @@ export default function App() {
   const [health, setHealth] = useState(null);
   const [latency, setLatency] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  // Feedback loop: number of manual corrections on the current plan, and the send status
+  const [editCount, setEditCount] = useState(0);
+  const [feedbackStatus, setFeedbackStatus] = useState(null);
   const analysisRequest = React.useRef(0);
   const facadeRevision = React.useRef(0);
 
@@ -268,6 +271,7 @@ export default function App() {
           ),
           num_walls: data.walls.length,
           num_rooms: data.rooms.length,
+          model_variant: data.model_variant,   // A/B variant that produced this prediction
         },
         // Studio finishes are generated from the fitted 3D openings after analysis.
         walls: data.walls.map(({ facade_texture, ...wall }) => wall),
@@ -284,6 +288,8 @@ export default function App() {
       };
 
       setLayout(parsedLayout);
+      setEditCount(0);
+      setFeedbackStatus(null);
       setSelectedRoom(null);
       setFurnishingData({});
 
@@ -345,7 +351,29 @@ export default function App() {
     executeAnalysis(file, scale, numFloors, frontWallId, reference);
   };
 
+  // Feedback loop: send the user-corrected layout + the original plan image to the API (new training data)
+  const sendFeedback = async () => {
+    if (!file || !layout || layout.metadata?.source === 'sample_reference') return;
+    setFeedbackStatus('sending');
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const clean = { ...layout, walls: layout.walls.map(({ facade_texture, ...wall }) => wall) };
+      formData.append('layout', JSON.stringify(clean));
+      if (layout.metadata?.model_variant) formData.append('model_variant', layout.metadata.model_variant);
+      if (layout.metadata?.scale_meters_per_pixel) formData.append('scale_m_per_px', String(layout.metadata.scale_meters_per_pixel));
+      await axios.post('/feedback/layout', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      setFeedbackStatus('sent');
+      setEditCount(0);
+    } catch (err) {
+      setFeedbackStatus('error');
+      setErrorMsg(err.response?.data?.detail || 'Could not send the correction.');
+    }
+  };
+
   const handleLayoutEdit = (next) => {
+    setEditCount(count => count + 1);
+    setFeedbackStatus(null);
     facadeRevision.current++;
     setFacadeDraft(null);
     const before = [...layout.doors, ...layout.windows];
@@ -654,6 +682,9 @@ export default function App() {
         {/* Left Sidebar Controls */}
         <ControlPanel
           referenceLevels={layout?.storeys}
+          editCount={editCount}
+          feedbackStatus={feedbackStatus}
+          onSendFeedback={layout?.metadata?.source === 'sample_reference' ? null : sendFeedback}
           isTracedSample={layout?.metadata.source === 'sample_reference'}
           fileName={file?.name}
           imageUrl={imageUrl}

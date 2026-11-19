@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: archigen-api
+  namespace: archigen
+  labels: {app: archigen-api}
+spec:
+  selector: {app: archigen-api}
+  ports:
+    - {name: http, port: 8000, targetPort: http}

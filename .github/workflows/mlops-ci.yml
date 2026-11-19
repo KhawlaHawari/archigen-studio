@@ -72,6 +72,65 @@ jobs:
         run: |
           pytest tests/monitoring/ -v --tb=short
 
+  real-models:
+    name: Real trained models (checksums, ONNX parity, API)
+    needs: test-and-verify
+    runs-on: ubuntu-latest
+    env:
+      ARCHIGEN_CI_UNTRAINED: "0"          # this job tests the REAL weights from the GitHub Release
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Download the released weights and verify their SHA-256 (models/manifest.json)
+        id: pull
+        run: |
+          python scripts/models.py pull --profile runtime --skip-if-unpublished
+          if python scripts/models.py check --profile runtime; then echo "ready=true" >> "$GITHUB_OUTPUT"; else echo "ready=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Install dependencies
+        if: steps.pull.outputs.ready == 'true'
+        run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+
+      - name: Export the real models to ONNX and check numerical parity
+        if: steps.pull.outputs.ready == 'true'
+        run: |
+          python -m src.mlops.export_onnx
+          python -m src.mlops.onnx_verifier
+
+      - name: API tests on the real models
+        if: steps.pull.outputs.ready == 'true'
+        run: pytest tests/test_api.py tests/monitoring/ -v --tb=short
+
+  infra-validate:
+    name: Validate Kubernetes, Prometheus and Grafana configuration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Kubernetes manifests against the official schemas (kubeconform)
+        run: |
+          curl -sSL https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz | tar xz
+          kubectl kustomize k8s/ | ./kubeconform -strict -summary -kubernetes-version 1.30.0 -
+
+      - name: Prometheus configuration and alert rules (promtool)
+        run: |
+          docker run --rm -v "$PWD/monitoring/prometheus:/cfg" --entrypoint promtool prom/prometheus:v2.53.0 check rules /cfg/alerts.yml
+          sed 's#/etc/prometheus/alerts.yml#/cfg/alerts.yml#' monitoring/prometheus/prometheus.yml > monitoring/prometheus/ci.yml
+          docker run --rm -v "$PWD/monitoring/prometheus:/cfg" --entrypoint promtool prom/prometheus:v2.53.0 check config /cfg/ci.yml
+
+      - name: Grafana dashboard is valid JSON
+        run: python -c "import json; d=json.load(open('monitoring/grafana/dashboards/archigen.json')); print(len(d['panels']), 'panels')"
+
   load-test:
     needs: test-and-verify
     runs-on: ubuntu-latest

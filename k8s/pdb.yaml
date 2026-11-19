@@ -1,0 +1,10 @@
+# Keep at least one API pod during node maintenance / cluster upgrades.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: archigen-api
+  namespace: archigen
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels: {app: archigen-api}

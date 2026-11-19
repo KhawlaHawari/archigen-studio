@@ -59,3 +59,9 @@ monitoring:
   trigger_retraining_on_drift: true
   min_samples_for_drift: 10
   reference_sample_count: 50
+
+# Retraining policy (src/mlops/retraining_policy.py): triggered OR scheduled
+retraining:
+  retrain_every_days: 30          # scheduled (batch) retraining
+  min_new_feedback: 25            # retrain once this many studio corrections have accumulated
+  drift_triggers_retraining: true # retrain when the drift detector flags drift

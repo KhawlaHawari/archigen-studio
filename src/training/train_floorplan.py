@@ -40,6 +40,7 @@ from src.training.checkpoints import load_weights
 from src.training.trainer_base import BaseTrainer, TrainResult
 
 CACHE_DIR = DATA_DIR / "processed" / "cubicasa_cache"
+FEEDBACK_CACHE = DATA_DIR / "processed" / "feedback_cache" / "train"   # studio corrections (feedback loop)
 METRICS_DIR = MODELS_DIR / "metrics"
 IGNORE_INDEX = 255
 
@@ -101,11 +102,15 @@ def split_files(split: str, cache_dir: Path = CACHE_DIR, limit: Optional[int] = 
 def make_cubicasa_loaders(
     cache_dir: Path = CACHE_DIR, batch_size: int = 2, limit: Optional[int] = None,
     num_workers: int = 0, seed: int = 42, image_size: int = 512, style_p: float = 0.0,
-    rare_room_oversample: float = 0.0,
+    rare_room_oversample: float = 0.0, include_feedback: bool = False,
 ) -> Tuple[DataLoader, DataLoader]:
     g = torch.Generator().manual_seed(seed)
-    train_ds = NPZFloorplanDataset(split_files("train", cache_dir, limit), augment=True, image_size=image_size,
-                                   style_p=style_p)
+    train_files = split_files("train", cache_dir, limit)
+    if include_feedback:   # feedback loop: user-corrected plans join the TRAIN split only (never val/test)
+        extra = sorted(FEEDBACK_CACHE.glob("*.npz"))
+        print(f"[Floorplan] feedback loop: +{len(extra)} user-corrected plans in the training split", flush=True)
+        train_files = train_files + extra
+    train_ds = NPZFloorplanDataset(train_files, augment=True, image_size=image_size, style_p=style_p)
     sampler = None
     if rare_room_oversample > 0:   # recipe v3: plans containing the weakest room types are drawn more often
         weights = rare_room_sample_weights(train_ds.npz_paths, rare_room_oversample)
@@ -370,6 +375,7 @@ def train_floorplan(
     time_budget_min: Optional[float] = None,
     recipe: str = "v1",
     init_checkpoint: Optional[Path] = None,
+    include_feedback: bool = False,
 ) -> TrainResult:
     """Train on REAL rasterized CubiCasa5K. Unspecified hyperparameters come from params.yaml.
 
@@ -404,6 +410,7 @@ def train_floorplan(
         cache_dir or CACHE_DIR, trainer.batch_size, limit, num_workers, seed, image_size,
         style_p=0.5 if recipe == "v3" else 0.0,
         rare_room_oversample=2.0 if recipe == "v3" else 0.0,
+        include_feedback=include_feedback,
     )
     if recipe == "v3":
         styled = NPZFloorplanDataset(split_files("val", cache_dir or CACHE_DIR, limit), augment=False,
@@ -437,7 +444,10 @@ if __name__ == "__main__":
                          "v3 = v2 + drawing-style augmentation, selected on clean + restyled val room mIoU")
     ap.add_argument("--init-checkpoint", type=Path, default=None,
                     help="Fine-tune from this checkpoint instead of ImageNet initialisation")
+    ap.add_argument("--include-feedback", action="store_true",
+                    help="Add user-corrected plans (python -m src.data.feedback_dataset) to the training split")
     a = ap.parse_args()
     r = train_floorplan(a.epochs, a.batch_size, a.lr, a.seed, a.cache_dir, a.max_batches, a.limit, a.tag,
-                        a.workers, a.image_size, a.amp, a.time_budget_min, a.recipe, a.init_checkpoint)
+                        a.workers, a.image_size, a.amp, a.time_budget_min, a.recipe, a.init_checkpoint,
+                        a.include_feedback)
     print(f"Floorplan training finished: run_id={r.run_id}, best {r.best_metric_name}={r.best_metric:.4f}")

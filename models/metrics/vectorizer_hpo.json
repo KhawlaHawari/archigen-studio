@@ -1,0 +1,49 @@
+{
+  "evaluated_at": "2026-11-19 14:40:37",
+  "objective": "0.4 footprint IoU + 0.3 shell rate + 0.3 room-type accuracy",
+  "trials": 25,
+  "val_plans": 30,
+  "test_plans": 60,
+  "defaults": {
+    "min_wall_area": 40,
+    "polygon_epsilon_ratio": 0.015,
+    "snap_angle_deg_tolerance": 12.0,
+    "min_area_habitable_m2": 2.0,
+    "min_area_service_m2": 0.8,
+    "default_door_width_m": 0.85
+  },
+  "best_params": {
+    "min_wall_area": 44,
+    "polygon_epsilon_ratio": 0.02920592922093062,
+    "snap_angle_deg_tolerance": 13.215635146052106,
+    "min_area_habitable_m2": 0.8424884484747062,
+    "min_area_service_m2": 1.1113666121266281,
+    "default_door_width_m": 0.865193372751974
+  },
+  "validation": {
+    "defaults": {
+      "footprint_iou": 0.9519406432129747,
+      "shell_rate": 1.0,
+      "room_type_acc": 0.8766519823788547,
+      "objective": 0.9437718519988463
+    },
+    "best": 0.9502452838338624
+  },
+  "test": {
+    "defaults": {
+      "footprint_iou": 0.9389301561855509,
+      "shell_rate": 1.0,
+      "room_type_acc": 0.8823529411764706,
+      "objective": 0.9402779448271614
+    },
+    "best": {
+      "footprint_iou": 0.9389301561855509,
+      "shell_rate": 1.0,
+      "room_type_acc": 0.8949880668257757,
+      "objective": 0.944068482521953
+    }
+  },
+  "adopted": true,
+  "mlflow_run_id": "d1a8272d720649f6962b8e15817f8f5c",
+  "elapsed_min": 9.3
+}

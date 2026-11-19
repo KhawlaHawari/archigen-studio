@@ -1,0 +1,14 @@
+# Runtime configuration of the API pods (A/B / canary split, MLflow, threads).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: archigen-api-config
+  namespace: archigen
+data:
+  ARCHIGEN_AB_CHAMPION: "run3"
+  ARCHIGEN_AB_CHALLENGER: "run2"
+  ARCHIGEN_AB_CANARY_FRACTION: "0.10"
+  MLFLOW_TRACKING_URI: "http://mlflow:5000"
+  OMP_NUM_THREADS: "2"
+  PYTHONUNBUFFERED: "1"
+  MLFLOW_DISABLE_AGENT_HINT: "1"

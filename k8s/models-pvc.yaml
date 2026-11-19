@@ -1,0 +1,14 @@
+# Model weights are NOT baked into the image (they are not in Git). They live on this volume:
+#   checkpoints/*.pt, onnx/*.onnx(+.data), controlnet_facade/, superres/ (see scripts/install_run.py).
+# Single-node clusters (Docker Desktop, kind, minikube): ReadWriteOnce is enough for several replicas.
+# Multi-node clusters: use a ReadOnlyMany / ReadWriteMany storage class (NFS, EFS, Filestore...).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: archigen-models
+  namespace: archigen
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 10Gi

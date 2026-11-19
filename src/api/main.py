@@ -94,6 +94,37 @@ def prometheus_metrics():
     return obs.metrics_response()
 
 
+@app.post("/feedback/layout", tags=["MLOps"])
+async def feedback_layout(
+    file: UploadFile = File(...),
+    layout: str = Form(...),
+    model_variant: Optional[str] = Form(default=None),
+    scale_m_per_px: Optional[float] = Form(default=None),
+):
+    """Feedback loop: store a user-corrected layout + its plan image as a future training example."""
+    from src.mlops.feedback import save_feedback
+    try:
+        meta = save_feedback(await file.read(), file.filename, json.loads(layout), model_variant, scale_m_per_px)
+    except (ValueError, json.JSONDecodeError) as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    obs.FEEDBACK_CORRECTIONS.inc()
+    return {"status": "saved", "feedback": meta}
+
+
+@app.get("/feedback/stats", tags=["MLOps"])
+def feedback_statistics():
+    from src.mlops.feedback import feedback_stats
+    from src.mlops.retraining_policy import last_training_time
+    return feedback_stats(since=last_training_time() or None)
+
+
+@app.get("/retraining/decision", tags=["MLOps"])
+def retraining_decision():
+    """Should the floor-plan model be retrained? (drift, new corrections, or schedule; see params.yaml)"""
+    from src.mlops.retraining_policy import decide
+    return decide()
+
+
 @app.get("/ab/status", tags=["MLOps"])
 def ab_status():
     """A/B / canary comparison of the floor-plan model variants and the promotion decision."""

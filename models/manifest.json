@@ -1,0 +1,85 @@
+{
+  "release_tag": "models-run3",
+  "repository": "KhawlaHawari/archigen-studio",
+  "files": [
+    {
+      "path": "models/checkpoints/floorplan_unetpp_best.pt",
+      "size": 314927359,
+      "sha256": "d159521f1663fb4f72804a741474a2df6a0a665cd6e84e6685515ad1aa61eaaa",
+      "url": "https://github.com/KhawlaHawari/archigen-studio/releases/download/models-run3/floorplan_unetpp_run3.pt",
+      "release_asset": "floorplan_unetpp_run3.pt",
+      "profiles": [
+        "runtime",
+        "studio",
+        "ab",
+        "eval"
+      ]
+    },
+    {
+      "path": "models/checkpoints/facade_pix2pix_best.pt",
+      "size": 504150459,
+      "sha256": "e0056324679894c9717a01a1dc16ca1850e743549d87db9f1a3b8863cd07a0a1",
+      "url": "https://github.com/KhawlaHawari/archigen-studio/releases/download/models-run3/facade_pix2pix_run2.pt",
+      "release_asset": "facade_pix2pix_run2.pt",
+      "profiles": [
+        "runtime",
+        "studio",
+        "ab",
+        "eval"
+      ]
+    },
+    {
+      "path": "models/superres/realesr-general-x4v3.pth",
+      "size": 4885111,
+      "sha256": "8dc7edb9ac80ccdc30c3a5dca6616509367f05fbc184ad95b731f05bece96292",
+      "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesr-general-x4v3.pth",
+      "release_asset": null,
+      "profiles": [
+        "runtime",
+        "studio",
+        "ab",
+        "eval"
+      ]
+    },
+    {
+      "path": "models/controlnet_facade/config.json",
+      "size": 1314,
+      "sha256": "b0aaeb3c07abd8b0db444d9b4d8fbd81336f5c252fcedb37f0143b56d2130aa1",
+      "url": "https://github.com/KhawlaHawari/archigen-studio/releases/download/models-run3/controlnet_facade_config.json",
+      "release_asset": "controlnet_facade_config.json",
+      "profiles": [
+        "studio"
+      ]
+    },
+    {
+      "path": "models/controlnet_facade/diffusion_pytorch_model.safetensors",
+      "size": 722598648,
+      "sha256": "941a6e245188cbf10a021480ebe6ad16def5c9814fb6c84987c52c5515783e65",
+      "url": "https://github.com/KhawlaHawari/archigen-studio/releases/download/models-run3/controlnet_facade_run3.safetensors",
+      "release_asset": "controlnet_facade_run3.safetensors",
+      "profiles": [
+        "studio"
+      ]
+    },
+    {
+      "path": "models/checkpoints/floorplan_unetpp_run2.pt",
+      "size": 314928073,
+      "sha256": "9407a8b2ea7d8a25a88fdefcc55d676bc1af18f146147cf9407a4bcfe74f44ed",
+      "url": "https://github.com/KhawlaHawari/archigen-studio/releases/download/models-run3/floorplan_unetpp_run2.pt",
+      "release_asset": "floorplan_unetpp_run2.pt",
+      "profiles": [
+        "ab"
+      ]
+    },
+    {
+      "path": "models/checkpoints/facade_parser_best.pt",
+      "size": 158902331,
+      "sha256": "aa2ba02c30a77165053d9b2ec28c44488090d763b3b7070c946d3cf3882f9dea",
+      "url": "https://github.com/KhawlaHawari/archigen-studio/releases/download/models-run3/facade_parser_run3.pt",
+      "release_asset": "facade_parser_run3.pt",
+      "profiles": [
+        "eval"
+      ]
+    }
+  ]
+}

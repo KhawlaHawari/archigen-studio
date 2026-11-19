@@ -1,0 +1,534 @@
+{
+  "n_plans": 400,
+  "flag_rule": "gap > 10.0 points and non-overlapping 95% CIs",
+  "groupings": {
+    "drawing_style": {
+      "groups": {
+        "colorful": {
+          "n_plans": 67,
+          "wall_iou": {
+            "value": 0.7843,
+            "ci95_low": 0.762,
+            "ci95_high": 0.8052
+          },
+          "exterior_wall_iou": {
+            "value": 0.8396,
+            "ci95_low": 0.8198,
+            "ci95_high": 0.8588
+          },
+          "interior_wall_iou": {
+            "value": 0.729,
+            "ci95_low": 0.6965,
+            "ci95_high": 0.7586
+          },
+          "door_iou": {
+            "value": 0.7089,
+            "ci95_low": 0.6821,
+            "ci95_high": 0.7375
+          },
+          "window_iou": {
+            "value": 0.7744,
+            "ci95_low": 0.7432,
+            "ci95_high": 0.8042
+          },
+          "structure_miou": {
+            "value": 0.8074,
+            "ci95_low": 0.7938,
+            "ci95_high": 0.8211
+          },
+          "room_miou_11": {
+            "value": 0.6946,
+            "ci95_low": 0.6367,
+            "ci95_high": 0.7532
+          },
+          "room_pixel_acc": {
+            "value": 0.9545,
+            "ci95_low": 0.9431,
+            "ci95_high": 0.9644
+          }
+        },
+        "high_quality": {
+          "n_plans": 63,
+          "wall_iou": {
+            "value": 0.7967,
+            "ci95_low": 0.7732,
+            "ci95_high": 0.8176
+          },
+          "exterior_wall_iou": {
+            "value": 0.8401,
+            "ci95_low": 0.8192,
+            "ci95_high": 0.8582
+          },
+          "interior_wall_iou": {
+            "value": 0.7534,
+            "ci95_low": 0.7215,
+            "ci95_high": 0.7797
+          },
+          "door_iou": {
+            "value": 0.7123,
+            "ci95_low": 0.6813,
+            "ci95_high": 0.7397
+          },
+          "window_iou": {
+            "value": 0.8072,
+            "ci95_low": 0.7779,
+            "ci95_high": 0.8355
+          },
+          "structure_miou": {
+            "value": 0.8192,
+            "ci95_low": 0.8023,
+            "ci95_high": 0.835
+          },
+          "room_miou_11": {
+            "value": 0.797,
+            "ci95_low": 0.7329,
+            "ci95_high": 0.8588
+          },
+          "room_pixel_acc": {
+            "value": 0.957,
+            "ci95_low": 0.942,
+            "ci95_high": 0.97
+          }
+        },
+        "high_quality_architectural": {
+          "n_plans": 270,
+          "wall_iou": {
+            "value": 0.6996,
+            "ci95_low": 0.6852,
+            "ci95_high": 0.7134
+          },
+          "exterior_wall_iou": {
+            "value": 0.754,
+            "ci95_low": 0.7362,
+            "ci95_high": 0.7702
+          },
+          "interior_wall_iou": {
+            "value": 0.6452,
+            "ci95_low": 0.629,
+            "ci95_high": 0.6602
+          },
+          "door_iou": {
+            "value": 0.6396,
+            "ci95_low": 0.6202,
+            "ci95_high": 0.6584
+          },
+          "window_iou": {
+            "value": 0.7545,
+            "ci95_low": 0.7342,
+            "ci95_high": 0.773
+          },
+          "structure_miou": {
+            "value": 0.7544,
+            "ci95_low": 0.7427,
+            "ci95_high": 0.7657
+          },
+          "room_miou_11": {
+            "value": 0.6278,
+            "ci95_low": 0.5974,
+            "ci95_high": 0.6575
+          },
+          "room_pixel_acc": {
+            "value": 0.9351,
+            "ci95_low": 0.9262,
+            "ci95_high": 0.9431
+          }
+        }
+      },
+      "disparity": {
+        "wall_iou": {
+          "best_group": "high_quality",
+          "worst_group": "high_quality_architectural",
+          "gap_points": 9.71,
+          "ratio_worst_over_best": 0.878,
+          "cis_overlap": false,
+          "flagged": false
+        },
+        "door_iou": {
+          "best_group": "high_quality",
+          "worst_group": "high_quality_architectural",
+          "gap_points": 7.27,
+          "ratio_worst_over_best": 0.898,
+          "cis_overlap": false,
+          "flagged": false
+        },
+        "window_iou": {
+          "best_group": "high_quality",
+          "worst_group": "high_quality_architectural",
+          "gap_points": 5.27,
+          "ratio_worst_over_best": 0.935,
+          "cis_overlap": false,
+          "flagged": false
+        },
+        "room_miou_11": {
+          "best_group": "high_quality",
+          "worst_group": "high_quality_architectural",
+          "gap_points": 16.92,
+          "ratio_worst_over_best": 0.788,
+          "cis_overlap": false,
+          "flagged": true
+        },
+        "room_pixel_acc": {
+          "best_group": "high_quality",
+          "worst_group": "high_quality_architectural",
+          "gap_points": 2.19,
+          "ratio_worst_over_best": 0.977,
+          "cis_overlap": true,
+          "flagged": false
+        }
+      }
+    },
+    "plan_size": {
+      "groups": {
+        "large": {
+          "n_plans": 133,
+          "wall_iou": {
+            "value": 0.7319,
+            "ci95_low": 0.7124,
+            "ci95_high": 0.7514
+          },
+          "exterior_wall_iou": {
+            "value": 0.787,
+            "ci95_low": 0.7651,
+            "ci95_high": 0.8065
+          },
+          "interior_wall_iou": {
+            "value": 0.6768,
+            "ci95_low": 0.6553,
+            "ci95_high": 0.6982
+          },
+          "door_iou": {
+            "value": 0.6564,
+            "ci95_low": 0.6312,
+            "ci95_high": 0.6812
+          },
+          "window_iou": {
+            "value": 0.7744,
+            "ci95_low": 0.748,
+            "ci95_high": 0.8004
+          },
+          "structure_miou": {
+            "value": 0.7738,
+            "ci95_low": 0.7581,
+            "ci95_high": 0.789
+          },
+          "room_miou_11": {
+            "value": 0.6922,
+            "ci95_low": 0.6516,
+            "ci95_high": 0.7332
+          },
+          "room_pixel_acc": {
+            "value": 0.9214,
+            "ci95_low": 0.9047,
+            "ci95_high": 0.9347
+          }
+        },
+        "medium": {
+          "n_plans": 133,
+          "wall_iou": {
+            "value": 0.7509,
+            "ci95_low": 0.7327,
+            "ci95_high": 0.7675
+          },
+          "exterior_wall_iou": {
+            "value": 0.8055,
+            "ci95_low": 0.7857,
+            "ci95_high": 0.8236
+          },
+          "interior_wall_iou": {
+            "value": 0.6964,
+            "ci95_low": 0.675,
+            "ci95_high": 0.7166
+          },
+          "door_iou": {
+            "value": 0.6958,
+            "ci95_low": 0.6727,
+            "ci95_high": 0.7163
+          },
+          "window_iou": {
+            "value": 0.7799,
+            "ci95_low": 0.759,
+            "ci95_high": 0.7984
+          },
+          "structure_miou": {
+            "value": 0.792,
+            "ci95_low": 0.7794,
+            "ci95_high": 0.8035
+          },
+          "room_miou_11": {
+            "value": 0.6807,
+            "ci95_low": 0.6376,
+            "ci95_high": 0.7388
+          },
+          "room_pixel_acc": {
+            "value": 0.9515,
+            "ci95_low": 0.943,
+            "ci95_high": 0.9591
+          }
+        },
+        "small": {
+          "n_plans": 134,
+          "wall_iou": {
+            "value": 0.696,
+            "ci95_low": 0.6748,
+            "ci95_high": 0.7153
+          },
+          "exterior_wall_iou": {
+            "value": 0.7453,
+            "ci95_low": 0.7224,
+            "ci95_high": 0.7679
+          },
+          "interior_wall_iou": {
+            "value": 0.6466,
+            "ci95_low": 0.6214,
+            "ci95_high": 0.6699
+          },
+          "door_iou": {
+            "value": 0.6281,
+            "ci95_low": 0.6002,
+            "ci95_high": 0.6545
+          },
+          "window_iou": {
+            "value": 0.7297,
+            "ci95_low": 0.703,
+            "ci95_high": 0.754
+          },
+          "structure_miou": {
+            "value": 0.7468,
+            "ci95_low": 0.7305,
+            "ci95_high": 0.7623
+          },
+          "room_miou_11": {
+            "value": 0.6245,
+            "ci95_low": 0.5869,
+            "ci95_high": 0.6648
+          },
+          "room_pixel_acc": {
+            "value": 0.9507,
+            "ci95_low": 0.9413,
+            "ci95_high": 0.958
+          }
+        }
+      },
+      "disparity": {
+        "wall_iou": {
+          "best_group": "medium",
+          "worst_group": "small",
+          "gap_points": 5.49,
+          "ratio_worst_over_best": 0.927,
+          "cis_overlap": false,
+          "flagged": false
+        },
+        "door_iou": {
+          "best_group": "medium",
+          "worst_group": "small",
+          "gap_points": 6.77,
+          "ratio_worst_over_best": 0.903,
+          "cis_overlap": false,
+          "flagged": false
+        },
+        "window_iou": {
+          "best_group": "medium",
+          "worst_group": "small",
+          "gap_points": 5.02,
+          "ratio_worst_over_best": 0.936,
+          "cis_overlap": false,
+          "flagged": false
+        },
+        "room_miou_11": {
+          "best_group": "large",
+          "worst_group": "small",
+          "gap_points": 6.77,
+          "ratio_worst_over_best": 0.902,
+          "cis_overlap": true,
+          "flagged": false
+        },
+        "room_pixel_acc": {
+          "best_group": "medium",
+          "worst_group": "large",
+          "gap_points": 3.01,
+          "ratio_worst_over_best": 0.968,
+          "cis_overlap": false,
+          "flagged": false
+        }
+      }
+    },
+    "complexity": {
+      "groups": {
+        "complex": {
+          "n_plans": 105,
+          "wall_iou": {
+            "value": 0.7121,
+            "ci95_low": 0.6908,
+            "ci95_high": 0.7319
+          },
+          "exterior_wall_iou": {
+            "value": 0.7487,
+            "ci95_low": 0.7265,
+            "ci95_high": 0.7715
+          },
+          "interior_wall_iou": {
+            "value": 0.6755,
+            "ci95_low": 0.6511,
+            "ci95_high": 0.6978
+          },
+          "door_iou": {
+            "value": 0.6465,
+            "ci95_low": 0.6179,
+            "ci95_high": 0.6719
+          },
+          "window_iou": {
+            "value": 0.7414,
+            "ci95_low": 0.7156,
+            "ci95_high": 0.7641
+          },
+          "structure_miou": {
+            "value": 0.7587,
+            "ci95_low": 0.7422,
+            "ci95_high": 0.7734
+          },
+          "room_miou_11": {
+            "value": 0.6649,
+            "ci95_low": 0.6298,
+            "ci95_high": 0.7002
+          },
+          "room_pixel_acc": {
+            "value": 0.9387,
+            "ci95_low": 0.9297,
+            "ci95_high": 0.9466
+          }
+        },
+        "medium": {
+          "n_plans": 82,
+          "wall_iou": {
+            "value": 0.7347,
+            "ci95_low": 0.7112,
+            "ci95_high": 0.7536
+          },
+          "exterior_wall_iou": {
+            "value": 0.7829,
+            "ci95_low": 0.7555,
+            "ci95_high": 0.8044
+          },
+          "interior_wall_iou": {
+            "value": 0.6866,
+            "ci95_low": 0.6644,
+            "ci95_high": 0.7071
+          },
+          "door_iou": {
+            "value": 0.6875,
+            "ci95_low": 0.6634,
+            "ci95_high": 0.7101
+          },
+          "window_iou": {
+            "value": 0.8085,
+            "ci95_low": 0.7858,
+            "ci95_high": 0.8275
+          },
+          "structure_miou": {
+            "value": 0.7892,
+            "ci95_low": 0.7727,
+            "ci95_high": 0.8019
+          },
+          "room_miou_11": {
+            "value": 0.6418,
+            "ci95_low": 0.5972,
+            "ci95_high": 0.6931
+          },
+          "room_pixel_acc": {
+            "value": 0.9373,
+            "ci95_low": 0.9269,
+            "ci95_high": 0.9465
+          }
+        },
+        "simple": {
+          "n_plans": 213,
+          "wall_iou": {
+            "value": 0.7327,
+            "ci95_low": 0.7135,
+            "ci95_high": 0.7502
+          },
+          "exterior_wall_iou": {
+            "value": 0.7937,
+            "ci95_low": 0.7729,
+            "ci95_high": 0.8095
+          },
+          "interior_wall_iou": {
+            "value": 0.6717,
+            "ci95_low": 0.65,
+            "ci95_high": 0.6926
+          },
+          "door_iou": {
+            "value": 0.6598,
+            "ci95_low": 0.6357,
+            "ci95_high": 0.6816
+          },
+          "window_iou": {
+            "value": 0.7619,
+            "ci95_low": 0.7373,
+            "ci95_high": 0.7844
+          },
+          "structure_miou": {
+            "value": 0.7734,
+            "ci95_low": 0.7586,
+            "ci95_high": 0.7867
+          },
+          "room_miou_11": {
+            "value": 0.6396,
+            "ci95_low": 0.5927,
+            "ci95_high": 0.6842
+          },
+          "room_pixel_acc": {
+            "value": 0.945,
+            "ci95_low": 0.933,
+            "ci95_high": 0.9546
+          }
+        }
+      },
+      "disparity": {
+        "wall_iou": {
+          "best_group": "medium",
+          "worst_group": "complex",
+          "gap_points": 2.26,
+          "ratio_worst_over_best": 0.969,
+          "cis_overlap": true,
+          "flagged": false
+        },
+        "door_iou": {
+          "best_group": "medium",
+          "worst_group": "complex",
+          "gap_points": 4.1,
+          "ratio_worst_over_best": 0.94,
+          "cis_overlap": true,
+          "flagged": false
+        },
+        "window_iou": {
+          "best_group": "medium",
+          "worst_group": "complex",
+          "gap_points": 6.71,
+          "ratio_worst_over_best": 0.917,
+          "cis_overlap": false,
+          "flagged": false
+        },
+        "room_miou_11": {
+          "best_group": "complex",
+          "worst_group": "simple",
+          "gap_points": 2.53,
+          "ratio_worst_over_best": 0.962,
+          "cis_overlap": true,
+          "flagged": false
+        },
+        "room_pixel_acc": {
+          "best_group": "simple",
+          "worst_group": "medium",
+          "gap_points": 0.77,
+          "ratio_worst_over_best": 0.992,
+          "cis_overlap": true,
+          "flagged": false
+        }
+      }
+    }
+  },
+  "flags": [
+    "drawing_style: room_miou_11 (high_quality_architectural 16.92 pts below high_quality)"
+  ]
+}

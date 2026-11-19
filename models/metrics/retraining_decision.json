@@ -1,0 +1,25 @@
+{
+  "evaluated_at": "2026-11-19 14:43:37",
+  "retrain": true,
+  "reasons": [
+    "data drift detected (max PSI 10.0, score 0.958)"
+  ],
+  "policy": {
+    "retrain_every_days": 30,
+    "min_new_feedback": 25,
+    "drift_triggers_retraining": true
+  },
+  "model_age_days": 2.7,
+  "feedback": {
+    "total": 0,
+    "new_since_last_training": 0,
+    "folder": "C:\\Users\\DELL\\Desktop\\archigen-3d\\data\\feedback"
+  },
+  "drift": {
+    "status": "DRIFT_DETECTED",
+    "drift_detected": true,
+    "drift_score": 0.958,
+    "max_psi": 10.0
+  },
+  "how_to_retrain": "Kaggle notebook (GPU) with: python -m src.training.train_floorplan --recipe v3 --init-checkpoint models/checkpoints/floorplan_unetpp_best.pt --include-feedback"
+}

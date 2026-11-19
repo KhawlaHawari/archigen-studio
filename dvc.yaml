@@ -37,9 +37,21 @@ stages:
       - data/processed/data_audit_summary.json:
           cache: false
 
+  # Validation GATE: explicit expectations, fails the pipeline on broken data (audit_data only reports)
+  validate_data:
+    cmd: python -m src.data.validate_data
+    deps:
+      - src/data/validate_data.py
+      - data/raw/facades
+      - data/processed/cubicasa_cache
+    outs:
+      - data/processed/data_validation.json:
+          cache: false
+
   train_facade_baseline:
     cmd: python -m src.training.train_facade --mode l1_baseline
     deps:
+      - data/processed/data_validation.json   # runs only after validate_data passed
       - src/models/pix2pix_cgan.py
       - src/training/trainer_base.py
       - src/training/train_facade.py
@@ -56,6 +68,7 @@ stages:
   train_facade:
     cmd: python -m src.training.train_facade --mode pix2pix
     deps:
+      - data/processed/data_validation.json   # runs only after validate_data passed
       - src/models/pix2pix_cgan.py
       - src/training/trainer_base.py
       - src/training/train_facade.py
@@ -72,6 +85,7 @@ stages:
   train_floorplan:
     cmd: python -m src.training.train_floorplan
     deps:
+      - data/processed/data_validation.json   # runs only after validate_data passed
       - src/models/unet_plus_plus.py
       - src/training/trainer_base.py
       - src/training/train_floorplan.py
@@ -162,3 +176,66 @@ stages:
       - src/mlops/drift_detector.py
     outs:
       - data/monitoring/reference_profile.json
+
+  # Feedback loop: user corrections from the studio -> training examples (CubiCasa cache format)
+  feedback_dataset:
+    cmd: python -m src.data.feedback_dataset
+    deps:
+      - src/data/feedback_dataset.py
+      - src/mlops/feedback.py
+      - data/feedback
+    outs:
+      - data/processed/feedback_cache:
+          cache: true
+
+  # Retraining policy: drift OR new corrections OR schedule (params.yaml: retraining)
+  retraining_decision:
+    cmd: python -m src.mlops.retraining_policy --report-only
+    deps:
+      - src/mlops/retraining_policy.py
+    params:
+      - retraining
+    outs:
+      - models/metrics/retraining_decision.json:
+          cache: false
+
+  # Per-plan results -> 95 % bootstrap confidence intervals + fairness / subgroup analysis
+  per_plan_eval:
+    cmd: python -m src.evaluation.per_plan_eval
+    deps:
+      - src/evaluation/per_plan_eval.py
+      - models/onnx/floorplan_unetpp.onnx
+      - data/processed/cubicasa_cache/test
+    outs:
+      - models/metrics/floorplan_unetpp_best_test_perplan.npz:
+          cache: false
+
+  confidence_intervals:
+    cmd: python -m src.evaluation.bootstrap
+    deps:
+      - src/evaluation/bootstrap.py
+      - models/metrics/floorplan_unetpp_best_test_perplan.npz
+    metrics:
+      - models/metrics/floorplan_unetpp_best_test_bootstrap.json:
+          cache: false
+
+  fairness:
+    cmd: python -m src.evaluation.fairness
+    deps:
+      - src/evaluation/fairness.py
+      - models/metrics/floorplan_unetpp_best_test_perplan.npz
+    metrics:
+      - models/metrics/floorplan_unetpp_best_test_fairness.json:
+          cache: false
+
+  # Optuna HPO of the plan -> 3D post-processing (validation split; adopted only if better on test)
+  hpo_vectorizer:
+    cmd: python -m src.mlops.hpo_vectorizer --trials 25 --val-plans 30 --test-plans 60
+    deps:
+      - src/mlops/hpo_vectorizer.py
+      - src/geometry/layout_vectorizer.py
+      - models/onnx/floorplan_unetpp.onnx
+    metrics:
+      - models/metrics/vectorizer_hpo.json:
+          cache: false
+

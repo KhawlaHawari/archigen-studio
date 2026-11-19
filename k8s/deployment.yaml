@@ -1,0 +1,55 @@
+# ArchiGen API: FastAPI + ONNX Runtime / PyTorch, image built and pushed by CI (mlops-ci.yml).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: archigen-api
+  namespace: archigen
+  labels: {app: archigen-api}
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxUnavailable: 0, maxSurge: 1}   # zero-downtime model / code updates
+  selector:
+    matchLabels: {app: archigen-api}
+  template:
+    metadata:
+      labels: {app: archigen-api}
+      annotations:                                       # scraped by Prometheus (monitoring/)
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/khawlahawari/archigen-studio:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - {name: http, containerPort: 8000}
+          envFrom:
+            - configMapRef: {name: archigen-api-config}
+          resources:
+            requests: {cpu: "1", memory: 3Gi}
+            limits: {cpu: "2", memory: 8Gi}        # ControlNet (Stable Diffusion) needs several GB
+          volumeMounts:
+            - {name: models, mountPath: /app/models, readOnly: true}
+            - {name: feedback, mountPath: /app/data/feedback}
+          startupProbe:                            # model loading can take a minute on CPU
+            httpGet: {path: /health, port: http}
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: models
+          persistentVolumeClaim: {claimName: archigen-models}
+        - name: feedback                           # user corrections (feedback loop); use a PVC in production
+          emptyDir: {}

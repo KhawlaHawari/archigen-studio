@@ -11,6 +11,7 @@ import {
   ChevronDown,
   FileImage,
   ArrowUpRight,
+  Send,
 } from 'lucide-react';
 
 const STYLES = [
@@ -43,6 +44,9 @@ export default function ControlPanel({
   fileName,
   imageUrl,
   referenceLevels,
+  editCount = 0,
+  feedbackStatus = null,
+  onSendFeedback = null,
   isTracedSample,
 }) {
   const input = useRef(null);
@@ -200,6 +204,24 @@ export default function ControlPanel({
           {isGeneratingFacade ? 'Generating finish…' : 'Generate facade'}
         </button>
       </details>
+      {onSendFeedback && (editCount > 0 || feedbackStatus) && (
+        <div className="sidebar-tip" data-testid="feedback-panel">
+          <Send size={18} />
+          <div>
+            <strong>Improve the model</strong>
+            <p>
+              {feedbackStatus === 'sent'
+                ? 'Thank you: your corrected plan was saved as new training data.'
+                : `You corrected this plan (${editCount} edit${editCount > 1 ? 's' : ''}). Send it so the next model learns from it.`}
+            </p>
+            {feedbackStatus !== 'sent' && (
+              <button onClick={onSendFeedback} disabled={feedbackStatus === 'sending'} data-testid="send-feedback">
+                {feedbackStatus === 'sending' ? 'Sending…' : 'Send my corrections'} <Send size={14} />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
       <div className="sidebar-tip">
         <Sparkles size={18} />
         <div>

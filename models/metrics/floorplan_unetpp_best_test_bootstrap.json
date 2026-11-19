@@ -1,0 +1,63 @@
+{
+  "method": "percentile bootstrap over test plans, B=2000, seed=42",
+  "n_plans": 400,
+  "segmentation": {
+    "wall_iou": {
+      "value": 0.7291,
+      "ci95_low": 0.7171,
+      "ci95_high": 0.7405
+    },
+    "exterior_wall_iou": {
+      "value": 0.7823,
+      "ci95_low": 0.7692,
+      "ci95_high": 0.7941
+    },
+    "interior_wall_iou": {
+      "value": 0.6759,
+      "ci95_low": 0.6623,
+      "ci95_high": 0.6893
+    },
+    "door_iou": {
+      "value": 0.662,
+      "ci95_low": 0.6474,
+      "ci95_high": 0.6771
+    },
+    "window_iou": {
+      "value": 0.766,
+      "ci95_low": 0.751,
+      "ci95_high": 0.7808
+    },
+    "structure_miou": {
+      "value": 0.7733,
+      "ci95_low": 0.7644,
+      "ci95_high": 0.7822
+    },
+    "room_miou_11": {
+      "value": 0.6483,
+      "ci95_low": 0.624,
+      "ci95_high": 0.6737
+    },
+    "room_pixel_acc": {
+      "value": 0.9416,
+      "ci95_low": 0.935,
+      "ci95_high": 0.9479
+    }
+  },
+  "layout_3d": {
+    "watertight_shell_rate": {
+      "value": 0.9975,
+      "ci95_low": 0.9925,
+      "ci95_high": 1.0
+    },
+    "footprint_iou_mean": {
+      "value": 0.9518,
+      "ci95_low": 0.9454,
+      "ci95_high": 0.958
+    },
+    "room_count_mae": {
+      "value": 0.945,
+      "ci95_low": 0.82,
+      "ci95_high": 1.0675
+    }
+  }
+}

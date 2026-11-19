@@ -7,6 +7,8 @@ and the building envelope, all in meters.
 """
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any, Dict, Optional
 
 import numpy as np
@@ -17,10 +19,22 @@ from src.geometry.layout_vectorizer import FloorplanVectorizer
 _VECTORIZER: Optional[FloorplanVectorizer] = None
 
 
+# Vectorizer hyperparameters tuned by Optuna (src/mlops/hpo_vectorizer.py) on the validation split;
+# the defaults of FloorplanVectorizer are used when the file does not exist.
+TUNED_PARAMS = Path(__file__).resolve().parents[2] / "models" / "vectorizer_params.json"
+
+
+def tuned_vectorizer_params() -> Dict[str, Any]:
+    try:
+        return json.loads(TUNED_PARAMS.read_text(encoding="utf-8"))["params"]
+    except (FileNotFoundError, KeyError, json.JSONDecodeError):
+        return {}
+
+
 def _vectorizer() -> FloorplanVectorizer:
     global _VECTORIZER
     if _VECTORIZER is None:
-        _VECTORIZER = FloorplanVectorizer()
+        _VECTORIZER = FloorplanVectorizer(**tuned_vectorizer_params())
     return _VECTORIZER
 
 
@@ -29,6 +43,7 @@ def layout_from_probabilities(
     prob_r: np.ndarray,
     image_rgb: np.ndarray,
     scale_override: Optional[float] = None,
+    vectorizer: Optional[FloorplanVectorizer] = None,
 ) -> Dict[str, Any]:
     """
     prob_s: (5, H, W) structure probabilities (0 bg, 1 exterior wall, 2 interior wall, 3 door, 4 window).
@@ -48,7 +63,7 @@ def layout_from_probabilities(
     legacy_struct[struct_mask == 1] = 2
     legacy_struct[struct_mask == 2] = 1
 
-    layout = _vectorizer().vectorize(
+    layout = (vectorizer or _vectorizer()).vectorize(
         mask=opening_mask,
         struct_mask=legacy_struct,
         room_mask=room_mask,
